@@ -153,6 +153,8 @@
   .stats-panel { position: absolute; top: 10px; right: 60px; display: flex; flex-direction: column; gap: 4px; z-index: 20; pointer-events: none; }
   .stat-card { background: var(--marcador-bg); color: #fff; padding: 3px 8px; border-radius: 8px; font-size: 11px; display: flex; justify-content: space-between; gap: 8px; min-width: 100px; border: 2px solid #333; }
   .stat-card .val { color: var(--amarillo); font-weight: bold; }
+  .stat-card.fail-flash { animation: failFlash 0.6s ease-out; }
+  @keyframes failFlash { 0% { background: var(--rojo); } 100% { background: var(--marcador-bg); } }
 
   .career-rank-card { width: 100%; max-width: 460px; background: linear-gradient(135deg, #1a1a2e 0%, #2a2a4e 100%); border: 3px solid var(--amarillo); border-radius: 16px; padding: 16px 20px; text-align: center; color: #fff; box-shadow: 0 4px 24px rgba(255,214,0,0.15); }
   .career-rank-emoji { font-size: 56px; line-height: 1; margin-bottom: 4px; filter: drop-shadow(0 0 20px rgba(255,214,0,0.5)); }
@@ -279,9 +281,6 @@
   .brand-tag { font-size: 14px; font-weight: 900; letter-spacing: 4px; color: var(--amarillo); text-transform: uppercase; margin-bottom: 4px; }
   @media (max-width: 600px) { #mat-corner .mat-mascot { font-size: 2px; } #mat-corner { top: 36px; } .mat-name { font-size: 10px; } }
 
-  /* ============================================================
-     SISTEMA DE RETOS COMPARTIBLES
-     ============================================================ */
   .challenge-input {
     background: #263238; color: #fff; border: 2px solid #546e7a;
     padding: 10px 14px; border-radius: 8px; font-size: 14px;
@@ -376,7 +375,8 @@
   </div>
 
   <div class="stats-panel">
-    <div class="stat-card"><span>🛡️ Vidas</span><span class="val" id="ui-lives">❤️❤️❤️</span></div>
+    <div class="stat-card" id="lives-card"><span>🛡️ Vidas</span><span class="val" id="ui-lives">❤️❤️❤️</span></div>
+    <div class="stat-card" id="fail-card" style="display:none;"><span>⚡ Fallos</span><span class="val" id="ui-fail-counter">0/3</span></div>
   </div>
 
   <button class="btn-exit-game hidden" id="btn-exit-game" title="Salir al menú">🏠</button>
@@ -450,6 +450,14 @@
           <span class="speed-value" id="speed-value">0.7x</span>
         </div>
         <div class="stage-range-hint" id="stage-range-hint">Etapa 1: 0.3x → 1.1x</div>
+      </div>
+      <div class="settings-section" style="margin-top:8px;">
+        <div class="settings-label">❤️ Intentos por vida</div>
+        <div class="speed-slider-wrap">
+          <input type="range" id="attempts-slider" min="1" max="5" step="1" value="1">
+          <span class="speed-value" id="attempts-value">1</span>
+        </div>
+        <div class="voice-hint">Cuántos errores hacen falta para perder un corazón. 1 = estricto, 5 = tolerante.</div>
       </div>
       <div class="settings-section" style="margin-top:8px;">
         <div class="settings-label">🔢 Tipos de números</div>
@@ -572,9 +580,6 @@
     <button class="btn secondary" id="btn-menu-lu">🏠 MENÚ</button>
   </div>
 
-  <!-- ============================================================
-       OVERLAYS DEL SISTEMA DE RETOS
-       ============================================================ -->
   <div class="overlay hidden" id="overlay-create-challenge">
     <div class="title">🎯 Crear reto</div>
     <div class="subtitle">Compartí esta configuración con tus amigos</div>
@@ -684,6 +689,8 @@ const state = {
   globalSpeedMultiplier: 0.7,
   velocityStage: 1,
   sliderPos: 5,
+  attemptsPerLife: 1,
+  failedAttempts: 0,
   musicEnabled: true,
   musicTrackIndex: 0,
   numberTypes: { natural: true, negative: true, fraction: true },
@@ -692,20 +699,15 @@ const state = {
   gamePaused: false, narrationTimer: null, pendingSpeakTimer: null,
   mistakes: [],
   sessionStats: { fractionSaves: 0, negativeSaves: 0, logSaves: 0, sqrtSaves: 0 },
-  // Shooter Mode specific
   shooterTargets: [],
   isAiming: false,
   aimX: 0, aimY: 0,
   playerBallX: 0, playerBallY: 0,
-  // Retos
   incomingChallenge: null,
   pendingIncomingChallenge: null,
   shareResultReturnTo: 'overlay-menu',
 };
 
-/* ============================================================
-   PROGRESO
-   ============================================================ */
 const RANKS = [
   { xp: 0,    name: 'Amateur',     emoji: '🥾' },
   { xp: 100,  name: 'Juvenil',     emoji: '🥅' },
@@ -738,7 +740,7 @@ const Progress = (function() {
     fractionSaves: 0, negativeSaves: 0, logSaves: 0, sqrtSaves: 0,
     hasPerfectLevel: false, hasFlawlessLevel: false, tournamentWins: 0,
     unlockedBadges: [],
-    preferences: { musicEnabled: true, musicTrack: 0, velocityStage: 1, sliderPos: 5, playerName: '' },
+    preferences: { musicEnabled: true, musicTrack: 0, velocityStage: 1, sliderPos: 5, attemptsPerLife: 1, playerName: '' },
   };
   let data = JSON.parse(JSON.stringify(defaults));
   function load() {
@@ -799,9 +801,6 @@ const Progress = (function() {
   return { recordSession, getData, getRankData, getNextRankData, getBadges, savePreference };
 })();
 
-/* ============================================================
-   MÚSICA
-   ============================================================ */
 const GameMusic = (function() {
   const BPM = 120;
   const BEAT_DUR = 60 / BPM;
@@ -1000,9 +999,6 @@ const GameMusic = (function() {
   return { start, stop, setMuted, isMuted: () => muted, isPlaying: () => isPlaying, setTrack, getCurrentTrack: () => currentTrackIndex, getTracks: () => TRACKS.map((t, i) => ({ index: i, id: t.id, name: t.name, emoji: t.emoji })), getBeat };
 })();
 
-/* ============================================================
-   FRACCIONES
-   ============================================================ */
 const FRACTION_MAX_DEN = 24;
 function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { const t = b; b = a % b; a = t; } return a || 1; }
 function lcm(a, b) { return (a * b) / gcd(a, b); }
@@ -1038,9 +1034,6 @@ function sameFraction(a, b) { if (approxEqual(a, b)) return true; const fa = dec
 const randInt = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
 const randChoice = arr => arr[Math.floor(Math.random()*arr.length)];
 
-/* ============================================================
-   AUDIO
-   ============================================================ */
 function initAudio() {
   if (!state.audioCtx) { try { state.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {} }
   if (state.audioCtx && state.audioCtx.state === 'suspended') state.audioCtx.resume().catch(()=>{});
@@ -1076,9 +1069,6 @@ function soundCrowd() {
   } catch(e) {}
 }
 
-/* ============================================================
-   NARRACIÓN
-   ============================================================ */
 const PHRASES = {
   levelStart: ['¡Comienza el partido!', '¡Rueda el balón!', '¡Arranca el juego!', '¡Todo listo en el estadio!'],
   preShoot: ['Se prepara...', 'Toma distancia...', 'Va a rematar...', 'El delantero se acomoda...', 'Carga la pierna...'],
@@ -1209,9 +1199,6 @@ function narrateSave() {
   else speakDirect(pickRandom(PHRASES.save), { rate: 1.15, pitch: 1.3 });
 }
 
-/* ============================================================
-   GENERACIÓN CON RAREZA
-   ============================================================ */
 function pickNumberType(level) {
   const types = [];
   if (state.numberTypes.natural) types.push('natural');
@@ -1503,9 +1490,6 @@ function generateOptions(answer, level) {
   return options;
 }
 
-/* ============================================================
-   EXPLICACIONES
-   ============================================================ */
 function simpNote(rawNum, rawDen, ansText) {
   if (gcd(Math.abs(rawNum), rawDen) > 1) return `<span class="step">Simplificar:</span> ${rawNum}/${rawDen} = <b>${ansText}</b>`;
   return '';
@@ -1694,6 +1678,16 @@ function updateUI() {
   for (let i=0;i<state.maxLives;i++) hearts += i<state.lives ? '❤️' : '🖤';
   uiLives.textContent = hearts;
   uiLivesIcons.textContent = hearts;
+  const failCard = document.getElementById('fail-card');
+  const failCounter = document.getElementById('ui-fail-counter');
+  if (failCard && failCounter) {
+    if (state.attemptsPerLife > 1) {
+      failCard.style.display = '';
+      failCounter.textContent = `${state.failedAttempts}/${state.attemptsPerLife}`;
+    } else {
+      failCard.style.display = 'none';
+    }
+  }
 }
 function setTicker(t){ uiTicker.textContent = t; }
 function matReact(kind) {
@@ -1724,6 +1718,30 @@ function syncSoundToggle() { if (!btnSoundToggle) return; btnSoundToggle.textCon
 function syncVoiceToggle() { if (!btnVoiceToggle) return; btnVoiceToggle.textContent = state.voiceEnabled ? 'ON' : 'OFF'; btnVoiceToggle.classList.toggle('toggle-off', !state.voiceEnabled); }
 function syncMusicToggle() { if (!btnMusicToggle) return; btnMusicToggle.textContent = state.musicEnabled ? 'ON' : 'OFF'; btnMusicToggle.classList.toggle('toggle-off', !state.musicEnabled); }
 function updateCareerButton() { if (!btnCareer) return; const r = Progress.getRankData(); btnCareer.textContent = `${r.emoji} MI CARRERA`; }
+
+/* ============================================================
+   REGISTRO DE INTENTOS
+   ============================================================ */
+function registerFailure() {
+  state.failedAttempts++;
+  let lifeLost = false;
+  if (state.failedAttempts >= state.attemptsPerLife) {
+    state.failedAttempts = 0;
+    state.lives--;
+    lifeLost = true;
+  }
+  return { lifeLost, gameOver: state.lives <= 0 };
+}
+function registerSuccess() {
+  state.failedAttempts = 0;
+}
+function flashFailCard() {
+  const el = document.getElementById('fail-card');
+  if (!el) return;
+  el.classList.remove('fail-flash');
+  void el.offsetWidth;
+  el.classList.add('fail-flash');
+}
 
 /* ============================================================
    ÁREA Y LÍMITES
@@ -1993,6 +2011,7 @@ function resolveShooterRound(isGoal, targetHit) {
   if (isGoal) {
     state.goals++; state.streak++;
     if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+    registerSuccess();
     soundSave(); soundCrowd();
     showFeedback('¡GOOOL! ⚽', '#4caf50');
     setTicker(`¡Golazo! Racha: ${state.streak} 🔥`);
@@ -2004,8 +2023,12 @@ function resolveShooterRound(isGoal, targetHit) {
       if (eq.op === 'log') state.sessionStats.logSaves++;
       if (eq.op === '√') state.sessionStats.sqrtSaves++;
     }
+    updateUI();
+    state.roundLocked = true;
+    if (state.goals >= LEVELS[state.levelIndex].target) { state.active = false; setTimeout(()=>levelComplete(), 700); return; }
+    setTimeout(()=>{ if (state.mode === 'playing') { state.lastTime = 0; spawnShooterTargets(); } }, 1200);
   } else {
-    state.lives--; state.streak = 0;
+    state.streak = 0;
     soundGoal();
     if (targetHit) {
       showFeedback('¡ATAJADO! 🧤', '#e53935');
@@ -2030,14 +2053,19 @@ function resolveShooterRound(isGoal, targetHit) {
         });
       }
     }
-  }
-  updateUI();
-  state.roundLocked = true;
-  if (isGoal) {
-    if (state.goals >= LEVELS[state.levelIndex].target) { state.active = false; setTimeout(()=>levelComplete(), 700); return; }
-    setTimeout(()=>{ if (state.mode === 'playing') { state.lastTime = 0; spawnShooterTargets(); } }, 1200);
-  } else {
-    if (state.lives <= 0) { state.active = false; setTimeout(()=>gameOver(), 1900); return; }
+    const result = registerFailure();
+    updateUI();
+    flashFailCard();
+    state.roundLocked = true;
+    if (result.lifeLost && state.attemptsPerLife > 1) {
+      setTimeout(() => setTicker(`💔 -1 vida · Fallos: 0/${state.attemptsPerLife}`), 800);
+    }
+    if (result.gameOver) {
+      state.active = false;
+      setTimeout(()=>gameOver(), 1900);
+      return;
+    }
+    state.active = false;
     setTimeout(()=>{ if (state.mode === 'playing') { state.lastTime = 0; spawnShooterTargets(); } }, 2100);
   }
 }
@@ -2059,6 +2087,7 @@ function checkCollisions() {
 function handleCollision(ball) {
   if (ball.resolved) return;
   if (ball.isCorrect) {
+    // ✅ Atajada exitosa
     ball.resolved = true;
     ball.el.style.transition = 'all 0.3s';
     ball.el.style.transform = 'scale(0.2)';
@@ -2066,6 +2095,7 @@ function handleCollision(ball) {
     setTimeout(()=>ball.el.remove(), 300);
     state.saves++; state.streak++;
     if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+    registerSuccess();
     if (state.currentEquation) {
       const eq = state.currentEquation;
       if ((eq.opA !== null && !Number.isInteger(eq.opA)) || (eq.opB !== null && !Number.isInteger(eq.opB))) state.sessionStats.fractionSaves++;
@@ -2083,12 +2113,12 @@ function handleCollision(ball) {
     if (state.saves >= LEVELS[state.levelIndex].target) { state.active = false; setTimeout(()=>levelComplete(), 700); return; }
     setTimeout(()=>{ if (state.mode === 'playing') { state.lastTime = 0; spawnBalls(); } }, 900);
   } else {
+    // ❌ Fallo: atajó el balón incorrecto → termina la ronda
     ball.resolved = true;
     state.streak = 0;
     soundGoal();
     showFeedback('¡NO! ❌', '#e53935');
     setTicker(`¡Ese no era! Era ${numText(state.correctAnswer)}.`);
-    updateUI();
     if (state.currentEquation) {
       state.mistakes.push({
         op: state.currentEquation.op, opA: state.currentEquation.opA, opB: state.currentEquation.opB,
@@ -2097,10 +2127,27 @@ function handleCollision(ball) {
       });
     }
     narrateCategory('wrongBall', { rate: 1.1, pitch: 1.1 });
-    ball.el.style.transition = 'all 0.5s';
-    ball.el.style.opacity = '0.15';
-    ball.el.style.transform = 'scale(0.5)';
-    ball.el.style.filter = 'grayscale(1)';
+    // Bloquear todos los balones restantes (no dejar que el correcto caiga)
+    state.roundLocked = true;
+    state.balls.forEach(b => {
+      if (b.resolved) return;
+      b.resolved = true;
+      b.el.style.transition = 'all 0.4s';
+      b.el.style.opacity = '0.1';
+      b.el.style.filter = 'grayscale(1)';
+    });
+    const result = registerFailure();
+    updateUI();
+    flashFailCard();
+    if (result.lifeLost && state.attemptsPerLife > 1) {
+      setTimeout(() => setTicker(`💔 -1 vida · Fallos: 0/${state.attemptsPerLife}`), 700);
+    }
+    state.active = false;
+    if (result.gameOver) {
+      setTimeout(()=>gameOver(), 1400);
+    } else {
+      setTimeout(()=>{ if (state.mode === 'playing') { state.lastTime = 0; spawnBalls(); } }, 1200);
+    }
   }
 }
 
@@ -2117,12 +2164,12 @@ function gameLoop(timestamp) {
       ball.y += ball.speed * dt;
       ball.el.style.top = ball.y + 'px';
       if (ball.isCorrect && ball.y > goalY && !ball.resolved) {
+        // ⚽ El balón correcto cruza la línea → GOL EN CONTRA (fallo del jugador)
         ball.resolved = true;
-        state.goals++; state.streak = 0; state.lives--;
+        state.streak = 0;
         soundGoal();
         showFeedback('¡GOL! ⚽', '#e53935');
-        setTicker(`¡Gol en contra! Era ${numText(state.correctAnswer)}. Vidas: ${state.lives}`);
-        updateUI();
+        setTicker(`¡Gol en contra! Era ${numText(state.correctAnswer)}.`);
         showCorrectAnswerBig(state.correctAnswer);
         if (state.currentEquation) {
           state.mistakes.push({
@@ -2132,10 +2179,27 @@ function gameLoop(timestamp) {
           });
         }
         narrateCategory('goal', { rate: 1.2, pitch: 1.3 });
+        // Bloquear el resto de balones
         state.roundLocked = true;
+        state.balls.forEach(b => {
+          if (b.resolved) return;
+          b.resolved = true;
+          b.el.style.transition = 'all 0.4s';
+          b.el.style.opacity = '0.1';
+          b.el.style.filter = 'grayscale(1)';
+        });
+        const result = registerFailure();
+        updateUI();
+        flashFailCard();
         state.active = false;
-        if (state.lives <= 0) setTimeout(()=>gameOver(), 1900);
-        else setTimeout(()=>{ if (state.mode === 'playing') { state.lastTime = 0; spawnBalls(); } }, 2100);
+        if (result.lifeLost && state.attemptsPerLife > 1) {
+          setTimeout(() => setTicker(`💔 -1 vida · Fallos: 0/${state.attemptsPerLife}`), 700);
+        }
+        if (result.gameOver) {
+          setTimeout(()=>gameOver(), 1900);
+        } else {
+          setTimeout(()=>{ if (state.mode === 'playing') { state.lastTime = 0; spawnBalls(); } }, 2100);
+        }
       }
       if (!ball.isCorrect && ball.y > goalY + 60 && !ball.resolved) {
         ball.resolved = true;
@@ -2161,9 +2225,6 @@ function renderSessionSummary(elId, result) {
   el.classList.remove('hidden');
 }
 
-/* ============================================================
-   FLUJO
-   ============================================================ */
 function startLevel(index, mode = 'keeper') {
   initAudio();
   if (state.musicEnabled) GameMusic.start();
@@ -2175,6 +2236,7 @@ function startLevel(index, mode = 'keeper') {
   state.goals = 0; state.saves = 0; state.streak = 0; state.bestStreak = 0;
   state.lives = LEVELS[index].lives;
   state.maxLives = LEVELS[index].lives;
+  state.failedAttempts = 0;
   state.active = false; state.roundLocked = false;
   state.lastTime = 0; state.pointerActive = false; state.gamePaused = false;
   state.mistakes = [];
@@ -2480,7 +2542,6 @@ function buildMusicTracks() {
 /* ============================================================
    SISTEMA DE RETOS COMPARTIBLES
    ============================================================ */
-
 function encodeNumberTypes(nt) {
   let bits = 0;
   if (nt.natural) bits |= 1;
@@ -2874,6 +2935,11 @@ onTap(document.getElementById('btn-settings'), () => {
   buildMusicTracks();
   setupStageSelector();
   applySpeedFromStage();
+  const attemptsSlider = document.getElementById('attempts-slider');
+  if (attemptsSlider) {
+    attemptsSlider.value = state.attemptsPerLife;
+    document.getElementById('attempts-value').textContent = state.attemptsPerLife;
+  }
   const tabs = document.querySelectorAll('.settings-tab');
   const panels = document.querySelectorAll('.settings-panel');
   tabs.forEach((t, i) => { t.classList.toggle('active', i === 0); });
@@ -2955,6 +3021,19 @@ speedSlider.addEventListener('input', (e) => {
   state.sliderPos = parseInt(e.target.value);
   applySpeedFromStage();
 });
+const attemptsSliderEl = document.getElementById('attempts-slider');
+if (attemptsSliderEl) {
+  attemptsSliderEl.addEventListener('input', (e) => {
+    state.attemptsPerLife = parseInt(e.target.value);
+    document.getElementById('attempts-value').textContent = state.attemptsPerLife;
+    Progress.savePreference('attemptsPerLife', state.attemptsPerLife);
+    if (state.mode === 'playing') {
+      // Si el valor cambió a uno menor o igual al acumulador, respetar el estado actual
+      // (no forzamos la resta de vida retroactivamente)
+      updateUI();
+    }
+  });
+}
 
 /* ============================================================
    INICIALIZACIÓN
@@ -2974,8 +3053,14 @@ setupSettingsTabs();
   if (typeof prefs.musicTrack === 'number') state.musicTrackIndex = prefs.musicTrack;
   if (typeof prefs.velocityStage === 'number') state.velocityStage = prefs.velocityStage;
   if (typeof prefs.sliderPos === 'number') state.sliderPos = prefs.sliderPos;
+  if (typeof prefs.attemptsPerLife === 'number') state.attemptsPerLife = Math.max(1, Math.min(5, prefs.attemptsPerLife));
   speedSlider.value = state.sliderPos;
   applySpeedFromStage();
+  const attSlider = document.getElementById('attempts-slider');
+  if (attSlider) {
+    attSlider.value = state.attemptsPerLife;
+    document.getElementById('attempts-value').textContent = state.attemptsPerLife;
+  }
   syncMusicToggle();
 })();
 
@@ -3008,13 +3093,10 @@ function globalFirstInteraction() {
 document.addEventListener('touchstart', globalFirstInteraction, { once: true, passive: true });
 document.addEventListener('click', globalFirstInteraction, { once: true });
 
-/* --- Detección de reto al cargar --- */
 (function initChallengeOnLoad() {
   const cfg = detectChallengeOnLoad();
   if (!cfg) return;
-  // Limpiar el hash ya para no repetir el modal si se recarga
   history.replaceState(null, '', location.pathname + location.search);
-  // Mostrar el modal cuando todo esté listo
   setTimeout(() => handleIncomingChallenge(cfg), 350);
 })();
 </script>
