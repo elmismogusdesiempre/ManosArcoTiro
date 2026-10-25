@@ -22,23 +22,17 @@
     user-select: none; -webkit-user-select: none;
   }
   #game-container { position: relative; width: 100vw; height: 100vh; height: 100dvh; max-width: 900px; max-height: 700px; background: var(--verde-campo); border-radius: 12px; overflow: hidden; box-shadow: var(--sombra); touch-action: manipulation; }
-  
-  /* Cursor del modo arquero */
   #game-container.playing.keeper-mode { cursor: none; touch-action: none; }
-  /* Cursor del modo pateador */
   #game-container.playing.shooter-mode { cursor: crosshair; touch-action: none; }
 
   .pitch { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, #2e7d32 0px, #2e7d32 40px, #388e3c 40px, #388e3c 80px); pointer-events: none; }
   .pitch::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 60%; height: 45%; border: 3px solid rgba(255,255,255,0.6); border-top: none; border-radius: 0 0 50% 50% / 0 0 30% 30%; }
   .pitch::after { content: ''; position: absolute; top: 42%; left: 50%; transform: translate(-50%, -50%); width: 18%; height: 12%; border: 3px solid rgba(255,255,255,0.6); border-radius: 50%; }
-  
   .penalty-area { position: absolute; bottom: 4%; left: 50%; transform: translateX(-50%); width: 82%; height: 42%; border: 3px solid rgba(255,255,255,0.55); border-bottom: none; border-radius: 6px 6px 0 0; z-index: 4; pointer-events: none; }
   .penalty-area::before { content: ''; position: absolute; top: -12%; left: 50%; transform: translateX(-50%); width: 40%; height: 24%; border: 3px solid rgba(255,255,255,0.55); border-bottom: none; border-radius: 50% 50% 0 0 / 100% 100% 0 0; }
-  
   .goal { position: absolute; bottom: 8%; left: 50%; transform: translateX(-50%); width: 50%; height: 22%; border: 5px solid #fff; border-bottom: none; border-radius: 8px 8px 0 0; z-index: 5; opacity: 0.6; pointer-events: none; }
   .goal-line { position: absolute; bottom: 8%; left: 0; right: 0; height: 3px; background: rgba(255,255,255,0.4); z-index: 6; pointer-events: none; }
 
-  /* Inversión de cancha para modo pateador */
   #game-container.shooter-mode .goal { top: 8%; bottom: auto; border-bottom: 5px solid #fff; border-top: none; border-radius: 0 0 8px 8px; }
   #game-container.shooter-mode .goal-line { top: 8%; bottom: auto; }
   #game-container.shooter-mode .penalty-area { top: 4%; bottom: auto; border-top: none; border-bottom: 3px solid rgba(255,255,255,0.55); border-radius: 0 0 6px 6px; }
@@ -48,19 +42,15 @@
   .score-card { background: var(--marcador-bg); color: #fff; padding: 5px 10px; border-radius: 8px; font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 4px; box-shadow: var(--sombra); border: 2px solid #333; }
   .score-card .label { font-size: 9px; opacity: 0.7; text-transform: uppercase; }
   .score-card .value { font-size: 15px; color: var(--amarillo); }
-  
   .btn-exit-game { position: absolute; top: 10px; right: 10px; z-index: 30; background: rgba(229, 57, 53, 0.9); color: #fff; border: 2px solid #fff; border-radius: 10px; width: 42px; height: 42px; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: var(--sombra); padding: 0; line-height: 1; touch-action: manipulation; }
   .btn-exit-game:active { transform: scale(0.95); }
   .btn-exit-game.hidden { display: none !important; }
-  
   .equation-box { position: absolute; top: 62px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.75); color: #fff; padding: 12px 28px; border-radius: 16px; font-size: clamp(20px, 5vw, 40px); font-weight: 900; letter-spacing: 1px; z-index: 15; box-shadow: var(--sombra), inset 0 0 20px rgba(255,214,0,0.15); border: 3px solid var(--amarillo); text-shadow: 0 0 20px rgba(255,214,0,0.6); white-space: nowrap; pointer-events: none; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 60px; }
-  
   .frac { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; vertical-align: middle; line-height: 1; margin: 0 3px; }
   .frac .num { border-bottom: 2px solid currentColor; padding: 0 4px; min-width: 16px; text-align: center; }
   .frac .den { padding: 0 4px; min-width: 16px; text-align: center; }
   .equation-box .frac { font-size: 0.85em; }
   .equation-box .frac .num { border-bottom-width: 3px; }
-  
   .ball { position: absolute; z-index: 10; display: flex; flex-direction: column; align-items: center; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); pointer-events: none; }
   .ball .ball-emoji { font-size: 42px; line-height: 1; }
   .ball .ball-value { background: var(--marcador-bg); color: #fff; font-size: 15px; font-weight: bold; padding: 2px 8px; border-radius: 10px; margin-top: -6px; border: 2px solid var(--amarillo); min-width: 34px; text-align: center; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 1px; min-height: 26px; }
@@ -69,33 +59,28 @@
   .ball .ball-value .frac { font-size: 0.95em; }
   .ball .ball-value .frac .num { border-bottom-width: 2px; padding: 0 3px; min-width: 12px; }
   .ball .ball-value .frac .den { padding: 0 3px; min-width: 12px; }
-  
   .goalkeeper { position: absolute; font-size: 50px; z-index: 12; filter: drop-shadow(0 0 10px rgba(255,255,255,0.6)); pointer-events: none; will-change: left, top; display: flex; align-items: center; justify-content: center; width: 60px; height: 60px; }
   .goalkeeper .keeper-halo { position: absolute; inset: -8px; border-radius: 50%; border: 2px dashed rgba(255,214,0,0.5); animation: haloSpin 3s linear infinite; }
   @keyframes haloSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-  
   .cursor-dot { position: absolute; width: 16px; height: 16px; border-radius: 50%; background: rgba(255,214,0,0.7); border: 2px solid #fff; transform: translate(-50%, -50%); pointer-events: none; z-index: 11; display: none; box-shadow: 0 0 10px rgba(255,214,0,0.8); }
   .lives { position: absolute; top: 10px; left: 10px; display: flex; gap: 3px; font-size: 20px; z-index: 20; pointer-events: none; }
-  
   .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.88); display: flex; flex-direction: column; justify-content: flex-start; align-items: center; z-index: 100; padding: 20px; text-align: center; color: #fff; gap: 10px; overflow-y: auto; cursor: default; touch-action: pan-y; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
   .overlay.hidden { display: none; }
   .overlay > *:first-child { margin-top: auto; }
   .overlay > *:last-child { margin-bottom: auto; }
-  
   .title { font-size: clamp(26px, 6vw, 44px); font-weight: 900; color: var(--amarillo); text-shadow: 0 0 20px rgba(255,214,0,0.5); margin-bottom: 4px; }
   .subtitle { font-size: 15px; opacity: 0.85; margin-bottom: 8px; }
   .btn { background: var(--amarillo); color: #1a1a2e; border: none; padding: 11px 26px; border-radius: 10px; font-size: 15px; font-weight: 900; cursor: pointer; transition: transform 0.15s, background 0.15s; box-shadow: var(--sombra); text-transform: uppercase; letter-spacing: 1px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; position: relative; z-index: 1; }
   .btn:active { transform: scale(0.97); }
   .btn.secondary { background: #455a64; color: #fff; }
   .btn.toggle-off { background: #455a64 !important; color: #fff !important; }
-  
+  .btn.hidden { display: none !important; }
   .level-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; width: 100%; max-width: 560px; margin: 8px 0; }
   .level-btn { background: #263238; color: #fff; border: 2px solid #546e7a; padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: all 0.15s; display: flex; flex-direction: column; gap: 2px; font-size: 12px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   .level-btn:active { transform: scale(0.97); }
   .level-btn .lv-num { font-size: 16px; color: var(--amarillo); }
   .level-btn .lv-desc { font-size: 10px; opacity: 0.8; }
   .level-btn .lv-rarity { font-size: 9px; color: #90caf9; margin-top: 2px; font-style: italic; }
-  
   .settings-tabs { display: flex; gap: 4px; padding: 4px; background: rgba(0,0,0,0.5); border: 2px solid #333; border-radius: 12px; width: 100%; max-width: 560px; margin: 4px 0 8px; touch-action: manipulation; }
   .settings-tab { flex: 1; background: transparent; color: #fff; border: none; padding: 9px 6px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; transition: all 0.15s; touch-action: manipulation; -webkit-tap-highlight-color: transparent; white-space: nowrap; }
   .settings-tab.active { background: var(--amarillo); color: #1a1a2e; box-shadow: 0 2px 8px rgba(255,214,0,0.4); }
@@ -103,11 +88,9 @@
   .settings-panel.active { display: flex; }
   .settings-section { width: 100%; max-width: 560px; margin: 4px 0; }
   .settings-label { font-size: 13px; font-weight: bold; color: var(--amarillo); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
-  
   .avatar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(48px, 1fr)); gap: 6px; justify-content: center; }
   .avatar-option { font-size: 28px; padding: 6px 4px; border-radius: 10px; cursor: pointer; border: 2px solid transparent; transition: all 0.15s; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   .avatar-option.selected { border-color: var(--amarillo); background: rgba(255,214,0,0.25); transform: scale(1.08); }
-  
   .speed-slider-wrap { display: flex; align-items: center; gap: 12px; width: 100%; max-width: 400px; justify-content: center; }
   input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; border-radius: 4px; background: linear-gradient(90deg, #4caf50 0%, #ffd600 50%, #e53935 100%); outline: none; cursor: pointer; touch-action: manipulation; }
   input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 3px solid var(--amarillo); cursor: pointer; box-shadow: 0 0 10px rgba(255,214,0,0.6); }
@@ -117,16 +100,13 @@
   .stage-btn { flex: 1; background: #263238; color: #fff; border: 2px solid #546e7a; padding: 8px 6px; border-radius: 10px; font-size: 11px; font-weight: 900; cursor: pointer; transition: all 0.15s; text-transform: uppercase; touch-action: manipulation; }
   .stage-btn.active { background: var(--amarillo); color: #1a1a2e; border-color: var(--amarillo); }
   .stage-range-hint { font-size: 10px; opacity: 0.7; color: #90caf9; text-align: center; margin-top: 4px; }
-  
   .toggle-group { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
   .toggle-btn { background: #455a64; color: #fff; border: 2px solid #546e7a; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.15s; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   .toggle-btn.active { background: var(--amarillo); color: #1a1a2e; border-color: var(--amarillo); }
   .toggle-btn:active { transform: scale(0.96); }
-  
   .voice-select { background: #263238; color: #fff; border: 2px solid #546e7a; padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; max-width: 320px; width: 100%; cursor: pointer; outline: none; touch-action: manipulation; }
   .voice-hint { font-size: 11px; opacity: 0.7; margin-top: 6px; color: #90caf9; }
   .voice-status { font-size: 11px; color: #4caf50; margin-top: 4px; min-height: 14px; font-style: italic; }
-  
   .music-tracks { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 6px; width: 100%; max-width: 500px; margin-top: 8px; }
   .music-track-card { background: #263238; border: 2px solid #546e7a; border-radius: 10px; padding: 8px 4px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; transition: all 0.15s; color: #fff; text-align: center; touch-action: manipulation; }
   .music-track-card.active { border-color: var(--amarillo); background: rgba(255,214,0,0.15); transform: scale(1.03); box-shadow: 0 0 12px rgba(255,214,0,0.3); }
@@ -161,22 +141,19 @@
   .expl-text .tip { color: #0d47a1; font-style: italic; font-weight: 600; }
   .expl-text .verify { color: #1b5e20; font-weight: 800; }
   .expl-text .step { color: #bf360c; font-weight: 800; }
-  
+
   .feedback { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: clamp(50px, 12vw, 90px); font-weight: 900; z-index: 50; pointer-events: none; animation: feedbackPop 1s ease-out forwards; text-shadow: 0 0 30px rgba(0,0,0,0.8), 0 0 10px currentColor; white-space: nowrap; }
   @keyframes feedbackPop { 0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; } 25% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; } 70% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -120%) scale(1); opacity: 0; } }
-  
   .correct-answer-big { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: clamp(50px, 13vw, 100px); font-weight: 900; color: #fff; z-index: 45; pointer-events: none; text-shadow: 0 0 30px var(--amarillo), 0 0 60px var(--rojo); background: rgba(229,57,53,0.85); padding: 20px 50px; border-radius: 20px; border: 4px solid var(--amarillo); animation: correctPop 1.8s ease-out forwards; display: flex; align-items: center; justify-content: center; gap: 6px; }
   .correct-answer-big .frac { font-size: 0.85em; }
   @keyframes correctPop { 0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; } 20% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; } 80% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 0; } }
-  
   .ticker { position: absolute; bottom: 0; left: 0; right: 0; background: var(--marcador-bg); color: #fff; padding: 5px 10px; font-size: 11px; display: flex; align-items: center; gap: 6px; z-index: 20; border-top: 2px solid var(--amarillo); overflow: hidden; white-space: nowrap; pointer-events: none; }
   .ticker .live { background: var(--rojo); padding: 2px 6px; border-radius: 4px; font-weight: bold; animation: blink 1.2s infinite; flex-shrink: 0; font-size: 10px; }
   @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-  
   .stats-panel { position: absolute; top: 10px; right: 60px; display: flex; flex-direction: column; gap: 4px; z-index: 20; pointer-events: none; }
   .stat-card { background: var(--marcador-bg); color: #fff; padding: 3px 8px; border-radius: 8px; font-size: 11px; display: flex; justify-content: space-between; gap: 8px; min-width: 100px; border: 2px solid #333; }
   .stat-card .val { color: var(--amarillo); font-weight: bold; }
-  
+
   .career-rank-card { width: 100%; max-width: 460px; background: linear-gradient(135deg, #1a1a2e 0%, #2a2a4e 100%); border: 3px solid var(--amarillo); border-radius: 16px; padding: 16px 20px; text-align: center; color: #fff; box-shadow: 0 4px 24px rgba(255,214,0,0.15); }
   .career-rank-emoji { font-size: 56px; line-height: 1; margin-bottom: 4px; filter: drop-shadow(0 0 20px rgba(255,214,0,0.5)); }
   .career-rank-name { font-size: 22px; font-weight: 900; color: var(--amarillo); text-transform: uppercase; letter-spacing: 2px; }
@@ -201,7 +178,6 @@
   .session-summary.hidden { display: none; }
   .session-summary .xp-gain { color: var(--amarillo); font-size: 18px; }
   .session-summary .new-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(255,214,0,0.2); padding: 3px 10px; border-radius: 99px; margin: 4px 3px 0; font-size: 11px; font-weight: 900; }
-  
   .confirm-modal { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 200; padding: 20px; }
   .confirm-modal.hidden { display: none; }
   .confirm-box { background: var(--marcador-bg); border: 3px solid var(--amarillo); border-radius: 16px; padding: 24px 28px; max-width: 360px; width: 100%; text-align: center; color: #fff; box-shadow: var(--sombra); }
@@ -211,20 +187,14 @@
   .confirm-box .confirm-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
   .confirm-box .btn { padding: 10px 20px; font-size: 13px; }
 
-  /* ============================================================
-     ESTILOS NUEVOS PARA MODO PATEADOR
-     ============================================================ */
   #game-container {
     --gl: 22%; --gt: 24%; --gw: 56%; --gh: 20%; --gline: 44%;
     --six-w: 70%; --six-b: 58%; --pen-w: 86%; --pen-b: 89%; --spot: 80%; --arc-h: 6%;
   }
-  /* Elementos del modo pateador: solo visibles dentro de ese modo */
   #game-container:not(.shooter-mode) .shooter-targets-container,
   #game-container:not(.shooter-mode) .player-ball,
   #game-container:not(.shooter-mode) .aim-line,
   #game-container:not(.shooter-mode) .ai-keeper { display: none !important; }
-
-  /* Cancha del modo pateador (reemplaza las líneas del modo arquero solo aquí) */
   #game-container.shooter-mode .pitch::before,
   #game-container.shooter-mode .pitch::after,
   #game-container.shooter-mode .penalty-area,
@@ -233,61 +203,17 @@
   .shooter-field { position: absolute; inset: 0; display: none; pointer-events: none; z-index: 3; }
   #game-container.shooter-mode .shooter-field { display: block; }
   .shooter-field > div { position: absolute; }
-  .sf-backdrop {
-    left: 0; right: 0; top: 0; height: var(--gline);
-    background:
-      radial-gradient(rgba(255,255,255,0.10) 1.4px, transparent 1.6px) 0 0 / 11px 11px,
-      linear-gradient(180deg, #0a1020 0%, #14213a 65%, #1f3358 100%);
-  }
+  .sf-backdrop { left: 0; right: 0; top: 0; height: var(--gline); background: radial-gradient(rgba(255,255,255,0.10) 1.4px, transparent 1.6px) 0 0 / 11px 11px, linear-gradient(180deg, #0a1020 0%, #14213a 65%, #1f3358 100%); }
   .sf-goalline { left: 0; right: 0; top: var(--gline); height: 3px; margin-top: -1px; background: rgba(255,255,255,0.92); box-shadow: 0 0 8px rgba(255,255,255,0.35); }
-  .sf-six {
-    left: calc((100% - var(--six-w)) / 2); width: var(--six-w);
-    top: var(--gline); height: calc(var(--six-b) - var(--gline));
-    border: 3px solid rgba(255,255,255,0.85); border-top: none;
-  }
-  .sf-pen {
-    left: calc((100% - var(--pen-w)) / 2); width: var(--pen-w);
-    top: var(--gline); height: calc(var(--pen-b) - var(--gline));
-    border: 3px solid rgba(255,255,255,0.85); border-top: none;
-  }
-  .sf-arc {
-    left: 50%; top: calc(var(--pen-b) - 1.5px); width: 34%; height: var(--arc-h);
-    transform: translateX(-50%);
-    border: 3px solid rgba(255,255,255,0.85); border-top: none;
-    border-radius: 0 0 50% 50% / 0 0 100% 100%;
-  }
+  .sf-six { left: calc((100% - var(--six-w)) / 2); width: var(--six-w); top: var(--gline); height: calc(var(--six-b) - var(--gline)); border: 3px solid rgba(255,255,255,0.85); border-top: none; }
+  .sf-pen { left: calc((100% - var(--pen-w)) / 2); width: var(--pen-w); top: var(--gline); height: calc(var(--pen-b) - var(--gline)); border: 3px solid rgba(255,255,255,0.85); border-top: none; }
+  .sf-arc { left: 50%; top: calc(var(--pen-b) - 1.5px); width: 34%; height: var(--arc-h); transform: translateX(-50%); border: 3px solid rgba(255,255,255,0.85); border-top: none; border-radius: 0 0 50% 50% / 0 0 100% 100%; }
   .sf-spot { left: 50%; top: var(--spot); width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: rgba(255,255,255,0.9); }
-  .sf-goal {
-    left: var(--gl); top: var(--gt); width: var(--gw); height: var(--gh);
-    border: 5px solid #fff; border-bottom: none; border-radius: 5px 5px 0 0;
-    background:
-      repeating-linear-gradient(45deg, rgba(255,255,255,0.20) 0 1px, transparent 1px 9px),
-      repeating-linear-gradient(-45deg, rgba(255,255,255,0.20) 0 1px, transparent 1px 9px),
-      rgba(0,0,0,0.30);
-    box-shadow: 0 0 20px rgba(255,255,255,0.25), inset 0 10px 16px rgba(0,0,0,0.35);
-  }
-
-  .shooter-targets-container {
-    position: absolute;
-    inset: 0;
-    z-index: 13;
-    pointer-events: none;
-  }
-  .shooter-target {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transform: translate(-50%, -50%);
-    filter: drop-shadow(0 0 8px rgba(255,255,255,0.4));
-  }
+  .sf-goal { left: var(--gl); top: var(--gt); width: var(--gw); height: var(--gh); border: 5px solid #fff; border-bottom: none; border-radius: 5px 5px 0 0; background: repeating-linear-gradient(45deg, rgba(255,255,255,0.20) 0 1px, transparent 1px 9px), repeating-linear-gradient(-45deg, rgba(255,255,255,0.20) 0 1px, transparent 1px 9px), rgba(0,0,0,0.30); box-shadow: 0 0 20px rgba(255,255,255,0.25), inset 0 10px 16px rgba(0,0,0,0.35); }
+  .shooter-targets-container { position: absolute; inset: 0; z-index: 13; pointer-events: none; }
+  .shooter-target { position: absolute; display: flex; flex-direction: column; align-items: center; transform: translate(-50%, -50%); filter: drop-shadow(0 0 8px rgba(255,255,255,0.4)); }
   .shooter-target .target-emoji { font-size: 38px; line-height: 1; transition: transform 0.12s; }
-  .shooter-target .target-value {
-    background: rgba(0,0,0,0.85); color: #fff; font-size: 15px; font-weight: bold;
-    padding: 2px 8px; border-radius: 10px; margin-top: -4px;
-    border: 2px solid var(--amarillo); white-space: nowrap;
-    display: flex; align-items: center; justify-content: center; min-height: 26px;
-  }
+  .shooter-target .target-value { background: rgba(0,0,0,0.85); color: #fff; font-size: 15px; font-weight: bold; padding: 2px 8px; border-radius: 10px; margin-top: -4px; border: 2px solid var(--amarillo); white-space: nowrap; display: flex; align-items: center; justify-content: center; min-height: 26px; }
   .shooter-target .target-value .frac { font-size: 0.95em; }
   .shooter-target .target-value .frac .num { border-bottom-width: 2px; padding: 0 3px; min-width: 12px; }
   .shooter-target .target-value .frac .den { padding: 0 3px; min-width: 12px; }
@@ -296,319 +222,51 @@
   .shooter-target.correct-hit .target-emoji { animation: popTarget 0.4s ease-out; }
   .shooter-target.wrong-hit .target-emoji { filter: grayscale(1); opacity: 0.5; }
   @keyframes popTarget { 0% { transform: scale(1); } 50% { transform: scale(1.5); } 100% { transform: scale(1); } }
-
-  .player-ball {
-    position: absolute;
-    top: var(--spot);
-    left: 50%;
-    width: 1em; height: 1em;
-    display: flex; align-items: center; justify-content: center;
-    line-height: 1;
-    transform: translate(-50%, -50%);
-    font-size: 54px;
-    z-index: 15;
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6));
-    pointer-events: auto;
-    cursor: grab;
-  }
-  .player-ball::before {
-    content: ''; position: absolute; left: 50%; top: 50%;
-    width: 86px; height: 86px; margin: -43px 0 0 -43px;
-    border: 3px dashed rgba(255,255,255,0.75); border-radius: 50%;
-    pointer-events: none; animation: ringPulse 1.6s ease-in-out infinite;
-  }
+  .player-ball { position: absolute; top: var(--spot); left: 50%; width: 1em; height: 1em; display: flex; align-items: center; justify-content: center; line-height: 1; transform: translate(-50%, -50%); font-size: 54px; z-index: 15; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6)); pointer-events: auto; cursor: grab; }
+  .player-ball::before { content: ''; position: absolute; left: 50%; top: 50%; width: 86px; height: 86px; margin: -43px 0 0 -43px; border: 3px dashed rgba(255,255,255,0.75); border-radius: 50%; pointer-events: none; animation: ringPulse 1.6s ease-in-out infinite; }
   .player-ball.flying::before { display: none; }
   @keyframes ringPulse { 0%,100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.12); opacity: 0.5; } }
   .player-ball:active { cursor: grabbing; }
   .player-ball.hidden { display: none; }
-
-  .aim-line {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 14;
-    display: none;
-  }
+  .aim-line { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 14; display: none; }
   .aim-line.active { display: block; }
-  .aim-line svg {
-    width: 100%; height: 100%;
-    overflow: visible;
-  }
-  .aim-line path {
-    stroke: rgba(255, 214, 0, 0.9);
-    stroke-width: 5;
-    stroke-linecap: round;
-    stroke-dasharray: 10 10;
-    fill: none;
-    filter: drop-shadow(0 0 8px rgba(255, 214, 0, 0.9));
-  }
-
-  .ai-keeper {
-    position: absolute;
-    top: calc(var(--gline) - 5%);
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 54px;
-    z-index: 11;
-    filter: drop-shadow(0 0 10px rgba(255,255,255,0.6));
-    pointer-events: none;
-    transition: left 0.28s cubic-bezier(0.25, 1, 0.5, 1), top 0.28s cubic-bezier(0.25, 1, 0.5, 1), transform 0.28s ease-out;
-    display: none;
-  }
+  .aim-line svg { width: 100%; height: 100%; overflow: visible; }
+  .aim-line path { stroke: rgba(255, 214, 0, 0.9); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 10 10; fill: none; filter: drop-shadow(0 0 8px rgba(255, 214, 0, 0.9)); }
+  .ai-keeper { position: absolute; top: calc(var(--gline) - 5%); left: 50%; transform: translate(-50%, -50%); font-size: 54px; z-index: 11; filter: drop-shadow(0 0 10px rgba(255,255,255,0.6)); pointer-events: none; transition: left 0.28s cubic-bezier(0.25, 1, 0.5, 1), top 0.28s cubic-bezier(0.25, 1, 0.5, 1), transform 0.28s ease-out; display: none; }
   .ai-keeper.active { display: block; }
   .ai-keeper.dive-left { left: 20%; }
   .ai-keeper.dive-right { left: 80%; }
   .ai-keeper.dive-center { left: 50%; }
 
-  /* ============================================================
-     MARCA MAT — Manos · Arco · Tiro  (mascota pixel-art 100% CSS)
-     ============================================================ */
   .mat-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; pointer-events: none; }
   .mat-mascot { position: relative; width: 16em; height: 22em; font-size: 4px; filter: drop-shadow(0 2px 0 rgba(0,0,0,0.45)); }
   .mat-px {
     position: absolute; left: -1em; top: -1em; width: 1em; height: 1em;
     box-shadow:
-      4em 1em 0 #23213f,
-      8em 1em 0 #23213f,
-      12em 1em 0 #23213f,
-      3em 2em 0 #23213f,
-      4em 2em 0 #23213f,
-      5em 2em 0 #23213f,
-      7em 2em 0 #23213f,
-      8em 2em 0 #23213f,
-      9em 2em 0 #23213f,
-      11em 2em 0 #23213f,
-      12em 2em 0 #23213f,
-      13em 2em 0 #23213f,
-      2em 3em 0 #23213f,
-      3em 3em 0 #23213f,
-      4em 3em 0 #23213f,
-      5em 3em 0 #23213f,
-      6em 3em 0 #23213f,
-      7em 3em 0 #23213f,
-      8em 3em 0 #23213f,
-      9em 3em 0 #23213f,
-      10em 3em 0 #23213f,
-      11em 3em 0 #23213f,
-      12em 3em 0 #23213f,
-      13em 3em 0 #23213f,
-      14em 3em 0 #23213f,
-      15em 3em 0 #23213f,
-      2em 4em 0 #23213f,
-      3em 4em 0 #23213f,
-      4em 4em 0 #5a58a8,
-      5em 4em 0 #5a58a8,
-      6em 4em 0 #23213f,
-      7em 4em 0 #23213f,
-      8em 4em 0 #23213f,
-      9em 4em 0 #23213f,
-      10em 4em 0 #23213f,
-      11em 4em 0 #23213f,
-      12em 4em 0 #5a58a8,
-      13em 4em 0 #23213f,
-      14em 4em 0 #23213f,
-      15em 4em 0 #23213f,
-      2em 5em 0 #23213f,
-      3em 5em 0 #23213f,
-      4em 5em 0 #ffe1c6,
-      5em 5em 0 #23213f,
-      6em 5em 0 #23213f,
-      7em 5em 0 #ffe1c6,
-      8em 5em 0 #ffe1c6,
-      9em 5em 0 #ffe1c6,
-      10em 5em 0 #ffe1c6,
-      11em 5em 0 #23213f,
-      12em 5em 0 #23213f,
-      13em 5em 0 #ffe1c6,
-      14em 5em 0 #23213f,
-      15em 5em 0 #23213f,
-      2em 6em 0 #23213f,
-      3em 6em 0 #ffe1c6,
-      4em 6em 0 #ffe1c6,
-      5em 6em 0 #ffe1c6,
-      6em 6em 0 #ffe1c6,
-      7em 6em 0 #ffe1c6,
-      8em 6em 0 #ffe1c6,
-      9em 6em 0 #ffe1c6,
-      10em 6em 0 #ffe1c6,
-      11em 6em 0 #ffe1c6,
-      12em 6em 0 #ffe1c6,
-      13em 6em 0 #ffe1c6,
-      14em 6em 0 #ffe1c6,
-      15em 6em 0 #23213f,
-      2em 7em 0 #23213f,
-      3em 7em 0 #ffe1c6,
-      4em 7em 0 #ffe1c6,
-      5em 7em 0 #15152b,
-      6em 7em 0 #ffffff,
-      7em 7em 0 #ffe1c6,
-      8em 7em 0 #ffe1c6,
-      9em 7em 0 #ffe1c6,
-      10em 7em 0 #ffe1c6,
-      11em 7em 0 #15152b,
-      12em 7em 0 #ffffff,
-      13em 7em 0 #ffe1c6,
-      14em 7em 0 #ffe1c6,
-      15em 7em 0 #23213f,
-      2em 8em 0 #23213f,
-      3em 8em 0 #ffe1c6,
-      4em 8em 0 #ffe1c6,
-      5em 8em 0 #15152b,
-      6em 8em 0 #15152b,
-      7em 8em 0 #ffe1c6,
-      8em 8em 0 #ffe1c6,
-      9em 8em 0 #ffe1c6,
-      10em 8em 0 #ffe1c6,
-      11em 8em 0 #15152b,
-      12em 8em 0 #15152b,
-      13em 8em 0 #ffe1c6,
-      14em 8em 0 #ffe1c6,
-      15em 8em 0 #23213f,
-      2em 9em 0 #23213f,
-      3em 9em 0 #ffe1c6,
-      4em 9em 0 #ffe1c6,
-      5em 9em 0 #ffe1c6,
-      6em 9em 0 #ffe1c6,
-      7em 9em 0 #ffe1c6,
-      8em 9em 0 #ffe1c6,
-      9em 9em 0 #ffe1c6,
-      10em 9em 0 #ffe1c6,
-      11em 9em 0 #ffe1c6,
-      12em 9em 0 #ffe1c6,
-      13em 9em 0 #ffe1c6,
-      14em 9em 0 #ffe1c6,
-      15em 9em 0 #23213f,
-      3em 10em 0 #23213f,
-      4em 10em 0 #ffe1c6,
-      5em 10em 0 #ffe1c6,
-      6em 10em 0 #ffe1c6,
-      7em 10em 0 #ffe1c6,
-      8em 10em 0 #d4534f,
-      9em 10em 0 #d4534f,
-      10em 10em 0 #ffe1c6,
-      11em 10em 0 #ffe1c6,
-      12em 10em 0 #ffe1c6,
-      13em 10em 0 #ffe1c6,
-      14em 10em 0 #23213f,
-      4em 11em 0 #f0bf99,
-      5em 11em 0 #ffe1c6,
-      6em 11em 0 #ffe1c6,
-      7em 11em 0 #ffe1c6,
-      8em 11em 0 #ffe1c6,
-      9em 11em 0 #ffe1c6,
-      10em 11em 0 #ffe1c6,
-      11em 11em 0 #ffe1c6,
-      12em 11em 0 #ffe1c6,
-      13em 11em 0 #f0bf99,
-      7em 12em 0 #ffe1c6,
-      8em 12em 0 #ffe1c6,
-      9em 12em 0 #ffe1c6,
-      10em 12em 0 #ffe1c6,
-      3em 13em 0 #ffffff,
-      4em 13em 0 #ffffff,
-      5em 13em 0 #ffffff,
-      6em 13em 0 #1e5bd8,
-      7em 13em 0 #1e5bd8,
-      8em 13em 0 #ffe1c6,
-      9em 13em 0 #ffe1c6,
-      10em 13em 0 #1e5bd8,
-      11em 13em 0 #1e5bd8,
-      12em 13em 0 #ffffff,
-      13em 13em 0 #ffffff,
-      14em 13em 0 #ffffff,
-      2em 14em 0 #ffffff,
-      3em 14em 0 #ffffff,
-      4em 14em 0 #ffffff,
-      5em 14em 0 #ffffff,
-      6em 14em 0 #1e5bd8,
-      7em 14em 0 #ffffff,
-      8em 14em 0 #ffffff,
-      9em 14em 0 #ffffff,
-      10em 14em 0 #ffffff,
-      11em 14em 0 #1e5bd8,
-      12em 14em 0 #ffffff,
-      13em 14em 0 #ffffff,
-      14em 14em 0 #ffffff,
-      15em 14em 0 #ffffff,
-      2em 15em 0 #ffe1c6,
-      3em 15em 0 #ffe1c6,
-      4em 15em 0 #ffffff,
-      5em 15em 0 #ffffff,
-      6em 15em 0 #1e5bd8,
-      7em 15em 0 #ffffff,
-      8em 15em 0 #ffffff,
-      9em 15em 0 #ffffff,
-      10em 15em 0 #ffffff,
-      11em 15em 0 #1e5bd8,
-      12em 15em 0 #ffffff,
-      13em 15em 0 #ffffff,
-      14em 15em 0 #ffe1c6,
-      15em 15em 0 #ffe1c6,
-      2em 16em 0 #ffe1c6,
-      3em 16em 0 #ffe1c6,
-      4em 16em 0 #ffffff,
-      5em 16em 0 #ffffff,
-      6em 16em 0 #1e5bd8,
-      7em 16em 0 #ffffff,
-      8em 16em 0 #ffffff,
-      9em 16em 0 #ffffff,
-      10em 16em 0 #ffffff,
-      11em 16em 0 #1e5bd8,
-      12em 16em 0 #ffffff,
-      13em 16em 0 #ffffff,
-      14em 16em 0 #ffe1c6,
-      15em 16em 0 #ffe1c6,
-      4em 17em 0 #1e5bd8,
-      5em 17em 0 #1e5bd8,
-      6em 17em 0 #1e5bd8,
-      7em 17em 0 #1e5bd8,
-      8em 17em 0 #1e5bd8,
-      9em 17em 0 #1e5bd8,
-      10em 17em 0 #1e5bd8,
-      11em 17em 0 #1e5bd8,
-      12em 17em 0 #1e5bd8,
-      13em 17em 0 #1e5bd8,
-      4em 18em 0 #1e5bd8,
-      5em 18em 0 #1e5bd8,
-      6em 18em 0 #1e5bd8,
-      7em 18em 0 #1e5bd8,
-      10em 18em 0 #1e5bd8,
-      11em 18em 0 #1e5bd8,
-      12em 18em 0 #1e5bd8,
-      13em 18em 0 #1e5bd8,
-      5em 19em 0 #ffe1c6,
-      6em 19em 0 #ffe1c6,
-      7em 19em 0 #ffe1c6,
-      10em 19em 0 #ffe1c6,
-      11em 19em 0 #ffe1c6,
-      12em 19em 0 #ffe1c6,
-      5em 20em 0 #ffffff,
-      6em 20em 0 #ffffff,
-      7em 20em 0 #ffffff,
-      10em 20em 0 #ffffff,
-      11em 20em 0 #ffffff,
-      12em 20em 0 #ffffff,
-      5em 21em 0 #1e5bd8,
-      6em 21em 0 #1e5bd8,
-      7em 21em 0 #1e5bd8,
-      10em 21em 0 #1e5bd8,
-      11em 21em 0 #1e5bd8,
-      12em 21em 0 #1e5bd8,
-      4em 22em 0 #1d1d1d,
-      5em 22em 0 #1d1d1d,
-      6em 22em 0 #1d1d1d,
-      7em 22em 0 #1d1d1d,
-      10em 22em 0 #1d1d1d,
-      11em 22em 0 #1d1d1d,
-      12em 22em 0 #1d1d1d,
-      13em 22em 0 #1d1d1d;
+      4em 1em 0 #23213f, 8em 1em 0 #23213f, 12em 1em 0 #23213f,
+      3em 2em 0 #23213f, 4em 2em 0 #23213f, 5em 2em 0 #23213f, 7em 2em 0 #23213f, 8em 2em 0 #23213f, 9em 2em 0 #23213f, 11em 2em 0 #23213f, 12em 2em 0 #23213f, 13em 2em 0 #23213f,
+      2em 3em 0 #23213f, 3em 3em 0 #23213f, 4em 3em 0 #23213f, 5em 3em 0 #23213f, 6em 3em 0 #23213f, 7em 3em 0 #23213f, 8em 3em 0 #23213f, 9em 3em 0 #23213f, 10em 3em 0 #23213f, 11em 3em 0 #23213f, 12em 3em 0 #23213f, 13em 3em 0 #23213f, 14em 3em 0 #23213f, 15em 3em 0 #23213f,
+      2em 4em 0 #23213f, 3em 4em 0 #23213f, 4em 4em 0 #5a58a8, 5em 4em 0 #5a58a8, 6em 4em 0 #23213f, 7em 4em 0 #23213f, 8em 4em 0 #23213f, 9em 4em 0 #23213f, 10em 4em 0 #23213f, 11em 4em 0 #23213f, 12em 4em 0 #5a58a8, 13em 4em 0 #23213f, 14em 4em 0 #23213f, 15em 4em 0 #23213f,
+      2em 5em 0 #23213f, 3em 5em 0 #23213f, 4em 5em 0 #ffe1c6, 5em 5em 0 #23213f, 6em 5em 0 #23213f, 7em 5em 0 #ffe1c6, 8em 5em 0 #ffe1c6, 9em 5em 0 #ffe1c6, 10em 5em 0 #ffe1c6, 11em 5em 0 #23213f, 12em 5em 0 #23213f, 13em 5em 0 #ffe1c6, 14em 5em 0 #23213f, 15em 5em 0 #23213f,
+      2em 6em 0 #23213f, 3em 6em 0 #ffe1c6, 4em 6em 0 #ffe1c6, 5em 6em 0 #ffe1c6, 6em 6em 0 #ffe1c6, 7em 6em 0 #ffe1c6, 8em 6em 0 #ffe1c6, 9em 6em 0 #ffe1c6, 10em 6em 0 #ffe1c6, 11em 6em 0 #ffe1c6, 12em 6em 0 #ffe1c6, 13em 6em 0 #ffe1c6, 14em 6em 0 #ffe1c6, 15em 6em 0 #23213f,
+      2em 7em 0 #23213f, 3em 7em 0 #ffe1c6, 4em 7em 0 #ffe1c6, 5em 7em 0 #15152b, 6em 7em 0 #ffffff, 7em 7em 0 #ffe1c6, 8em 7em 0 #ffe1c6, 9em 7em 0 #ffe1c6, 10em 7em 0 #ffe1c6, 11em 7em 0 #15152b, 12em 7em 0 #ffffff, 13em 7em 0 #ffe1c6, 14em 7em 0 #ffe1c6, 15em 7em 0 #23213f,
+      2em 8em 0 #23213f, 3em 8em 0 #ffe1c6, 4em 8em 0 #ffe1c6, 5em 8em 0 #15152b, 6em 8em 0 #15152b, 7em 8em 0 #ffe1c6, 8em 8em 0 #ffe1c6, 9em 8em 0 #ffe1c6, 10em 8em 0 #ffe1c6, 11em 8em 0 #15152b, 12em 8em 0 #15152b, 13em 8em 0 #ffe1c6, 14em 8em 0 #ffe1c6, 15em 8em 0 #23213f,
+      2em 9em 0 #23213f, 3em 9em 0 #ffe1c6, 4em 9em 0 #ffe1c6, 5em 9em 0 #ffe1c6, 6em 9em 0 #ffe1c6, 7em 9em 0 #ffe1c6, 8em 9em 0 #ffe1c6, 9em 9em 0 #ffe1c6, 10em 9em 0 #ffe1c6, 11em 9em 0 #ffe1c6, 12em 9em 0 #ffe1c6, 13em 9em 0 #ffe1c6, 14em 9em 0 #ffe1c6, 15em 9em 0 #23213f,
+      3em 10em 0 #23213f, 4em 10em 0 #ffe1c6, 5em 10em 0 #ffe1c6, 6em 10em 0 #ffe1c6, 7em 10em 0 #ffe1c6, 8em 10em 0 #d4534f, 9em 10em 0 #d4534f, 10em 10em 0 #ffe1c6, 11em 10em 0 #ffe1c6, 12em 10em 0 #ffe1c6, 13em 10em 0 #ffe1c6, 14em 10em 0 #23213f,
+      4em 11em 0 #f0bf99, 5em 11em 0 #ffe1c6, 6em 11em 0 #ffe1c6, 7em 11em 0 #ffe1c6, 8em 11em 0 #ffe1c6, 9em 11em 0 #ffe1c6, 10em 11em 0 #ffe1c6, 11em 11em 0 #ffe1c6, 12em 11em 0 #ffe1c6, 13em 11em 0 #f0bf99,
+      7em 12em 0 #ffe1c6, 8em 12em 0 #ffe1c6, 9em 12em 0 #ffe1c6, 10em 12em 0 #ffe1c6,
+      3em 13em 0 #ffffff, 4em 13em 0 #ffffff, 5em 13em 0 #ffffff, 6em 13em 0 #1e5bd8, 7em 13em 0 #1e5bd8, 8em 13em 0 #ffe1c6, 9em 13em 0 #ffe1c6, 10em 13em 0 #1e5bd8, 11em 13em 0 #1e5bd8, 12em 13em 0 #ffffff, 13em 13em 0 #ffffff, 14em 13em 0 #ffffff,
+      2em 14em 0 #ffffff, 3em 14em 0 #ffffff, 4em 14em 0 #ffffff, 5em 14em 0 #ffffff, 6em 14em 0 #1e5bd8, 7em 14em 0 #ffffff, 8em 14em 0 #ffffff, 9em 14em 0 #ffffff, 10em 14em 0 #ffffff, 11em 14em 0 #1e5bd8, 12em 14em 0 #ffffff, 13em 14em 0 #ffffff, 14em 14em 0 #ffffff, 15em 14em 0 #ffffff,
+      2em 15em 0 #ffe1c6, 3em 15em 0 #ffe1c6, 4em 15em 0 #ffffff, 5em 15em 0 #ffffff, 6em 15em 0 #1e5bd8, 7em 15em 0 #ffffff, 8em 15em 0 #ffffff, 9em 15em 0 #ffffff, 10em 15em 0 #ffffff, 11em 15em 0 #1e5bd8, 12em 15em 0 #ffffff, 13em 15em 0 #ffffff, 14em 15em 0 #ffe1c6, 15em 15em 0 #ffe1c6,
+      2em 16em 0 #ffe1c6, 3em 16em 0 #ffe1c6, 4em 16em 0 #ffffff, 5em 16em 0 #ffffff, 6em 16em 0 #1e5bd8, 7em 16em 0 #ffffff, 8em 16em 0 #ffffff, 9em 16em 0 #ffffff, 10em 16em 0 #ffffff, 11em 16em 0 #1e5bd8, 12em 16em 0 #ffffff, 13em 16em 0 #ffffff, 14em 16em 0 #ffe1c6, 15em 16em 0 #ffe1c6,
+      4em 17em 0 #1e5bd8, 5em 17em 0 #1e5bd8, 6em 17em 0 #1e5bd8, 7em 17em 0 #1e5bd8, 8em 17em 0 #1e5bd8, 9em 17em 0 #1e5bd8, 10em 17em 0 #1e5bd8, 11em 17em 0 #1e5bd8, 12em 17em 0 #1e5bd8, 13em 17em 0 #1e5bd8,
+      4em 18em 0 #1e5bd8, 5em 18em 0 #1e5bd8, 6em 18em 0 #1e5bd8, 7em 18em 0 #1e5bd8, 10em 18em 0 #1e5bd8, 11em 18em 0 #1e5bd8, 12em 18em 0 #1e5bd8, 13em 18em 0 #1e5bd8,
+      5em 19em 0 #ffe1c6, 6em 19em 0 #ffe1c6, 7em 19em 0 #ffe1c6, 10em 19em 0 #ffe1c6, 11em 19em 0 #ffe1c6, 12em 19em 0 #ffe1c6,
+      5em 20em 0 #ffffff, 6em 20em 0 #ffffff, 7em 20em 0 #ffffff, 10em 20em 0 #ffffff, 11em 20em 0 #ffffff, 12em 20em 0 #ffffff,
+      5em 21em 0 #1e5bd8, 6em 21em 0 #1e5bd8, 7em 21em 0 #1e5bd8, 10em 21em 0 #1e5bd8, 11em 21em 0 #1e5bd8, 12em 21em 0 #1e5bd8,
+      4em 22em 0 #1d1d1d, 5em 22em 0 #1d1d1d, 6em 22em 0 #1d1d1d, 7em 22em 0 #1d1d1d, 10em 22em 0 #1d1d1d, 11em 22em 0 #1d1d1d, 12em 22em 0 #1d1d1d, 13em 22em 0 #1d1d1d;
   }
-  .mat-name {
-    font-family: 'Courier New', monospace; font-weight: 900; font-size: 12px; letter-spacing: 3px;
-    color: #fff; text-shadow: 1px 1px 0 #1e5bd8, -1px -1px 0 #0d1b2a, 1px -1px 0 #0d1b2a, -1px 1px 0 #0d1b2a;
-    padding-left: 3px;
-  }
+  .mat-name { font-family: 'Courier New', monospace; font-weight: 900; font-size: 12px; letter-spacing: 3px; color: #fff; text-shadow: 1px 1px 0 #1e5bd8, -1px -1px 0 #0d1b2a, 1px -1px 0 #0d1b2a, -1px 1px 0 #0d1b2a; padding-left: 3px; }
   #mat-corner { position: absolute; top: 38px; left: 10px; z-index: 20; animation: matBob 1.4s steps(2) infinite; }
   #mat-corner .mat-mascot { font-size: 3px; }
   #game-container:not(.playing) #mat-corner { display: none; }
@@ -617,10 +275,55 @@
   .mat-wrap.sad .mat-mascot { animation: matSad 0.5s steps(5) 1; }
   @keyframes matCheer { 0% { transform: translateY(0); } 30% { transform: translateY(-4em); } 60% { transform: translateY(-4em); } 100% { transform: translateY(0); } }
   @keyframes matSad { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-1em); } 40% { transform: translateX(1em); } 60% { transform: translateX(-1em); } 80% { transform: translateX(1em); } }
-  .brand-title { font-family: 'Courier New', monospace; font-size: clamp(54px, 13vw, 92px); font-weight: 900; letter-spacing: 8px; padding-left: 8px; color: #fff; line-height: 1;
-    text-shadow: 4px 4px 0 #1e5bd8, 0 0 24px rgba(255,214,0,0.55); }
+  .brand-title { font-family: 'Courier New', monospace; font-size: clamp(54px, 13vw, 92px); font-weight: 900; letter-spacing: 8px; padding-left: 8px; color: #fff; line-height: 1; text-shadow: 4px 4px 0 #1e5bd8, 0 0 24px rgba(255,214,0,0.55); }
   .brand-tag { font-size: 14px; font-weight: 900; letter-spacing: 4px; color: var(--amarillo); text-transform: uppercase; margin-bottom: 4px; }
   @media (max-width: 600px) { #mat-corner .mat-mascot { font-size: 2px; } #mat-corner { top: 36px; } .mat-name { font-size: 10px; } }
+
+  /* ============================================================
+     SISTEMA DE RETOS COMPARTIBLES
+     ============================================================ */
+  .challenge-input {
+    background: #263238; color: #fff; border: 2px solid #546e7a;
+    padding: 10px 14px; border-radius: 8px; font-size: 14px;
+    width: 100%; max-width: 400px; outline: none;
+    font-family: inherit; font-weight: bold;
+    touch-action: manipulation;
+    transition: border-color 0.15s;
+  }
+  .challenge-input:focus { border-color: var(--amarillo); }
+  .challenge-preview {
+    background: rgba(255,214,0,0.1); border: 2px solid var(--amarillo);
+    border-radius: 12px; padding: 12px 18px; max-width: 460px; width: 100%;
+    display: flex; flex-direction: column; gap: 6px; margin: 4px 0;
+    text-align: left;
+  }
+  .challenge-preview .cp-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; gap: 12px;
+  }
+  .challenge-preview .cp-label { opacity: 0.7; text-transform: uppercase; font-size: 10px; letter-spacing: 1px; white-space: nowrap; }
+  .challenge-preview .cp-value { font-weight: 900; color: var(--amarillo); text-align: right; }
+  .challenge-preview .cp-row.cp-highlight {
+    border-top: 1px solid rgba(255,255,255,0.2);
+    padding-top: 6px; margin-top: 4px;
+  }
+  .toast {
+    position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%);
+    background: #4caf50; color: #fff; padding: 10px 22px; border-radius: 99px;
+    font-size: 13px; font-weight: 900; z-index: 300;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+    animation: toastIn 0.3s ease-out;
+    pointer-events: none;
+    white-space: nowrap;
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  @keyframes toastIn {
+    from { transform: translate(-50%, 20px); opacity: 0; }
+    to { transform: translate(-50%, 0); opacity: 1; }
+  }
+  .toast.hidden { display: none; }
 
   @media (max-width: 600px) {
     .ball .ball-emoji { font-size: 34px; }
@@ -643,6 +346,9 @@
     .shooter-target .target-emoji { font-size: 30px; }
     .shooter-target .target-value { font-size: 12px; }
     .ai-keeper { font-size: 46px; }
+    .challenge-preview { padding: 10px 12px; }
+    .challenge-preview .cp-row { font-size: 12px; }
+    .challenge-input { font-size: 13px; padding: 8px 12px; }
   }
 </style>
 </head>
@@ -679,13 +385,11 @@
   <div id="mat-corner" class="mat-wrap" data-mat="0"></div>
   <div class="equation-box" id="ui-equation">2 + 3</div>
 
-  <!-- Keeper Mode Elements -->
   <div class="goalkeeper" id="ui-keeper">
     <span class="keeper-halo"></span>
     <span id="ui-keeper-emoji">🧤</span>
   </div>
 
-  <!-- Shooter Mode Elements -->
   <div class="shooter-targets-container" id="shooter-targets"></div>
   <div class="player-ball hidden" id="player-ball">⚽</div>
   <div class="aim-line" id="aim-line">
@@ -711,6 +415,7 @@
     <button class="btn secondary" id="btn-levels">🎯 ELEGIR NIVEL</button>
     <button class="btn secondary" id="btn-career">🥾 MI CARRERA</button>
     <button class="btn secondary" id="btn-settings">⚙️ AJUSTES</button>
+    <button class="btn" id="btn-create-challenge" style="background:linear-gradient(135deg,#4caf50,#2e7d32); color:#fff; border: 2px solid #a5d6a7;">🎯 CREAR RETO</button>
     <div class="settings-label" style="margin-top:6px;">Modo de juego</div>
     <div class="toggle-group" id="mode-selector">
       <button class="toggle-btn active" data-mode="keeper">🧤 ARQUERO</button>
@@ -833,6 +538,7 @@
         <div class="expl-text" data-role="explanation"></div>
       </div>
     </div>
+    <button class="btn hidden" id="btn-share-result-go" style="background:#4caf50; color:#fff; margin-top:4px;">📤 Devolver resultado</button>
     <button class="btn" id="btn-retry">🔄 REINTENTAR</button>
     <button class="btn secondary" id="btn-menu-go">🏠 MENÚ</button>
   </div>
@@ -861,11 +567,64 @@
         <div class="expl-text" data-role="explanation"></div>
       </div>
     </div>
+    <button class="btn hidden" id="btn-share-result-lu" style="background:#4caf50; color:#fff; margin-top:4px;">📤 Devolver resultado</button>
     <button class="btn" id="btn-next-level">➡️ SIGUIENTE NIVEL</button>
     <button class="btn secondary" id="btn-menu-lu">🏠 MENÚ</button>
   </div>
 
+  <!-- ============================================================
+       OVERLAYS DEL SISTEMA DE RETOS
+       ============================================================ -->
+  <div class="overlay hidden" id="overlay-create-challenge">
+    <div class="title">🎯 Crear reto</div>
+    <div class="subtitle">Compartí esta configuración con tus amigos</div>
+    <div class="challenge-preview" id="challenge-preview"></div>
+    <div class="settings-section" style="max-width:400px; margin-top:8px;">
+      <div class="settings-label">Tu nombre (opcional)</div>
+      <input type="text" id="challenge-name" class="challenge-input" placeholder="Ej: María" maxlength="20">
+    </div>
+    <button class="btn" id="btn-generate-challenge" style="margin-top:8px;">🔗 Generar link</button>
+    <div id="challenge-result" class="hidden" style="width:100%; max-width:460px; margin-top:8px; display:flex; flex-direction:column; align-items:center; gap:8px;">
+      <div class="settings-label" style="align-self:flex-start;">Tu link de reto</div>
+      <input type="text" id="challenge-url" class="challenge-input" readonly onclick="this.select()" style="max-width:100%;">
+      <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+        <button class="btn" id="btn-copy-challenge">📋 Copiar link</button>
+        <button class="btn secondary" id="btn-show-qr">📱 Mostrar QR</button>
+      </div>
+      <div id="challenge-qr" class="hidden" style="margin-top:10px; text-align:center;"></div>
+    </div>
+    <button class="btn secondary" id="btn-back-create" style="margin-top:8px;">⬅️ VOLVER</button>
+  </div>
+
+  <div class="overlay hidden" id="overlay-incoming-challenge">
+    <div class="title" id="incoming-title">🏆 Te retaron</div>
+    <div class="subtitle" id="incoming-subtitle">¿Aceptás el desafío?</div>
+    <div class="challenge-preview" id="incoming-preview"></div>
+    <button class="btn" id="btn-accept-challenge" style="margin-top:8px;">⚔️ Aceptar reto</button>
+    <button class="btn secondary" id="btn-decline-challenge">🏠 Ver menú</button>
+  </div>
+
+  <div class="overlay hidden" id="overlay-share-result">
+    <div class="title">📤 Devolver resultado</div>
+    <div class="subtitle" id="share-result-subtitle"></div>
+    <div class="challenge-preview" id="share-result-preview"></div>
+    <div class="settings-section" style="max-width:400px; margin-top:8px;">
+      <div class="settings-label">Tu nombre (opcional)</div>
+      <input type="text" id="share-result-name" class="challenge-input" placeholder="Ej: Juan" maxlength="20">
+    </div>
+    <button class="btn" id="btn-generate-result" style="margin-top:8px;">🔗 Generar link</button>
+    <div id="share-result-output" class="hidden" style="width:100%; max-width:460px; margin-top:8px; display:flex; flex-direction:column; align-items:center; gap:8px;">
+      <div class="settings-label" style="align-self:flex-start;">Tu link de resultado</div>
+      <input type="text" id="share-result-url" class="challenge-input" readonly onclick="this.select()" style="max-width:100%;">
+      <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+        <button class="btn" id="btn-copy-result">📋 Copiar link</button>
+      </div>
+    </div>
+    <button class="btn secondary" id="btn-back-share-result" style="margin-top:8px;">⬅️ VOLVER</button>
+  </div>
+
   <div class="feedback hidden" id="ui-feedback"></div>
+  <div class="toast hidden" id="toast"></div>
 
   <div class="confirm-modal hidden" id="confirm-exit-modal">
     <div class="confirm-box">
@@ -938,10 +697,14 @@ const state = {
   isAiming: false,
   aimX: 0, aimY: 0,
   playerBallX: 0, playerBallY: 0,
+  // Retos
+  incomingChallenge: null,
+  pendingIncomingChallenge: null,
+  shareResultReturnTo: 'overlay-menu',
 };
 
 /* ============================================================
-   MÓDULO DE PROGRESO (XP + insignias + localStorage)
+   PROGRESO
    ============================================================ */
 const RANKS = [
   { xp: 0,    name: 'Amateur',     emoji: '🥾' },
@@ -952,7 +715,6 @@ const RANKS = [
   { xp: 3000, name: 'Leyenda',     emoji: '🏆' },
   { xp: 6000, name: 'Ídolo',       emoji: '👑' },
 ];
-
 const BADGES = [
   { id: 'first_win',       emoji: '🌟', title: 'Primer paso',          desc: 'Completá tu primer nivel',                    check: (p) => p.levelsCompleted >= 1 },
   { id: 'streak_5',        emoji: '🔥', title: 'En llamas',            desc: 'Racha de 5 atajadas seguidas',                check: (p) => p.bestStreak >= 5 },
@@ -968,7 +730,6 @@ const BADGES = [
   { id: 'saves_100',       emoji: '🧤', title: 'Guantes de acero',     desc: '100 atajadas totales',                        check: (p) => p.totalSaves >= 100 },
   { id: 'xp_1000',         emoji: '⭐', title: 'Veterano',             desc: 'Alcanzá 1000 XP',                             check: (p) => p.xp >= 1000 },
 ];
-
 const Progress = (function() {
   const KEY = 'arquero-matematico-progress-v1';
   const defaults = {
@@ -977,10 +738,9 @@ const Progress = (function() {
     fractionSaves: 0, negativeSaves: 0, logSaves: 0, sqrtSaves: 0,
     hasPerfectLevel: false, hasFlawlessLevel: false, tournamentWins: 0,
     unlockedBadges: [],
-    preferences: { musicEnabled: true, musicTrack: 0, velocityStage: 1, sliderPos: 5 },
+    preferences: { musicEnabled: true, musicTrack: 0, velocityStage: 1, sliderPos: 5, playerName: '' },
   };
   let data = JSON.parse(JSON.stringify(defaults));
-
   function load() {
     try {
       const raw = localStorage.getItem(KEY);
@@ -991,18 +751,9 @@ const Progress = (function() {
       }
     } catch(e) {}
   }
-  function save() {
-    try { localStorage.setItem(KEY, JSON.stringify(data)); } catch(e) {}
-  }
-  function getRank(xp) {
-    let r = RANKS[0];
-    for (const rk of RANKS) if (xp >= rk.xp) r = rk;
-    return r;
-  }
-  function getNextRank(xp) {
-    for (const rk of RANKS) if (xp < rk.xp) return rk;
-    return null;
-  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch(e) {} }
+  function getRank(xp) { let r = RANKS[0]; for (const rk of RANKS) if (xp >= rk.xp) r = rk; return r; }
+  function getNextRank(xp) { for (const rk of RANKS) if (xp < rk.xp) return rk; return null; }
   function recordSession(session) {
     data.totalSaves += session.saves;
     data.totalGoals += session.goals;
@@ -1019,7 +770,6 @@ const Progress = (function() {
     if (session.goals === 0 && session.completed) data.hasPerfectLevel = true;
     if (session.mistakes === 0 && session.completed) data.hasFlawlessLevel = true;
     if (session.tournamentWin) data.tournamentWins++;
-
     let xpGained = 0;
     xpGained += session.saves * 10;
     xpGained += session.bestStreak * 5;
@@ -1030,7 +780,6 @@ const Progress = (function() {
       if (session.mistakes === 0) xpGained += 50;
     }
     data.xp += xpGained;
-
     const newBadges = [];
     for (const b of BADGES) {
       if (!data.unlockedBadges.includes(b.id) && b.check(data)) {
@@ -1051,7 +800,7 @@ const Progress = (function() {
 })();
 
 /* ============================================================
-   MÓDULO DE MÚSICA PROCEDURAL (Web Audio API)
+   MÚSICA
    ============================================================ */
 const GameMusic = (function() {
   const BPM = 120;
@@ -1169,11 +918,7 @@ const GameMusic = (function() {
     const now = ac.currentTime;
     const lookahead = 0.2;
     while (true) {
-      if (nextEventIdx >= currentEvents.length) {
-        loopStart += LOOP_DUR; nextEventIdx = 0;
-        if (!currentEvents.length) break;
-        continue;
-      }
+      if (nextEventIdx >= currentEvents.length) { loopStart += LOOP_DUR; nextEventIdx = 0; if (!currentEvents.length) break; continue; }
       const ev = currentEvents[nextEventIdx];
       const playTime = loopStart + ev.time * BEAT_DUR;
       if (playTime > now + lookahead) break;
@@ -1183,12 +928,7 @@ const GameMusic = (function() {
   }
   function startScheduler() { if (schedulerTimer) return; schedulerTimer = setInterval(scheduleAhead, 25); }
   function stopScheduler() { if (schedulerTimer) { clearInterval(schedulerTimer); schedulerTimer = null; } }
-  function loadTrack(index) {
-    currentTrackIndex = index;
-    currentEvents = buildEvents(TRACKS[index]);
-    nextEventIdx = 0;
-    loopStart = ac.currentTime + 0.1;
-  }
+  function loadTrack(index) { currentTrackIndex = index; currentEvents = buildEvents(TRACKS[index]); nextEventIdx = 0; loopStart = ac.currentTime + 0.1; }
   function init() {
     if (ac) return true;
     try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { return false; }
@@ -1261,7 +1001,7 @@ const GameMusic = (function() {
 })();
 
 /* ============================================================
-   FRACCIONES - Utilidades
+   FRACCIONES
    ============================================================ */
 const FRACTION_MAX_DEN = 24;
 function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { const t = b; b = a % b; a = t; } return a || 1; }
@@ -1299,7 +1039,7 @@ const randInt = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
 const randChoice = arr => arr[Math.floor(Math.random()*arr.length)];
 
 /* ============================================================
-   AUDIO (beeps)
+   AUDIO
    ============================================================ */
 function initAudio() {
   if (!state.audioCtx) { try { state.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {} }
@@ -1678,11 +1418,6 @@ function generateEquationRaw(level) {
   return { textHTML, answer, options, op, opA, opB };
 }
 
-/* ============================================================
-   VERIFICACIÓN INDEPENDIENTE: cada ejercicio se re-resuelve con
-   aritmética exacta a partir de lo que SE MUESTRA en pantalla.
-   Si algo no cuadra, el ejercicio se descarta y se genera otro.
-   ============================================================ */
 function exactAnswer(textHTML) {
   const t = textHTML.replace(/<span class="frac"><span class="num">(\d+)<\/span><span class="den">(\d+)<\/span><\/span>/g, '[$1/$2]');
   const O = '(\\(−(?:\\d+|\\[\\d+\\/\\d+\\])\\)|\\d+|\\[\\d+\\/\\d+\\])';
@@ -1714,9 +1449,9 @@ function equationIsSound(eq) {
   let correct = 0;
   for (const o of eq.options) {
     const f = decimalToFraction(o);
-    if (Math.abs(f.num / f.den - o) > 1e-4) return false;            // se mostraría un valor distinto
-    if (f.num * ex.d === ex.n * f.den) correct++;                      // coincide con el resultado exacto
-    for (const q of seen) if (q.num * f.den === f.num * q.den) return false; // opciones repetidas
+    if (Math.abs(f.num / f.den - o) > 1e-4) return false;
+    if (f.num * ex.d === ex.n * f.den) correct++;
+    for (const q of seen) if (q.num * f.den === f.num * q.den) return false;
     seen.push(f);
   }
   return correct === 1;
@@ -1726,7 +1461,6 @@ function generateEquation(level) {
     const eq = generateEquationRaw(level);
     if (equationIsSound(eq)) return eq;
   }
-  // respaldo seguro (nunca debería llegar aquí)
   const a = randInt(1, 10), b = randInt(1, 10);
   const options = generateOptions(a + b, level);
   for (let i = options.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [options[i], options[j]] = [options[j], options[i]]; }
@@ -1770,7 +1504,7 @@ function generateOptions(answer, level) {
 }
 
 /* ============================================================
-   EXPLICACIONES DIDÁCTICAS
+   EXPLICACIONES
    ============================================================ */
 function simpNote(rawNum, rawDen, ansText) {
   if (gcd(Math.abs(rawNum), rawDen) > 1) return `<span class="step">Simplificar:</span> ${rawNum}/${rawDen} = <b>${ansText}</b>`;
@@ -1894,7 +1628,6 @@ function generateExplanation(mistake) {
   } else if (type === 'missed') {
     lines.push(`⚽ Dejaste pasar el balón correcto (<b>${ansText}</b>) y fue gol en contra.`);
   }
-  // Presentación: signo menos tipográfico y negativos entre paréntesis después de un operador
   return lines.map(l => l.replace(/(^|[\s(>])-(\d)/g, '$1−$2').replace(/([+−×÷=]) −(\d)/g, '$1 (−$2)'));
 }
 
@@ -1946,8 +1679,6 @@ const btnSoundToggle = document.getElementById('btn-sound-toggle');
 const btnVoiceToggle = document.getElementById('btn-voice-toggle');
 const btnMusicToggle = document.getElementById('btn-music-toggle');
 const btnCareer = document.getElementById('btn-career');
-
-// Shooter elements
 const shooterTargetsEl = document.getElementById('shooter-targets');
 const playerBallEl = document.getElementById('player-ball');
 const aimLineEl = document.getElementById('aim-line');
@@ -2020,13 +1751,9 @@ function renderKeeper() {
   uiKeeper.style.transform = 'translate(-50%, -50%)';
 }
 
-/* ============================================================
-   MOVIMIENTO (Keeper Mode)
-   ============================================================ */
 function updateKeeper(dt) {
   if (state.mode !== 'playing' || !state.active || state.gamePaused) return;
   if (state.playMode !== 'keeper') return;
-
   let dx = 0, dy = 0;
   if (state.keys.left) dx -= 1;
   if (state.keys.right) dx += 1;
@@ -2047,9 +1774,6 @@ function updateKeeper(dt) {
   renderKeeper();
 }
 
-/* ============================================================
-   BALONES (Keeper Mode)
-   ============================================================ */
 function getValueClass(val) {
   if (val < 0 && !Number.isInteger(val)) return 'ball-value negative fraction';
   if (val < 0) return 'ball-value negative';
@@ -2064,18 +1788,13 @@ function spawnBalls() {
   state.currentEquation = eq;
   state.correctAnswer = eq.answer;
   uiEquation.innerHTML = eq.textHTML + ' = ?';
-
   const numBalls = Math.min(level.balls, eq.options.length);
   let picked = [...eq.options].sort(()=>Math.random()-0.5).slice(0, numBalls);
-  if (!picked.some(v => approxEqual(v, eq.answer))) {
-    picked[0] = eq.answer;
-    picked.sort(()=>Math.random()-0.5);
-  }
+  if (!picked.some(v => approxEqual(v, eq.answer))) { picked[0] = eq.answer; picked.sort(()=>Math.random()-0.5); }
   eq.shown = picked.slice();
   const rect = container.getBoundingClientRect();
   const w = rect.width;
   const colWidth = (w - 100) / picked.length;
-
   picked.forEach((val, i) => {
     const el = document.createElement('div');
     el.className = 'ball';
@@ -2101,19 +1820,11 @@ function spawnBalls() {
   narrateShot();
 }
 
-/* ============================================================
-   MODO PATEADOR - Lógica Mejorada
-   ============================================================ */
 function shooterGeom() {
   const r = container.getBoundingClientRect();
   const narrow = r.width < 600;
   const gw = narrow ? 0.72 : 0.56;
-  return {
-    gw, gl: (1 - gw) / 2, gt: 0.24, gh: 0.20, gline: 0.44,
-    sixW: Math.min(0.94, gw + 0.14), sixB: 0.58,
-    penW: Math.min(0.96, gw + 0.30), penB: 0.89,
-    spot: 0.80, arcH: 0.06,
-  };
+  return { gw, gl: (1 - gw) / 2, gt: 0.24, gh: 0.20, gline: 0.44, sixW: Math.min(0.94, gw + 0.14), sixB: 0.58, penW: Math.min(0.96, gw + 0.30), penB: 0.89, spot: 0.80, arcH: 0.06 };
 }
 function applyShooterGeom() {
   const g = shooterGeom();
@@ -2157,42 +1868,24 @@ function spawnShooterTargets() {
   state.currentEquation = eq;
   state.correctAnswer = eq.answer;
   uiEquation.innerHTML = eq.textHTML + ' = ?';
-
   const numBalls = Math.min(level.balls, eq.options.length);
   let picked = [...eq.options].sort(()=>Math.random()-0.5).slice(0, numBalls);
-  if (!picked.some(v => approxEqual(v, eq.answer))) {
-    picked[0] = eq.answer;
-    picked.sort(()=>Math.random()-0.5);
-  }
-
+  if (!picked.some(v => approxEqual(v, eq.answer))) { picked[0] = eq.answer; picked.sort(()=>Math.random()-0.5); }
   eq.shown = picked.slice();
   picked.forEach((val) => {
     const el = document.createElement('div');
     el.className = 'shooter-target';
     el.innerHTML = `<span class="target-emoji">${state.shooterAvatar}</span><span class="target-value">${numHTML(val, { parentheses: false })}</span>`;
     shooterTargetsEl.appendChild(el);
-    state.shooterTargets.push({
-      el, value: val, nx: 0.5, ny: 0.3,
-      isCorrect: approxEqual(val, eq.answer),
-      resolved: false,
-    });
+    state.shooterTargets.push({ el, value: val, nx: 0.5, ny: 0.3, isCorrect: approxEqual(val, eq.answer), resolved: false });
   });
   applyShooterGeom();
   layoutShooterTargets();
-
-  // El balón SIEMPRE nace en el punto de penal (parte inferior, centrado)
-  playerBallEl.style.left = '';
-  playerBallEl.style.top = '';
-  playerBallEl.style.transform = '';
+  playerBallEl.style.left = ''; playerBallEl.style.top = ''; playerBallEl.style.transform = '';
   playerBallEl.classList.remove('hidden', 'flying');
   updateBallSpot();
-
-  // Arquero IA en su posición base
   aiKeeperEl.className = 'ai-keeper active';
-  aiKeeperEl.style.left = '';
-  aiKeeperEl.style.top = '';
-  aiKeeperEl.style.transform = '';
-
+  aiKeeperEl.style.left = ''; aiKeeperEl.style.top = ''; aiKeeperEl.style.transform = '';
   state.active = true;
   state.roundLocked = false;
   controlsHint.textContent = 'Arrastra desde el balón hacia el arco';
@@ -2201,7 +1894,6 @@ function spawnShooterTargets() {
   narrateShot();
 }
 
-/* Objetivo bajo la línea de tiro: distancia perpendicular del centro del objetivo al rayo */
 function findAimTarget(dirX, dirY, sx, sy) {
   const rect = container.getBoundingClientRect();
   let best = null;
@@ -2248,44 +1940,37 @@ function shootBall() {
   state.isAiming = false;
   aimLineEl.classList.remove('active');
   clearAimed();
-
   const rect = container.getBoundingClientRect();
-  const W = rect.width, H = rect.height;
+  const H = rect.height;
   const sx = state.playerBallX, sy = state.playerBallY;
   const dx = state.aimX - sx, dy = state.aimY - sy;
   const len = Math.hypot(dx, dy);
-  if (len < 25 || dy > -12) return; // línea inválida: no gasta el intento
+  if (len < 25 || dy > -12) return;
   state.active = false;
-
   const dirX = dx / len, dirY = dy / len;
   const hit = findAimTarget(dirX, dirY, sx, sy);
   const g = shooterGeom();
   const gx = v => (v * 100) + '%';
-
   let endX, endY, isGoal = false, targetHit = null;
   if (hit) {
     targetHit = hit.t; endX = hit.tx; endY = hit.ty;
     if (targetHit.isCorrect) {
-      // Respuesta correcta: GOL seguro, el arquero se tira al lado contrario
       isGoal = true;
       targetHit.el.classList.add('correct-hit');
       const goRight = targetHit.nx < 0.5;
       aiKeeperEl.style.left = gx(g.gl + g.gw * (goRight ? 0.86 : 0.14));
       aiKeeperEl.style.transform = `translate(-50%, -50%) rotate(${goRight ? 55 : -55}deg)`;
     } else {
-      // Respuesta errada: el arquero sí la ataja
       targetHit.el.classList.add('wrong-hit');
       aiKeeperEl.style.left = gx(targetHit.nx);
       aiKeeperEl.style.top = gx(targetHit.ny);
       aiKeeperEl.style.transform = `translate(-50%, -50%) rotate(${targetHit.nx < 0.5 ? -45 : 45}deg)`;
     }
   } else {
-    // Tiro sin objetivo: la pelota sigue su línea y se va afuera
     const yEnd = H * (g.gt - 0.05);
     const tt = (sy - yEnd) / (-dirY);
     endX = sx + dirX * tt; endY = yEnd;
   }
-
   playerBallEl.classList.add('flying');
   const animStart = performance.now();
   const duration = 480;
@@ -2297,28 +1982,21 @@ function shootBall() {
     playerBallEl.style.left = cx + 'px';
     playerBallEl.style.top = cy + 'px';
     playerBallEl.style.transform = `translate(-50%, -50%) scale(${1 - 0.4 * e}) rotate(${e * 540}deg)`;
-    if (t < 1) {
-      requestAnimationFrame(animateBall);
-    } else {
-      playerBallEl.classList.add('hidden');
-      setTimeout(() => { resolveShooterRound(isGoal, targetHit); }, 180);
-    }
+    if (t < 1) { requestAnimationFrame(animateBall); }
+    else { playerBallEl.classList.add('hidden'); setTimeout(() => { resolveShooterRound(isGoal, targetHit); }, 180); }
   }
   requestAnimationFrame(animateBall);
 }
 
 function resolveShooterRound(isGoal, targetHit) {
   playerBallEl.classList.add('hidden');
-
   if (isGoal) {
-    state.goals++;
-    state.streak++;
+    state.goals++; state.streak++;
     if (state.streak > state.bestStreak) state.bestStreak = state.streak;
     soundSave(); soundCrowd();
     showFeedback('¡GOOOL! ⚽', '#4caf50');
     setTicker(`¡Golazo! Racha: ${state.streak} 🔥`);
     narrateCategory('shooterGoal', { rate: 1.2, pitch: 1.3 });
-
     if (state.currentEquation) {
       const eq = state.currentEquation;
       if ((eq.opA !== null && !Number.isInteger(eq.opA)) || (eq.opB !== null && !Number.isInteger(eq.opB))) state.sessionStats.fractionSaves++;
@@ -2327,15 +2005,12 @@ function resolveShooterRound(isGoal, targetHit) {
       if (eq.op === '√') state.sessionStats.sqrtSaves++;
     }
   } else {
-    state.lives--;
-    state.streak = 0;
+    state.lives--; state.streak = 0;
     soundGoal();
-    
     if (targetHit) {
       showFeedback('¡ATAJADO! 🧤', '#e53935');
       setTicker(`¡El arquero la sacó! Era ${numText(state.correctAnswer)}.`);
       narrateCategory('shooterSave', { rate: 1.1, pitch: 1.1 });
-
       if (state.currentEquation) {
         state.mistakes.push({
           op: state.currentEquation.op, opA: state.currentEquation.opA, opB: state.currentEquation.opB,
@@ -2358,20 +2033,11 @@ function resolveShooterRound(isGoal, targetHit) {
   }
   updateUI();
   state.roundLocked = true;
-
   if (isGoal) {
-    if (state.goals >= LEVELS[state.levelIndex].target) {
-      state.active = false;
-      setTimeout(()=>levelComplete(), 700);
-      return;
-    }
+    if (state.goals >= LEVELS[state.levelIndex].target) { state.active = false; setTimeout(()=>levelComplete(), 700); return; }
     setTimeout(()=>{ if (state.mode === 'playing') { state.lastTime = 0; spawnShooterTargets(); } }, 1200);
   } else {
-    if (state.lives <= 0) {
-      state.active = false;
-      setTimeout(()=>gameOver(), 1900);
-      return;
-    }
+    if (state.lives <= 0) { state.active = false; setTimeout(()=>gameOver(), 1900); return; }
     setTimeout(()=>{ if (state.mode === 'playing') { state.lastTime = 0; spawnShooterTargets(); } }, 2100);
   }
 }
@@ -2379,7 +2045,6 @@ function resolveShooterRound(isGoal, targetHit) {
 function checkCollisions() {
   if (!state.active || state.roundLocked || state.gamePaused) return;
   if (state.playMode !== 'keeper') return;
-
   const kx = state.keeperX, ky = state.keeperY;
   const kw = state.keeperW * 0.85, kh = state.keeperH * 0.85;
   state.balls.forEach(ball => {
@@ -2401,7 +2066,6 @@ function handleCollision(ball) {
     setTimeout(()=>ball.el.remove(), 300);
     state.saves++; state.streak++;
     if (state.streak > state.bestStreak) state.bestStreak = state.streak;
-
     if (state.currentEquation) {
       const eq = state.currentEquation;
       if ((eq.opA !== null && !Number.isInteger(eq.opA)) || (eq.opB !== null && !Number.isInteger(eq.opB))) state.sessionStats.fractionSaves++;
@@ -2409,7 +2073,6 @@ function handleCollision(ball) {
       if (eq.op === 'log') state.sessionStats.logSaves++;
       if (eq.op === '√') state.sessionStats.sqrtSaves++;
     }
-
     soundSave(); soundCrowd();
     showFeedback('¡ATAJADA! 🧤', '#4caf50');
     setTicker(`¡Atajada! Racha: ${state.streak} 🔥`);
@@ -2417,11 +2080,7 @@ function handleCollision(ball) {
     uiKeeper.style.transform = 'translate(-50%, -50%) scale(1.4)';
     setTimeout(()=>{ uiKeeper.style.transform = 'translate(-50%, -50%) scale(1)'; }, 200);
     state.roundLocked = true;
-    if (state.saves >= LEVELS[state.levelIndex].target) {
-      state.active = false;
-      setTimeout(()=>levelComplete(), 700);
-      return;
-    }
+    if (state.saves >= LEVELS[state.levelIndex].target) { state.active = false; setTimeout(()=>levelComplete(), 700); return; }
     setTimeout(()=>{ if (state.mode === 'playing') { state.lastTime = 0; spawnBalls(); } }, 900);
   } else {
     ball.resolved = true;
@@ -2445,15 +2104,11 @@ function handleCollision(ball) {
   }
 }
 
-/* ============================================================
-   GAME LOOP
-   ============================================================ */
 function gameLoop(timestamp) {
   if (state.mode !== 'playing') return;
   if (state.gamePaused) { state.lastTime = timestamp; state.animationId = requestAnimationFrame(gameLoop); return; }
   const dt = state.lastTime ? Math.min((timestamp - state.lastTime)/1000, 0.05) : 0.016;
   state.lastTime = timestamp;
-
   if (state.playMode === 'keeper') {
     updateKeeper(dt);
     const goalY = state.goalLineY;
@@ -2494,18 +2149,13 @@ function gameLoop(timestamp) {
   state.animationId = requestAnimationFrame(gameLoop);
 }
 
-/* ============================================================
-   RESUMEN DE SESIÓN (XP + insignias nuevas)
-   ============================================================ */
 function renderSessionSummary(elId, result) {
   const el = document.getElementById(elId);
   if (!el || !result) return;
   const { xpGained, newBadges } = result;
   let html = `<div>✨ Ganaste <span class="xp-gain">+${xpGained} XP</span></div>`;
   if (newBadges && newBadges.length > 0) {
-    for (const b of newBadges) {
-      html += `<div class="new-badge">${b.emoji} ¡Nuevo logro: ${b.title}!</div>`;
-    }
+    for (const b of newBadges) html += `<div class="new-badge">${b.emoji} ¡Nuevo logro: ${b.title}!</div>`;
   }
   el.innerHTML = html;
   el.classList.remove('hidden');
@@ -2533,11 +2183,12 @@ function startLevel(index, mode = 'keeper') {
   container.classList.add('playing');
   container.classList.remove('keeper-mode', 'shooter-mode');
   container.classList.add(mode === 'keeper' ? 'keeper-mode' : 'shooter-mode');
-  
+
   uiEquation.textContent = '...';
   updateUI();
   hideAllOverlays();
   hideAllAcademicCards();
+  updateShareResultButton();
   document.getElementById('lu-session-summary').classList.add('hidden');
   document.getElementById('go-session-summary').classList.add('hidden');
   confirmExitModal.classList.add('hidden');
@@ -2566,8 +2217,7 @@ function startLevel(index, mode = 'keeper') {
       }
     }, 1200);
   } else {
-    // Shooter mode
-    uiKeeper.style.display = 'none'; 
+    uiKeeper.style.display = 'none';
     applyShooterGeom();
     recalcArea();
     setTimeout(()=>{
@@ -2613,14 +2263,9 @@ function levelComplete() {
   if (state.isTournament && isLast) { gameOver(true); return; }
 
   const result = Progress.recordSession({
-    level: state.levelIndex,
-    saves: state.saves,
-    goals: state.goals,
-    bestStreak: state.bestStreak,
-    mistakes: state.mistakes.length,
-    completed: true,
-    tournamentWin: false,
-    ...state.sessionStats,
+    level: state.levelIndex, saves: state.saves, goals: state.goals,
+    bestStreak: state.bestStreak, mistakes: state.mistakes.length,
+    completed: true, tournamentWin: false, ...state.sessionStats,
   });
   renderSessionSummary('lu-session-summary', result);
 
@@ -2629,6 +2274,7 @@ function levelComplete() {
     `Atajadas/Goles: ${state.saves + state.goals} | Errores: ${state.mistakes.length} | Racha máx: ${state.bestStreak}`;
 
   showEndAcademicCard('overlay-levelup');
+  updateShareResultButton();
 
   const btnNext = document.getElementById('btn-next-level');
   if (isLast && !state.isTournament) {
@@ -2659,14 +2305,9 @@ function gameOver(tournamentWin = false) {
   }, 600);
 
   const result = Progress.recordSession({
-    level: state.levelIndex,
-    saves: state.saves,
-    goals: state.goals,
-    bestStreak: state.bestStreak,
-    mistakes: state.mistakes.length,
-    completed: false,
-    tournamentWin: tournamentWin,
-    ...state.sessionStats,
+    level: state.levelIndex, saves: state.saves, goals: state.goals,
+    bestStreak: state.bestStreak, mistakes: state.mistakes.length,
+    completed: false, tournamentWin: tournamentWin, ...state.sessionStats,
   });
   renderSessionSummary('go-session-summary', result);
 
@@ -2679,6 +2320,7 @@ function gameOver(tournamentWin = false) {
   document.getElementById('go-streak').textContent = state.bestStreak;
 
   showEndAcademicCard('overlay-gameover');
+  updateShareResultButton();
   showOverlay('overlay-gameover');
   setTicker('Fin del partido. ¡Presiona reintentar!');
 }
@@ -2686,17 +2328,12 @@ function gameOver(tournamentWin = false) {
 function hideAllOverlays() { document.querySelectorAll('.overlay').forEach(o => o.classList.add('hidden')); }
 function showOverlay(id) { hideAllOverlays(); document.getElementById(id).classList.remove('hidden'); }
 
-/* ============================================================
-   MI CARRERA — Renderizar
-   ============================================================ */
 function renderCareer() {
   const data = Progress.getData();
   const rank = Progress.getRankData();
   const nextRank = Progress.getNextRankData();
-
   const rankEl = document.getElementById('career-rank');
-  let barPct = 100;
-  let nextText = '¡Rango máximo alcanzado!';
+  let barPct = 100, nextText = '¡Rango máximo alcanzado!';
   if (nextRank) {
     const prevXp = rank.xp;
     const range = nextRank.xp - prevXp;
@@ -2708,12 +2345,9 @@ function renderCareer() {
     <div class="career-rank-emoji">${rank.emoji}</div>
     <div class="career-rank-name">${rank.name}</div>
     <div class="career-rank-xp">${data.xp} XP totales</div>
-    <div class="career-rank-bar-wrap">
-      <div class="career-rank-bar" style="width:${barPct}%"></div>
-    </div>
+    <div class="career-rank-bar-wrap"><div class="career-rank-bar" style="width:${barPct}%"></div></div>
     <div class="career-rank-next">${nextText}</div>
   `;
-
   const statsEl = document.getElementById('career-stats');
   const stats = [
     { label: 'Atajadas/Goles', value: data.totalSaves + data.totalGoals },
@@ -2722,13 +2356,7 @@ function renderCareer() {
     { label: 'Sesiones jugadas', value: data.totalSessions },
     { label: 'Nivel máximo', value: data.maxLevelReached > 0 ? `N°${data.maxLevelReached}` : '—' },
   ];
-  statsEl.innerHTML = stats.map(s => `
-    <div class="career-stat">
-      <span class="label">${s.label}</span>
-      <span class="value">${s.value}</span>
-    </div>
-  `).join('');
-
+  statsEl.innerHTML = stats.map(s => `<div class="career-stat"><span class="label">${s.label}</span><span class="value">${s.value}</span></div>`).join('');
   const badgesEl = document.getElementById('career-badges');
   const badges = Progress.getBadges();
   badgesEl.innerHTML = badges.map(b => `
@@ -2740,9 +2368,6 @@ function renderCareer() {
   `).join('');
 }
 
-/* ============================================================
-   OVERLAYS
-   ============================================================ */
 function buildLevelGrid() {
   const grid = document.getElementById('level-grid');
   grid.innerHTML = '';
@@ -2805,9 +2430,6 @@ function setupSettingsTabs() {
   });
 }
 
-/* ============================================================
-   ETAPAS DE VELOCIDAD
-   ============================================================ */
 const STAGE_RANGES = { 1: [0.3, 1.1], 2: [1.1, 1.8], 3: [1.8, 2.5] };
 function applySpeedFromStage() {
   const range = STAGE_RANGES[state.velocityStage];
@@ -2834,9 +2456,6 @@ function setupStageSelector() {
   });
 }
 
-/* ============================================================
-   MÚSICA - UI
-   ============================================================ */
 function buildMusicTracks() {
   const tracksEl = document.getElementById('music-tracks');
   if (!tracksEl) return;
@@ -2852,12 +2471,289 @@ function buildMusicTracks() {
       state.musicTrackIndex = t.index;
       GameMusic.setTrack(t.index);
       Progress.savePreference('musicTrack', t.index);
-      document.querySelectorAll('.music-track-card').forEach(c => {
-        c.classList.toggle('active', parseInt(c.dataset.track) === t.index);
-      });
+      document.querySelectorAll('.music-track-card').forEach(c => { c.classList.toggle('active', parseInt(c.dataset.track) === t.index); });
     });
     tracksEl.appendChild(card);
   });
+}
+
+/* ============================================================
+   SISTEMA DE RETOS COMPARTIBLES
+   ============================================================ */
+
+function encodeNumberTypes(nt) {
+  let bits = 0;
+  if (nt.natural) bits |= 1;
+  if (nt.negative) bits |= 2;
+  if (nt.fraction) bits |= 4;
+  return bits || 7;
+}
+function decodeNumberTypes(bits) {
+  bits = parseInt(bits) || 7;
+  bits = Math.max(1, Math.min(7, bits));
+  return { natural: !!(bits & 1), negative: !!(bits & 2), fraction: !!(bits & 4) };
+}
+function getCurrentChallengeConfig() {
+  return {
+    level: state.levelIndex,
+    mode: state.playMode,
+    velocityStage: state.velocityStage,
+    sliderPos: state.sliderPos,
+    numberTypes: { ...state.numberTypes },
+    challengerName: '',
+    result: null,
+    resultBy: '',
+  };
+}
+function encodeChallenge(cfg) {
+  const parts = [];
+  parts.push('n=' + (cfg.level + 1));
+  parts.push('m=' + (cfg.mode === 'shooter' ? 's' : 'k'));
+  parts.push('v=' + cfg.velocityStage);
+  parts.push('sp=' + cfg.sliderPos);
+  parts.push('nt=' + encodeNumberTypes(cfg.numberTypes));
+  if (cfg.challengerName) parts.push('d=' + encodeURIComponent(cfg.challengerName));
+  if (cfg.result !== null && cfg.result !== undefined) parts.push('r=' + cfg.result);
+  if (cfg.resultBy) parts.push('d2=' + encodeURIComponent(cfg.resultBy));
+  return parts.join('&');
+}
+function decodeChallenge(hash) {
+  try {
+    const params = {};
+    hash.split('&').forEach(p => {
+      const eq = p.indexOf('=');
+      if (eq < 0) return;
+      const k = p.substring(0, eq);
+      const v = p.substring(eq + 1);
+      if (k) params[k] = v || '';
+    });
+    return {
+      level: Math.max(0, Math.min(LEVELS.length - 1, (parseInt(params.n) || 1) - 1)),
+      mode: params.m === 's' ? 'shooter' : 'keeper',
+      velocityStage: Math.max(1, Math.min(3, parseInt(params.v) || 1)),
+      sliderPos: Math.max(0, Math.min(10, parseInt(params.sp) || 5)),
+      numberTypes: decodeNumberTypes(params.nt),
+      challengerName: params.d ? decodeURIComponent(params.d) : '',
+      result: params.r !== undefined && params.r !== '' ? parseInt(params.r) : null,
+      resultBy: params.d2 ? decodeURIComponent(params.d2) : '',
+    };
+  } catch (e) { return null; }
+}
+function buildChallengeURL(cfg) {
+  const base = location.href.split('#')[0];
+  return base + '#reto=' + encodeChallenge(cfg);
+}
+function applyChallengeConfig(cfg) {
+  state.playMode = cfg.mode;
+  state.velocityStage = cfg.velocityStage;
+  state.sliderPos = cfg.sliderPos;
+  state.numberTypes = { ...cfg.numberTypes };
+  state.incomingChallenge = {
+    level: cfg.level, mode: cfg.mode,
+    velocityStage: cfg.velocityStage, sliderPos: cfg.sliderPos,
+    numberTypes: { ...cfg.numberTypes }, challengerName: cfg.challengerName,
+  };
+  syncModeSelector();
+  applySpeedFromStage();
+  document.querySelectorAll('#number-type-toggles .toggle-btn').forEach(btn => {
+    btn.classList.toggle('active', state.numberTypes[btn.dataset.type]);
+  });
+  const slider = document.getElementById('speed-slider');
+  if (slider) slider.value = state.sliderPos;
+}
+function detectChallengeOnLoad() {
+  const hash = location.hash;
+  if (!hash || hash.indexOf('#reto=') !== 0) return null;
+  return decodeChallenge(hash.substring(6));
+}
+
+let toastTimer = null;
+function showToast(text, color) {
+  const toast = document.getElementById('toast');
+  if (!toast) return;
+  toast.textContent = text;
+  toast.style.background = color || '#4caf50';
+  toast.classList.remove('hidden');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.add('hidden'), 2600);
+}
+
+function copyToClipboard(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text)
+      .then(() => showToast('✅ ¡Link copiado!'))
+      .catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+function fallbackCopy(text) {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.top = '-1000px';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('✅ ¡Link copiado!');
+  } catch (e) {
+    showToast('⚠️ No se pudo copiar. Copialo manualmente.', '#e53935');
+  }
+}
+
+function renderChallengePreview(elId, cfg, showResult) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  const nivel = LEVELS[cfg.level];
+  const modeLabel = cfg.mode === 'shooter' ? '🎯 Pateador' : '🧤 Arquero';
+  const stageLabel = ['', '🐢 Etapa 1', '⚡ Etapa 2', '🚀 Etapa 3'][cfg.velocityStage];
+  const numTypes = [];
+  if (cfg.numberTypes.natural) numTypes.push('Naturales');
+  if (cfg.numberTypes.negative) numTypes.push('Negativos');
+  if (cfg.numberTypes.fraction) numTypes.push('Fracciones');
+  const metaLabel = cfg.mode === 'shooter' ? 'goles' : 'atajadas';
+  let html = `
+    <div class="cp-row"><span class="cp-label">Nivel</span><span class="cp-value">${cfg.level + 1} · ${nivel.name}</span></div>
+    <div class="cp-row"><span class="cp-label">Modo</span><span class="cp-value">${modeLabel}</span></div>
+    <div class="cp-row"><span class="cp-label">Velocidad</span><span class="cp-value">${stageLabel}</span></div>
+    <div class="cp-row"><span class="cp-label">Números</span><span class="cp-value">${numTypes.join(' · ') || '—'}</span></div>
+    <div class="cp-row"><span class="cp-label">Meta</span><span class="cp-value">${nivel.target} ${metaLabel}</span></div>
+  `;
+  if (showResult && cfg.result !== null && cfg.result !== undefined) {
+    html += `<div class="cp-row cp-highlight"><span class="cp-label">Resultado</span><span class="cp-value">${cfg.result} ${metaLabel}</span></div>`;
+  }
+  el.innerHTML = html;
+}
+
+function openCreateChallenge() {
+  soundClick();
+  const cfg = getCurrentChallengeConfig();
+  renderChallengePreview('challenge-preview', cfg, false);
+  const nameInput = document.getElementById('challenge-name');
+  nameInput.value = (Progress.getData().preferences && Progress.getData().preferences.playerName) || '';
+  document.getElementById('challenge-result').classList.add('hidden');
+  document.getElementById('challenge-qr').classList.add('hidden');
+  document.getElementById('challenge-qr').innerHTML = '';
+  showOverlay('overlay-create-challenge');
+}
+function generateChallengeLink() {
+  soundClick();
+  const nameInput = document.getElementById('challenge-name');
+  const playerName = (nameInput.value || '').trim().substring(0, 20);
+  if (playerName) Progress.savePreference('playerName', playerName);
+  const cfg = getCurrentChallengeConfig();
+  cfg.challengerName = playerName;
+  document.getElementById('challenge-url').value = buildChallengeURL(cfg);
+  document.getElementById('challenge-result').classList.remove('hidden');
+}
+function toggleChallengeQR() {
+  soundClick();
+  const url = document.getElementById('challenge-url').value;
+  if (!url) return;
+  const qrDiv = document.getElementById('challenge-qr');
+  if (!qrDiv.classList.contains('hidden')) {
+    qrDiv.classList.add('hidden');
+    qrDiv.innerHTML = '';
+    return;
+  }
+  qrDiv.innerHTML = '<div style="font-size:11px; opacity:0.7; margin-bottom:6px;">Generando QR…</div>';
+  qrDiv.classList.remove('hidden');
+  const img = document.createElement('img');
+  img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + encodeURIComponent(url);
+  img.style.cssText = 'width:180px; height:180px; border-radius:8px; background:#fff; padding:6px;';
+  img.alt = 'QR del reto';
+  img.onerror = () => { qrDiv.innerHTML = '<div style="font-size:11px; opacity:0.6;">QR no disponible (sin conexión)</div>'; };
+  img.onload = () => { qrDiv.innerHTML = ''; qrDiv.appendChild(img); };
+  qrDiv.appendChild(img);
+}
+
+function handleIncomingChallenge(cfg) {
+  if (!cfg) return;
+  state.pendingIncomingChallenge = cfg;
+  if (cfg.result !== null && cfg.result !== undefined) {
+    const metaLabel = cfg.mode === 'shooter' ? 'goles' : 'atajadas';
+    const levelTarget = LEVELS[cfg.level].target;
+    const by = cfg.resultBy || 'Tu amigo';
+    const completed = cfg.result >= levelTarget;
+    document.getElementById('incoming-title').textContent = `📊 ${by} hizo ${cfg.result} ${metaLabel}`;
+    document.getElementById('incoming-subtitle').textContent = completed
+      ? `¡Completó tu reto (meta: ${levelTarget})! ¿Le ganás de nuevo?`
+      : `No alcanzó la meta de ${levelTarget} ${metaLabel}. ¿Jugás vos?`;
+    document.getElementById('btn-accept-challenge').textContent = '🔁 Jugar el reto';
+    renderChallengePreview('incoming-preview', cfg, true);
+  } else {
+    const titulo = cfg.challengerName ? `🏆 ${cfg.challengerName} te retó` : '🏆 Te retaron';
+    document.getElementById('incoming-title').textContent = titulo;
+    document.getElementById('incoming-subtitle').textContent = '¿Aceptás el desafío?';
+    document.getElementById('btn-accept-challenge').textContent = '⚔️ Aceptar reto';
+    renderChallengePreview('incoming-preview', cfg, false);
+  }
+  showOverlay('overlay-incoming-challenge');
+}
+function acceptIncomingChallenge() {
+  soundClick();
+  const cfg = state.pendingIncomingChallenge;
+  if (!cfg) return;
+  applyChallengeConfig(cfg);
+  state.pendingIncomingChallenge = null;
+  history.replaceState(null, '', location.pathname + location.search);
+  startLevel(cfg.level, cfg.mode);
+}
+function declineIncomingChallenge() {
+  soundClick();
+  history.replaceState(null, '', location.pathname + location.search);
+  state.pendingIncomingChallenge = null;
+  state.incomingChallenge = null;
+  showOverlay('overlay-menu');
+}
+
+function openShareResult(fromOverlay) {
+  soundClick();
+  const ch = state.incomingChallenge;
+  if (!ch) return;
+  state.shareResultReturnTo = fromOverlay || 'overlay-gameover';
+  const achieved = ch.mode === 'shooter' ? state.goals : state.saves;
+  const metaLabel = ch.mode === 'shooter' ? 'goles' : 'atajadas';
+  const meta = LEVELS[ch.level].target;
+  const nameBy = (Progress.getData().preferences && Progress.getData().preferences.playerName) || '';
+  document.getElementById('share-result-subtitle').textContent =
+    `Hiciste ${achieved} de ${meta} ${metaLabel} en el reto${ch.challengerName ? ' de ' + ch.challengerName : ''}`;
+  const cfg = {
+    level: ch.level, mode: ch.mode,
+    velocityStage: ch.velocityStage, sliderPos: ch.sliderPos,
+    numberTypes: ch.numberTypes, challengerName: ch.challengerName,
+    result: achieved, resultBy: nameBy,
+  };
+  renderChallengePreview('share-result-preview', cfg, true);
+  document.getElementById('share-result-name').value = nameBy;
+  document.getElementById('share-result-output').classList.add('hidden');
+  showOverlay('overlay-share-result');
+}
+function generateShareResultLink() {
+  soundClick();
+  const ch = state.incomingChallenge;
+  if (!ch) return;
+  const nameInput = document.getElementById('share-result-name');
+  const resultBy = (nameInput.value || '').trim().substring(0, 20);
+  if (resultBy) Progress.savePreference('playerName', resultBy);
+  const achieved = ch.mode === 'shooter' ? state.goals : state.saves;
+  const cfg = {
+    level: ch.level, mode: ch.mode,
+    velocityStage: ch.velocityStage, sliderPos: ch.sliderPos,
+    numberTypes: ch.numberTypes, challengerName: ch.challengerName,
+    result: achieved, resultBy: resultBy,
+  };
+  document.getElementById('share-result-url').value = buildChallengeURL(cfg);
+  document.getElementById('share-result-output').classList.remove('hidden');
+}
+function updateShareResultButton() {
+  const show = !!state.incomingChallenge;
+  const b1 = document.getElementById('btn-share-result-lu');
+  const b2 = document.getElementById('btn-share-result-go');
+  if (b1) b1.classList.toggle('hidden', !show);
+  if (b2) b2.classList.toggle('hidden', !show);
 }
 
 /* ============================================================
@@ -2884,12 +2780,10 @@ window.addEventListener('keyup', (e) => {
 });
 
 function getPointerPos(e) { const rect = container.getBoundingClientRect(); return { x: e.clientX - rect.left, y: e.clientY - rect.top }; }
-
 function updatePointer(e) {
   if (state.mode !== 'playing' || state.gamePaused) return;
   const p = getPointerPos(e);
   state.pointerX = p.x; state.pointerY = p.y; state.pointerActive = true;
-
   if (state.playMode === 'keeper') {
     cursorDot.style.display = 'block';
     cursorDot.style.left = p.x + 'px'; cursorDot.style.top = p.y + 'px';
@@ -2897,46 +2791,35 @@ function updatePointer(e) {
     state.aimX = p.x; state.aimY = p.y;
     if (state.isAiming) updateAim(p.x, p.y);
     else if (e.pointerType === 'mouse' && state.active && !state.roundLocked) {
-      // En PC: vista previa de la línea al pasar el mouse
       updateBallSpot();
       updateAim(p.x, p.y);
     }
   }
 }
-
 container.addEventListener('pointermove', (e) => { if (state.mode !== 'playing') return; updatePointer(e); });
 container.addEventListener('pointerdown', (e) => {
   initAudio();
   if (state.mode !== 'playing') return;
   if (!confirmExitModal.classList.contains('hidden')) return;
   const p = getPointerPos(e);
-
-  if (state.playMode === 'keeper') {
-    updatePointer(e);
-  } else if (state.playMode === 'shooter' && state.active && !state.roundLocked) {
+  if (state.playMode === 'keeper') { updatePointer(e); }
+  else if (state.playMode === 'shooter' && state.active && !state.roundLocked) {
     if (e.target.closest && e.target.closest('button')) return;
-    // Mouse: se puede apuntar desde cualquier lugar (clic = patear). Touch: desde el balón.
     beginAim(p, e.pointerType === 'mouse');
   }
 });
-
 container.addEventListener('pointerleave', (e) => {
   state.pointerActive = false;
   cursorDot.style.display = 'none';
   if (state.playMode === 'shooter' && !state.isAiming) { aimLineEl.classList.remove('active'); clearAimed(); }
 });
-
 container.addEventListener('pointerup', () => {
-  if (state.playMode === 'shooter' && state.isAiming) {
-    shootBall();
-  }
+  if (state.playMode === 'shooter' && state.isAiming) shootBall();
   setTimeout(()=>{ state.pointerActive = false; }, 250);
 });
-// Si se suelta el mouse fuera del campo, igual se patea
 window.addEventListener('pointerup', () => {
   if (state.mode === 'playing' && state.playMode === 'shooter' && state.isAiming) shootBall();
 });
-
 container.addEventListener('touchstart', (e) => {
   initAudio();
   if (state.mode !== 'playing') return;
@@ -2944,26 +2827,20 @@ container.addEventListener('touchstart', (e) => {
   e.preventDefault();
   const t = e.touches[0];
   const p = getPointerPos({ clientX: t.clientX, clientY: t.clientY });
-
-  if (state.playMode === 'keeper') {
-    updatePointer({ clientX: t.clientX, clientY: t.clientY });
-  } else if (state.playMode === 'shooter' && state.active && !state.roundLocked) {
+  if (state.playMode === 'keeper') { updatePointer({ clientX: t.clientX, clientY: t.clientY }); }
+  else if (state.playMode === 'shooter' && state.active && !state.roundLocked) {
     if (e.target.closest && e.target.closest('button')) return;
     beginAim(p, false);
   }
 }, { passive: false });
-
 container.addEventListener('touchmove', (e) => {
   if (state.mode !== 'playing' || state.gamePaused) return;
   e.preventDefault();
   const t = e.touches[0];
   updatePointer({ clientX: t.clientX, clientY: t.clientY });
 }, { passive: false });
-
 container.addEventListener('touchend', () => {
-  if (state.playMode === 'shooter' && state.isAiming) {
-    shootBall();
-  }
+  if (state.playMode === 'shooter' && state.isAiming) shootBall();
   cursorDot.style.display = 'none';
   setTimeout(()=>{ state.pointerActive = false; }, 250);
 });
@@ -3047,13 +2924,32 @@ onTap(btnExitGame, () => { soundClick(); state.gamePaused = true; confirmExitMod
 onTap(document.getElementById('btn-confirm-cancel'), () => { soundClick(); confirmExitModal.classList.add('hidden'); state.gamePaused = false; state.lastTime = 0; });
 onTap(document.getElementById('btn-confirm-exit'), () => { soundClick(); exitToMenu(); });
 
+/* --- Botones del sistema de retos --- */
+onTap(document.getElementById('btn-create-challenge'), openCreateChallenge);
+onTap(document.getElementById('btn-back-create'), () => { soundClick(); showOverlay('overlay-menu'); });
+onTap(document.getElementById('btn-generate-challenge'), generateChallengeLink);
+onTap(document.getElementById('btn-copy-challenge'), () => {
+  const url = document.getElementById('challenge-url').value;
+  if (url) copyToClipboard(url);
+});
+onTap(document.getElementById('btn-show-qr'), toggleChallengeQR);
+onTap(document.getElementById('btn-accept-challenge'), acceptIncomingChallenge);
+onTap(document.getElementById('btn-decline-challenge'), declineIncomingChallenge);
+onTap(document.getElementById('btn-share-result-lu'), () => openShareResult('overlay-levelup'));
+onTap(document.getElementById('btn-share-result-go'), () => openShareResult('overlay-gameover'));
+onTap(document.getElementById('btn-back-share-result'), () => { soundClick(); showOverlay(state.shareResultReturnTo || 'overlay-gameover'); });
+onTap(document.getElementById('btn-generate-result'), generateShareResultLink);
+onTap(document.getElementById('btn-copy-result'), () => {
+  const url = document.getElementById('share-result-url').value;
+  if (url) copyToClipboard(url);
+});
+
 const voiceSelect = document.getElementById('voice-select');
 voiceSelect.addEventListener('change', (e) => {
   state.selectedVoiceName = e.target.value;
   soundClick();
   if (state.voiceEnabled) speakDirect('Voz seleccionada', { rate: 1.05, pitch: 1.15 });
 });
-
 const speedSlider = document.getElementById('speed-slider');
 speedSlider.addEventListener('input', (e) => {
   state.sliderPos = parseInt(e.target.value);
@@ -3091,8 +2987,6 @@ window.addEventListener('resize', () => {
     state.keeperY = Math.max(state.area.top + kh, Math.min(state.area.bottom - kh, state.keeperY));
     renderKeeper();
   }
-});
-window.addEventListener('resize', () => {
   if (state.mode === 'playing' && state.playMode === 'shooter') { applyShooterGeom(); layoutShooterTargets(); updateBallSpot(); }
 });
 setTimeout(() => { recalcArea(); resetKeeperPosition(); }, 100);
@@ -3113,6 +3007,16 @@ function globalFirstInteraction() {
 }
 document.addEventListener('touchstart', globalFirstInteraction, { once: true, passive: true });
 document.addEventListener('click', globalFirstInteraction, { once: true });
+
+/* --- Detección de reto al cargar --- */
+(function initChallengeOnLoad() {
+  const cfg = detectChallengeOnLoad();
+  if (!cfg) return;
+  // Limpiar el hash ya para no repetir el modal si se recarga
+  history.replaceState(null, '', location.pathname + location.search);
+  // Mostrar el modal cuando todo esté listo
+  setTimeout(() => handleIncomingChallenge(cfg), 350);
+})();
 </script>
 </body>
 </html>
