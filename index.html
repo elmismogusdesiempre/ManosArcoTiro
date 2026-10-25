@@ -324,6 +324,30 @@
   }
   .toast.hidden { display: none; }
 
+  /* ============================================================
+     CONTROLES DE AUDIO (fondo · narración · celebración)
+     ============================================================ */
+  .audio-quick { display: flex; gap: 6px; }
+  .aq-btn { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; width: 46px; height: 46px; padding: 0; border-radius: 12px; cursor: pointer; color: #fff; font-family: inherit;
+    background: rgba(13,27,42,0.85); border: 2px solid var(--amarillo); box-shadow: var(--sombra); touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: transform 0.1s, background 0.15s; }
+  .aq-btn:active { transform: scale(0.94); }
+  .aq-btn .aq-ico { font-size: 19px; line-height: 1; }
+  .aq-btn .aq-lbl { font-size: 8px; font-weight: 900; letter-spacing: 0.4px; line-height: 1; }
+  .aq-btn.off { background: rgba(38,50,56,0.88); border-color: #78909c; color: #b0bec5; }
+  .aq-btn.off .aq-ico { opacity: 0.45; filter: grayscale(1); }
+  .aq-btn.off::after { content: ''; position: absolute; left: 7px; right: 7px; top: 50%; height: 3px; margin-top: -4px; background: #ef5350; border-radius: 2px; transform: rotate(-35deg); box-shadow: 0 0 0 1px rgba(0,0,0,0.5); }
+  /* En partida: columna bajo el botón de salir */
+  #audio-hud { position: absolute; top: 58px; right: 10px; z-index: 30; flex-direction: column; display: none; }
+  #game-container.playing #audio-hud { display: flex; }
+  #audio-hud .aq-btn { width: 40px; height: 40px; }
+  #audio-hud .aq-btn .aq-ico { font-size: 17px; }
+  /* En el menú: fila centrada */
+  #audio-menu { justify-content: center; margin: 2px 0 4px; }
+  #audio-menu .aq-btn { width: 74px; height: 48px; }
+  #audio-menu .aq-btn .aq-ico { font-size: 20px; }
+  #audio-menu .aq-btn .aq-lbl { font-size: 9px; }
+  @media (max-width: 600px) { #audio-hud { top: 54px; } #audio-hud .aq-btn { width: 36px; height: 36px; } #audio-hud .aq-btn .aq-ico { font-size: 15px; } #audio-hud .aq-btn .aq-lbl { display: none; } }
+
   @media (max-width: 600px) {
     .ball .ball-emoji { font-size: 34px; }
     .ball .ball-value { font-size: 13px; min-width: 28px; padding: 1px 6px; }
@@ -380,6 +404,11 @@
   </div>
 
   <button class="btn-exit-game hidden" id="btn-exit-game" title="Salir al menú">🏠</button>
+  <div class="audio-quick" id="audio-hud">
+      <button class="aq-btn" data-audio="music" title="Música de fondo" aria-label="Música de fondo"><span class="aq-ico">🎵</span><span class="aq-lbl">FONDO</span></button>
+      <button class="aq-btn" data-audio="voice" title="Narración" aria-label="Narración"><span class="aq-ico">🎙️</span><span class="aq-lbl">VOZ</span></button>
+      <button class="aq-btn" data-audio="celebration" title="Celebración de goles" aria-label="Celebración de goles"><span class="aq-ico">🎉</span><span class="aq-lbl">GOL</span></button>
+  </div>
 
   <div class="lives" id="ui-lives-icons"></div>
   <div id="mat-corner" class="mat-wrap" data-mat="0"></div>
@@ -411,6 +440,11 @@
     <div class="brand-tag">Manos · Arco · Tiro</div>
     <div class="subtitle">Ataja con el arquero o patea para hacer goles</div>
     <div class="subtitle" style="font-size:13px;opacity:0.7;">🖱️ Mouse · ⌨️ Flechas/WASD · 📱 Touch</div>
+    <div class="audio-quick" id="audio-menu">
+      <button class="aq-btn" data-audio="music" title="Música de fondo" aria-label="Música de fondo"><span class="aq-ico">🎵</span><span class="aq-lbl">FONDO</span></button>
+      <button class="aq-btn" data-audio="voice" title="Narración" aria-label="Narración"><span class="aq-ico">🎙️</span><span class="aq-lbl">VOZ</span></button>
+      <button class="aq-btn" data-audio="celebration" title="Celebración de goles" aria-label="Celebración de goles"><span class="aq-ico">🎉</span><span class="aq-lbl">GOL</span></button>
+    </div>
     <button class="btn" id="btn-tournament">🏆 MODO TORNEO</button>
     <button class="btn secondary" id="btn-levels">🎯 ELEGIR NIVEL</button>
     <button class="btn secondary" id="btn-career">🥾 MI CARRERA</button>
@@ -483,7 +517,7 @@
 
     <div class="settings-panel" id="tab-audio">
       <div class="settings-section">
-        <div class="settings-label">🔊 Sonido (beeps)</div>
+        <div class="settings-label">🔊 Efectos (beeps)</div>
         <button class="btn" id="btn-sound-toggle" style="padding:6px 20px;font-size:13px;">ON</button>
       </div>
       <div class="settings-section" style="margin-top:8px;">
@@ -497,6 +531,10 @@
           <div class="voice-status" id="voice-status"></div>
         </div>
         <button class="btn secondary" id="btn-voice-test" style="margin-top:8px;padding:6px 20px;font-size:12px;">🔊 Probar voz</button>
+      </div>
+      <div class="settings-section" style="margin-top:8px;">
+        <div class="settings-label">🎉 Celebración de goles</div>
+        <button class="btn" id="btn-celebration-toggle" style="padding:6px 20px;font-size:13px;">ON</button>
       </div>
       <div class="settings-section" style="margin-top:12px;">
         <div class="settings-label">🎵 Música de fondo</div>
@@ -682,7 +720,8 @@ const state = {
   keys: { left: false, right: false, up: false, down: false },
   pointerActive: false, pointerX: 0, pointerY: 0,
   soundOn: true,
-  voiceEnabled: true,
+  voiceEnabled: false,
+  celebrationEnabled: true,
   voices: [], selectedVoiceName: null, hasSpokenOnce: false,
   keeperAvatar: '🧤', shooterAvatar: '⚽', isTournament: false,
   audioCtx: null, active: false, roundLocked: false,
@@ -740,7 +779,7 @@ const Progress = (function() {
     fractionSaves: 0, negativeSaves: 0, logSaves: 0, sqrtSaves: 0,
     hasPerfectLevel: false, hasFlawlessLevel: false, tournamentWins: 0,
     unlockedBadges: [],
-    preferences: { musicEnabled: true, musicTrack: 0, velocityStage: 1, sliderPos: 5, attemptsPerLife: 1, playerName: '' },
+    preferences: { musicEnabled: true, voiceEnabled: false, celebrationEnabled: true, musicTrack: 0, velocityStage: 1, sliderPos: 5, attemptsPerLife: 1, playerName: '' },
   };
   let data = JSON.parse(JSON.stringify(defaults));
   function load() {
@@ -800,6 +839,153 @@ const Progress = (function() {
   load();
   return { recordSession, getData, getRankData, getNextRankData, getBadges, savePreference };
 })();
+
+/* ============================================================
+   GOAL CELEBRATION (Sonidos procedurales de multitud y silbatos)
+   ============================================================ */
+const GoalCelebration = (function () {
+  'use strict';
+
+  let ctx = null;
+  let comp = null;
+  let noiseBuffer = null;
+  let lastPlay = 0;
+  let muted = false;
+
+  const SEMITONES = { C:0, D:2, E:4, F:5, G:7, A:9, B:11 };
+  function freq(name) {
+    const m = /^([A-G])([#b]?)(-?\d)$/.exec(name);
+    const midi = (parseInt(m[3], 10) + 1) * 12 + SEMITONES[m[1]] +
+                 (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0);
+    return 440 * Math.pow(2, (midi - 69) / 12);
+  }
+
+  function init() {
+    if (ctx) return;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    ctx = new AC();
+    comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -14;
+    comp.knee.value      = 20;
+    comp.ratio.value     = 4;
+    comp.attack.value    = 0.003;
+    comp.release.value   = 0.2;
+    comp.connect(ctx.destination);
+    const len = Math.floor(ctx.sampleRate * 3);
+    noiseBuffer = ctx.createBuffer(1, len, ctx.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+
+    // Desbloqueo de audio en el primer clic
+    document.addEventListener('click', function unlock() {
+      if (ctx && ctx.state === 'suspended') ctx.resume();
+    }, { once: true });
+  }
+
+  function play() {
+    try {
+      init();
+      if (!ctx || muted) return;
+      const now = ctx.currentTime;
+      if (now - lastPlay < 1.2) return;
+      lastPlay = now;
+      if (ctx.state === 'suspended') ctx.resume();
+      const t0 = ctx.currentTime + 0.08;
+      const master = ctx.createGain();
+      master.gain.value = 0.85;
+      master.connect(comp);
+
+      // Multitud
+      const crowdGain = ctx.createGain();
+      crowdGain.gain.value = 1;
+      crowdGain.connect(master);
+      const lfo = ctx.createOscillator();
+      lfo.type = 'sine';
+      lfo.frequency.value = 1.8;
+      const lfoG = ctx.createGain();
+      lfoG.gain.value = 0.2;
+      lfo.connect(lfoG); lfoG.connect(crowdGain.gain);
+      lfo.start(t0); lfo.stop(t0 + 3.4);
+
+      function crowdLayer(type, fStart, fMid, vol) {
+        const src = ctx.createBufferSource();
+        src.buffer = noiseBuffer; src.loop = true;
+        const flt = ctx.createBiquadFilter();
+        flt.type = type;
+        flt.frequency.setValueAtTime(fStart, t0);
+        flt.frequency.linearRampToValueAtTime(fMid, t0 + 0.6);
+        flt.Q.value = type === 'bandpass' ? 1 : 0.7;
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(vol, t0 + 0.35);
+        g.gain.setValueAtTime(vol, t0 + 2.2);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 3.2);
+        src.connect(flt); flt.connect(g); g.connect(crowdGain);
+        src.start(t0); src.stop(t0 + 3.3);
+      }
+      crowdLayer('lowpass',  280,  550, 0.38);
+      crowdLayer('bandpass', 800, 1200, 0.28);
+      crowdLayer('highpass', 3000, 3000, 0.09);
+
+      // Timbal
+      const timp = ctx.createOscillator();
+      timp.type = 'sine';
+      timp.frequency.setValueAtTime(180, t0);
+      timp.frequency.exponentialRampToValueAtTime(60, t0 + 0.3);
+      const tg = ctx.createGain();
+      tg.gain.setValueAtTime(0.0001, t0);
+      tg.gain.exponentialRampToValueAtTime(0.26, t0 + 0.01);
+      tg.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.5);
+      timp.connect(tg); tg.connect(master);
+      timp.start(t0); timp.stop(t0 + 0.6);
+
+      // Fanfarria
+      const notes = [
+        ['C5', 0.00, 0.12], ['E5', 0.12, 0.12], ['G5', 0.24, 0.12],
+        ['C6', 0.36, 0.18], ['G5', 0.60, 0.12], ['C6', 0.72, 0.55]
+      ];
+      notes.forEach(function (n) {
+        const note = n[0], off = n[1], len = n[2];
+        const osc = ctx.createOscillator();
+        osc.type = 'square';
+        osc.frequency.value = freq(note);
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t0 + off);
+        g.gain.exponentialRampToValueAtTime(0.11, t0 + off + 0.01);
+        g.gain.setValueAtTime(0.11, t0 + off + len * 0.7);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + off + len + 0.05);
+        osc.connect(g); g.connect(master);
+        osc.start(t0 + off); osc.stop(t0 + off + len + 0.1);
+      });
+
+      // Silbatos
+      [0.5, 1.2, 1.9, 2.5].forEach(function (off, i) {
+        const osc = ctx.createOscillator();
+        osc.type = 'sine';
+        const base = 2400 + (i % 2) * 400;
+        osc.frequency.setValueAtTime(base, t0 + off);
+        osc.frequency.exponentialRampToValueAtTime(base * 1.3, t0 + off + 0.08);
+        osc.frequency.exponentialRampToValueAtTime(base * 0.9, t0 + off + 0.2);
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t0 + off);
+        g.gain.exponentialRampToValueAtTime(0.035, t0 + off + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + off + 0.25);
+        osc.connect(g); g.connect(master);
+        osc.start(t0 + off); osc.stop(t0 + off + 0.3);
+      });
+
+      setTimeout(function () {
+        try { master.disconnect(); } catch (e) {}
+      }, 4500);
+    } catch (e) {}
+  }
+
+  function setMuted(m) { muted = !!m; }
+
+  return { play: play, setMuted: setMuted, isMuted: function () { return muted; } };
+})();
+
 
 const GameMusic = (function() {
   const BPM = 120;
@@ -1055,7 +1241,7 @@ function soundWhistle() { playTone(1200,0.12,'sine',0.1); setTimeout(()=>playTon
 function soundClick() { playTone(600,0.06,'square',0.08); }
 function soundLevelUp() { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f,0.2,'sine',0.12),i*100)); }
 function soundCrowd() {
-  if (!state.soundOn || !state.audioCtx) return;
+  if (!state.celebrationEnabled || !state.soundOn || !state.audioCtx) return;
   try {
     const sz = state.audioCtx.sampleRate * 0.5;
     const buf = state.audioCtx.createBuffer(1, sz, state.audioCtx.sampleRate);
@@ -1714,7 +1900,44 @@ function showCorrectAnswerBig(value) {
   container.appendChild(div);
   setTimeout(()=>div.remove(), 1900);
 }
-function syncSoundToggle() { if (!btnSoundToggle) return; btnSoundToggle.textContent = state.soundOn ? 'ON' : 'OFF'; btnSoundToggle.classList.toggle('toggle-off', !state.soundOn); }
+function syncSoundToggle() {
+  if (!btnSoundToggle) return;
+  btnSoundToggle.textContent = state.soundOn ? 'ON' : 'OFF';
+  btnSoundToggle.classList.toggle('toggle-off', !state.soundOn);
+}
+function syncCelebrationToggle() {
+  const b = document.getElementById('btn-celebration-toggle');
+  if (b) { b.textContent = state.celebrationEnabled ? 'ON' : 'OFF'; b.classList.toggle('toggle-off', !state.celebrationEnabled); }
+  if (typeof GoalCelebration !== 'undefined') GoalCelebration.setMuted(!state.celebrationEnabled);
+}
+const AUDIO_LABELS = { music: 'Música de fondo', voice: 'Narración', celebration: 'Celebración de goles' };
+function audioFlag(k) { return k === 'music' ? state.musicEnabled : k === 'voice' ? state.voiceEnabled : state.celebrationEnabled; }
+function syncAudioButtons() {
+  document.querySelectorAll('.aq-btn[data-audio]').forEach(b => {
+    const on = audioFlag(b.dataset.audio);
+    b.classList.toggle('off', !on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    b.title = AUDIO_LABELS[b.dataset.audio] + ': ' + (on ? 'activada' : 'desactivada');
+  });
+  syncMusicToggle(); syncVoiceToggle(); syncCelebrationToggle();
+}
+function setAudio(k, on, announce) {
+  on = !!on;
+  if (k === 'music') {
+    state.musicEnabled = on; Progress.savePreference('musicEnabled', on);
+    if (on) { initAudio(); GameMusic.start(); GameMusic.setMuted(false); } else { GameMusic.setMuted(true); }
+  } else if (k === 'voice') {
+    state.voiceEnabled = on; Progress.savePreference('voiceEnabled', on);
+    if (on) speakDirect('Narración activada', { rate: 1.05, pitch: 1.15 });
+    else { cancelSpeech(); updateVoiceStatus('Narración desactivada'); }
+  } else {
+    state.celebrationEnabled = on; Progress.savePreference('celebrationEnabled', on);
+    GoalCelebration.setMuted(!on);
+    if (on) { initAudio(); GoalCelebration.play(); }
+  }
+  syncAudioButtons();
+  if (announce) setTicker((on ? '🔊 ' : '🔇 ') + AUDIO_LABELS[k] + ': ' + (on ? 'ON' : 'OFF'));
+}
 function syncVoiceToggle() { if (!btnVoiceToggle) return; btnVoiceToggle.textContent = state.voiceEnabled ? 'ON' : 'OFF'; btnVoiceToggle.classList.toggle('toggle-off', !state.voiceEnabled); }
 function syncMusicToggle() { if (!btnMusicToggle) return; btnMusicToggle.textContent = state.musicEnabled ? 'ON' : 'OFF'; btnMusicToggle.classList.toggle('toggle-off', !state.musicEnabled); }
 function updateCareerButton() { if (!btnCareer) return; const r = Progress.getRankData(); btnCareer.textContent = `${r.emoji} MI CARRERA`; }
@@ -2014,6 +2237,7 @@ function resolveShooterRound(isGoal, targetHit) {
     registerSuccess();
     soundSave(); soundCrowd();
     showFeedback('¡GOOOL! ⚽', '#4caf50');
+    GoalCelebration.play();
     setTicker(`¡Golazo! Racha: ${state.streak} 🔥`);
     narrateCategory('shooterGoal', { rate: 1.2, pitch: 1.3 });
     if (state.currentEquation) {
@@ -2087,7 +2311,6 @@ function checkCollisions() {
 function handleCollision(ball) {
   if (ball.resolved) return;
   if (ball.isCorrect) {
-    // ✅ Atajada exitosa
     ball.resolved = true;
     ball.el.style.transition = 'all 0.3s';
     ball.el.style.transform = 'scale(0.2)';
@@ -2105,6 +2328,7 @@ function handleCollision(ball) {
     }
     soundSave(); soundCrowd();
     showFeedback('¡ATAJADA! 🧤', '#4caf50');
+    GoalCelebration.play();
     setTicker(`¡Atajada! Racha: ${state.streak} 🔥`);
     updateUI(); narrateSave();
     uiKeeper.style.transform = 'translate(-50%, -50%) scale(1.4)';
@@ -2113,7 +2337,6 @@ function handleCollision(ball) {
     if (state.saves >= LEVELS[state.levelIndex].target) { state.active = false; setTimeout(()=>levelComplete(), 700); return; }
     setTimeout(()=>{ if (state.mode === 'playing') { state.lastTime = 0; spawnBalls(); } }, 900);
   } else {
-    // ❌ Fallo: atajó el balón incorrecto → termina la ronda
     ball.resolved = true;
     state.streak = 0;
     soundGoal();
@@ -2127,7 +2350,6 @@ function handleCollision(ball) {
       });
     }
     narrateCategory('wrongBall', { rate: 1.1, pitch: 1.1 });
-    // Bloquear todos los balones restantes (no dejar que el correcto caiga)
     state.roundLocked = true;
     state.balls.forEach(b => {
       if (b.resolved) return;
@@ -2164,11 +2386,11 @@ function gameLoop(timestamp) {
       ball.y += ball.speed * dt;
       ball.el.style.top = ball.y + 'px';
       if (ball.isCorrect && ball.y > goalY && !ball.resolved) {
-        // ⚽ El balón correcto cruza la línea → GOL EN CONTRA (fallo del jugador)
         ball.resolved = true;
         state.streak = 0;
         soundGoal();
         showFeedback('¡GOL! ⚽', '#e53935');
+        GoalCelebration.play();
         setTicker(`¡Gol en contra! Era ${numText(state.correctAnswer)}.`);
         showCorrectAnswerBig(state.correctAnswer);
         if (state.currentEquation) {
@@ -2179,7 +2401,6 @@ function gameLoop(timestamp) {
           });
         }
         narrateCategory('goal', { rate: 1.2, pitch: 1.3 });
-        // Bloquear el resto de balones
         state.roundLocked = true;
         state.balls.forEach(b => {
           if (b.resolved) return;
@@ -2961,18 +3182,11 @@ onTap(document.getElementById('btn-back-levels'), () => { soundClick(); showOver
 onTap(document.getElementById('btn-back-settings'), () => { soundClick(); showOverlay('overlay-menu'); });
 onTap(document.getElementById('btn-back-career'), () => { soundClick(); showOverlay('overlay-menu'); });
 onTap(btnSoundToggle, function() { state.soundOn = !state.soundOn; syncSoundToggle(); soundClick(); });
-onTap(btnVoiceToggle, function() {
-  state.voiceEnabled = !state.voiceEnabled;
-  syncVoiceToggle(); soundClick();
-  if (state.voiceEnabled) speakDirect('Narración activada', { rate: 1.05, pitch: 1.15 });
-  else { cancelSpeech(); updateVoiceStatus('Narración desactivada'); }
-});
-onTap(btnMusicToggle, function() {
-  state.musicEnabled = !state.musicEnabled;
-  syncMusicToggle(); soundClick();
-  Progress.savePreference('musicEnabled', state.musicEnabled);
-  if (state.musicEnabled) { GameMusic.start(); GameMusic.setMuted(false); }
-  else { GameMusic.setMuted(true); }
+onTap(btnVoiceToggle, function() { soundClick(); setAudio('voice', !state.voiceEnabled, true); });
+onTap(btnMusicToggle, function() { soundClick(); setAudio('music', !state.musicEnabled, true); });
+onTap(document.getElementById('btn-celebration-toggle'), function() { soundClick(); setAudio('celebration', !state.celebrationEnabled, true); });
+document.querySelectorAll('.aq-btn[data-audio]').forEach(b => {
+  onTap(b, () => { soundClick(); const k = b.dataset.audio; setAudio(k, !audioFlag(k), true); });
 });
 onTap(document.getElementById('btn-voice-test'), () => { soundClick(); speakDirect('¡Se prepara... y patea! ¡Gooool!', { rate: 1.15, pitch: 1.3, force: true }); });
 onTap(document.getElementById('btn-retry'), () => { soundClick(); state.isTournament=false; startLevel(state.levelIndex, state.playMode); });
@@ -3028,8 +3242,6 @@ if (attemptsSliderEl) {
     document.getElementById('attempts-value').textContent = state.attemptsPerLife;
     Progress.savePreference('attemptsPerLife', state.attemptsPerLife);
     if (state.mode === 'playing') {
-      // Si el valor cambió a uno menor o igual al acumulador, respetar el estado actual
-      // (no forzamos la resta de vida retroactivamente)
       updateUI();
     }
   });
@@ -3042,7 +3254,7 @@ updateUI();
 setTicker('Bienvenidos a MAT. ¡Elige un modo!');
 buildLevelGrid();
 uiKeeperEmoji.textContent = state.keeperAvatar;
-syncSoundToggle(); syncVoiceToggle(); syncMusicToggle();
+syncSoundToggle(); syncAudioButtons();
 updateCareerButton();
 initVoices();
 setupSettingsTabs();
@@ -3050,6 +3262,8 @@ setupSettingsTabs();
 (function restorePrefs() {
   const prefs = Progress.getData().preferences || {};
   if (typeof prefs.musicEnabled === 'boolean') state.musicEnabled = prefs.musicEnabled;
+  if (typeof prefs.voiceEnabled === 'boolean') state.voiceEnabled = prefs.voiceEnabled;
+  if (typeof prefs.celebrationEnabled === 'boolean') state.celebrationEnabled = prefs.celebrationEnabled;
   if (typeof prefs.musicTrack === 'number') state.musicTrackIndex = prefs.musicTrack;
   if (typeof prefs.velocityStage === 'number') state.velocityStage = prefs.velocityStage;
   if (typeof prefs.sliderPos === 'number') state.sliderPos = prefs.sliderPos;
@@ -3061,7 +3275,7 @@ setupSettingsTabs();
     attSlider.value = state.attemptsPerLife;
     document.getElementById('attempts-value').textContent = state.attemptsPerLife;
   }
-  syncMusicToggle();
+  syncAudioButtons();
 })();
 
 window.addEventListener('resize', () => {
