@@ -287,11 +287,9 @@
     0%,100% { transform: scale(1); }
     50% { transform: scale(1.08); }
   }
-  /* Etiqueta PASE oculta por defecto, visible al apuntar */
   .teammate-player .tm-label { display: none; }
   .teammate-player.aimed .tm-label { display: block; }
 
-  /* Línea cian punteada del compañero */
   .tm-line { position: absolute; inset: 0; pointer-events: none; z-index: 14; display: none; }
   .tm-line.active { display: block; }
   .tm-line svg { width: 100%; height: 100%; overflow: visible; }
@@ -796,7 +794,6 @@ const state = {
   gamePaused: false, narrationTimer: null, pendingSpeakTimer: null,
   mistakes: [], sessionStats: { fractionSaves: 0, negativeSaves: 0, logSaves: 0, sqrtSaves: 0 },
   shooterTargets: [], isAiming: false, aimX: 0, aimY: 0, playerBallX: 0, playerBallY: 0,
-  // WorldCup shooter-specific
   wallElements: [], teammate: null, teammates: [], hoveredTeammate: null, passPhase: 'normal', aimedAtTeammate: false,
   incomingChallenge: null, pendingIncomingChallenge: null, shareResultReturnTo: 'overlay-menu',
 };
@@ -1964,7 +1961,8 @@ function spawnBalls() {
     const startY = -90 - i * 90 - Math.random()*40;
     el.style.left = startX + 'px'; el.style.top = startY + 'px';
     container.appendChild(el);
-    const baseSpeed = 55 * level.speed * state.globalSpeedMultiplier;
+    const wcFactor = state.worldcupEnabled ? 0.5 : 1;
+    const baseSpeed = 55 * level.speed * state.globalSpeedMultiplier * wcFactor;
     const ball = {
       el, value: val, x: startX, y: startY,
       speed: baseSpeed * (0.85 + Math.random()*0.3),
@@ -1973,7 +1971,8 @@ function spawnBalls() {
       vx: 0,
     };
     if (state.worldcupEnabled) {
-      ball.vx = (Math.random() < 0.5 ? -1 : 1) * (25 + Math.random() * 30);
+      const rawVx = (25 + Math.random() * 30) * 0.5 * level.speed * state.globalSpeedMultiplier;
+      ball.vx = (Math.random() < 0.5 ? -1 : 1) * rawVx;
     }
     state.balls.push(ball);
   });
@@ -2032,7 +2031,6 @@ function layoutShooterTargets() {
 function setupWorldCupWall() {
   const g = shooterGeom();
 
-  // --- Barrera: 4 jugadores hombro con hombro, un solo contenedor ---
   const wallEl = document.createElement('div');
   wallEl.className = 'wall-player';
   wallEl.innerHTML = '<span>🧍</span><span>🧍</span><span>🧍</span><span>🧍</span>';
@@ -2041,7 +2039,6 @@ function setupWorldCupWall() {
   shooterTargetsEl.appendChild(wallEl);
   state.wallElements.push(wallEl);
 
-  // --- Compañeros: uno por cada balón del arco ---
   const targets = state.shooterTargets;
   const n = targets.length;
   const correctTarget = targets.find(t => t.isCorrect);
@@ -2143,7 +2140,6 @@ function spawnShooterTargets() {
   aiKeeperEl.className = 'ai-keeper active';
   aiKeeperEl.style.left = ''; aiKeeperEl.style.top = ''; aiKeeperEl.style.transform = '';
 
-  // WorldCup: SIEMPRE barrera + compañeros (el pase es obligatorio)
   if (state.worldcupEnabled) {
     setupWorldCupWall();
   } else {
@@ -2193,7 +2189,6 @@ function updateAim(x, y) {
   const sx = state.playerBallX, sy = state.playerBallY;
   const dx = x - sx, dy = y - sy, len = Math.hypot(dx, dy);
 
-  // Fase de PASE (WorldCup): se elige compañero por proximidad
   if (state.passPhase === 'pass' && state.teammates.length) {
     const tm = findTeammateNear(x, y);
     clearAimed();
@@ -2213,7 +2208,6 @@ function updateAim(x, y) {
     return;
   }
 
-  // Modo SHOOT directo
   clearAimed();
   if (len < 18 || dy > -8) { aimLineEl.classList.remove('active'); return; }
   const dirX = dx / len, dirY = dy / len;
@@ -2232,7 +2226,6 @@ function shootBall() {
   state.isAiming = false;
   aimLineEl.classList.remove('active');
 
-  // PASO 1: Fase de pase al compañero (obligatorio en WorldCup)
   if (state.passPhase === 'pass') {
     const tm = state.hoveredTeammate;
     if (!tm) {
@@ -2244,7 +2237,6 @@ function shootBall() {
     return;
   }
 
-  // PASO 2: Fase de disparo normal (sin WorldCup)
   clearAimed();
   const rect = container.getBoundingClientRect();
   const H = rect.height;
