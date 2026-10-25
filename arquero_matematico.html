@@ -1,0 +1,2766 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>⚽ Arquero Matemático ⚽</title>
+<style>
+  :root {
+    --verde-campo: #2e7d32;
+    --marcador-bg: #1a1a2e;
+    --amarillo: #ffd600;
+    --rojo: #e53935;
+    --sombra: 0 4px 12px rgba(0,0,0,0.4);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { overflow: hidden; touch-action: manipulation; overscroll-behavior: none; }
+  body {
+    font-family: 'Segoe UI', 'Arial Black', sans-serif;
+    background: linear-gradient(180deg, #0d1b2a 0%, #1b263b 50%, #2e7d32 100%);
+    height: 100vh; height: 100dvh;
+    display: flex; justify-content: center; align-items: center;
+    user-select: none; -webkit-user-select: none;
+  }
+  #game-container { position: relative; width: 100vw; height: 100vh; height: 100dvh; max-width: 900px; max-height: 700px; background: var(--verde-campo); border-radius: 12px; overflow: hidden; box-shadow: var(--sombra); touch-action: manipulation; }
+  
+  /* Cursor del modo arquero */
+  #game-container.playing.keeper-mode { cursor: none; touch-action: none; }
+  /* Cursor del modo pateador */
+  #game-container.playing.shooter-mode { cursor: crosshair; touch-action: none; }
+
+  .pitch { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, #2e7d32 0px, #2e7d32 40px, #388e3c 40px, #388e3c 80px); pointer-events: none; }
+  .pitch::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 60%; height: 45%; border: 3px solid rgba(255,255,255,0.6); border-top: none; border-radius: 0 0 50% 50% / 0 0 30% 30%; }
+  .pitch::after { content: ''; position: absolute; top: 42%; left: 50%; transform: translate(-50%, -50%); width: 18%; height: 12%; border: 3px solid rgba(255,255,255,0.6); border-radius: 50%; }
+  
+  .penalty-area { position: absolute; bottom: 4%; left: 50%; transform: translateX(-50%); width: 82%; height: 42%; border: 3px solid rgba(255,255,255,0.55); border-bottom: none; border-radius: 6px 6px 0 0; z-index: 4; pointer-events: none; }
+  .penalty-area::before { content: ''; position: absolute; top: -12%; left: 50%; transform: translateX(-50%); width: 40%; height: 24%; border: 3px solid rgba(255,255,255,0.55); border-bottom: none; border-radius: 50% 50% 0 0 / 100% 100% 0 0; }
+  
+  .goal { position: absolute; bottom: 8%; left: 50%; transform: translateX(-50%); width: 50%; height: 22%; border: 5px solid #fff; border-bottom: none; border-radius: 8px 8px 0 0; z-index: 5; opacity: 0.6; pointer-events: none; }
+  .goal-line { position: absolute; bottom: 8%; left: 0; right: 0; height: 3px; background: rgba(255,255,255,0.4); z-index: 6; pointer-events: none; }
+
+  /* Inversión de cancha para modo pateador */
+  #game-container.shooter-mode .goal { top: 8%; bottom: auto; border-bottom: 5px solid #fff; border-top: none; border-radius: 0 0 8px 8px; }
+  #game-container.shooter-mode .goal-line { top: 8%; bottom: auto; }
+  #game-container.shooter-mode .penalty-area { top: 4%; bottom: auto; border-top: none; border-bottom: 3px solid rgba(255,255,255,0.55); border-radius: 0 0 6px 6px; }
+  #game-container.shooter-mode .penalty-area::before { bottom: -12%; top: auto; border-top: none; border-bottom: 3px solid rgba(255,255,255,0.55); border-radius: 0 0 50% 50% / 0 0 100% 100%; }
+
+  .scoreboard { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 20; flex-wrap: wrap; justify-content: center; max-width: 95%; pointer-events: none; }
+  .score-card { background: var(--marcador-bg); color: #fff; padding: 5px 10px; border-radius: 8px; font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 4px; box-shadow: var(--sombra); border: 2px solid #333; }
+  .score-card .label { font-size: 9px; opacity: 0.7; text-transform: uppercase; }
+  .score-card .value { font-size: 15px; color: var(--amarillo); }
+  
+  .btn-exit-game { position: absolute; top: 10px; right: 10px; z-index: 30; background: rgba(229, 57, 53, 0.9); color: #fff; border: 2px solid #fff; border-radius: 10px; width: 42px; height: 42px; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: var(--sombra); padding: 0; line-height: 1; touch-action: manipulation; }
+  .btn-exit-game:active { transform: scale(0.95); }
+  .btn-exit-game.hidden { display: none !important; }
+  
+  .equation-box { position: absolute; top: 62px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.75); color: #fff; padding: 12px 28px; border-radius: 16px; font-size: clamp(20px, 5vw, 40px); font-weight: 900; letter-spacing: 1px; z-index: 15; box-shadow: var(--sombra), inset 0 0 20px rgba(255,214,0,0.15); border: 3px solid var(--amarillo); text-shadow: 0 0 20px rgba(255,214,0,0.6); white-space: nowrap; pointer-events: none; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 60px; }
+  
+  .frac { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; vertical-align: middle; line-height: 1; margin: 0 3px; }
+  .frac .num { border-bottom: 2px solid currentColor; padding: 0 4px; min-width: 16px; text-align: center; }
+  .frac .den { padding: 0 4px; min-width: 16px; text-align: center; }
+  .equation-box .frac { font-size: 0.85em; }
+  .equation-box .frac .num { border-bottom-width: 3px; }
+  
+  .ball { position: absolute; z-index: 10; display: flex; flex-direction: column; align-items: center; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); pointer-events: none; }
+  .ball .ball-emoji { font-size: 42px; line-height: 1; }
+  .ball .ball-value { background: var(--marcador-bg); color: #fff; font-size: 15px; font-weight: bold; padding: 2px 8px; border-radius: 10px; margin-top: -6px; border: 2px solid var(--amarillo); min-width: 34px; text-align: center; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 1px; min-height: 26px; }
+  .ball .ball-value.negative { border-color: #ff7043; color: #ffab91; }
+  .ball .ball-value.fraction { border-color: #64b5f6; color: #90caf9; }
+  .ball .ball-value .frac { font-size: 0.95em; }
+  .ball .ball-value .frac .num { border-bottom-width: 2px; padding: 0 3px; min-width: 12px; }
+  .ball .ball-value .frac .den { padding: 0 3px; min-width: 12px; }
+  
+  .goalkeeper { position: absolute; font-size: 50px; z-index: 12; filter: drop-shadow(0 0 10px rgba(255,255,255,0.6)); pointer-events: none; will-change: left, top; display: flex; align-items: center; justify-content: center; width: 60px; height: 60px; }
+  .goalkeeper .keeper-halo { position: absolute; inset: -8px; border-radius: 50%; border: 2px dashed rgba(255,214,0,0.5); animation: haloSpin 3s linear infinite; }
+  @keyframes haloSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  
+  .cursor-dot { position: absolute; width: 16px; height: 16px; border-radius: 50%; background: rgba(255,214,0,0.7); border: 2px solid #fff; transform: translate(-50%, -50%); pointer-events: none; z-index: 11; display: none; box-shadow: 0 0 10px rgba(255,214,0,0.8); }
+  .lives { position: absolute; top: 10px; left: 10px; display: flex; gap: 3px; font-size: 20px; z-index: 20; pointer-events: none; }
+  
+  .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.88); display: flex; flex-direction: column; justify-content: flex-start; align-items: center; z-index: 100; padding: 20px; text-align: center; color: #fff; gap: 10px; overflow-y: auto; cursor: default; touch-action: pan-y; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+  .overlay.hidden { display: none; }
+  .overlay > *:first-child { margin-top: auto; }
+  .overlay > *:last-child { margin-bottom: auto; }
+  
+  .title { font-size: clamp(26px, 6vw, 44px); font-weight: 900; color: var(--amarillo); text-shadow: 0 0 20px rgba(255,214,0,0.5); margin-bottom: 4px; }
+  .subtitle { font-size: 15px; opacity: 0.85; margin-bottom: 8px; }
+  .btn { background: var(--amarillo); color: #1a1a2e; border: none; padding: 11px 26px; border-radius: 10px; font-size: 15px; font-weight: 900; cursor: pointer; transition: transform 0.15s, background 0.15s; box-shadow: var(--sombra); text-transform: uppercase; letter-spacing: 1px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; position: relative; z-index: 1; }
+  .btn:active { transform: scale(0.97); }
+  .btn.secondary { background: #455a64; color: #fff; }
+  .btn.toggle-off { background: #455a64 !important; color: #fff !important; }
+  
+  .level-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; width: 100%; max-width: 560px; margin: 8px 0; }
+  .level-btn { background: #263238; color: #fff; border: 2px solid #546e7a; padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: all 0.15s; display: flex; flex-direction: column; gap: 2px; font-size: 12px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .level-btn:active { transform: scale(0.97); }
+  .level-btn .lv-num { font-size: 16px; color: var(--amarillo); }
+  .level-btn .lv-desc { font-size: 10px; opacity: 0.8; }
+  .level-btn .lv-rarity { font-size: 9px; color: #90caf9; margin-top: 2px; font-style: italic; }
+  
+  .settings-tabs { display: flex; gap: 4px; padding: 4px; background: rgba(0,0,0,0.5); border: 2px solid #333; border-radius: 12px; width: 100%; max-width: 560px; margin: 4px 0 8px; touch-action: manipulation; }
+  .settings-tab { flex: 1; background: transparent; color: #fff; border: none; padding: 9px 6px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; transition: all 0.15s; touch-action: manipulation; -webkit-tap-highlight-color: transparent; white-space: nowrap; }
+  .settings-tab.active { background: var(--amarillo); color: #1a1a2e; box-shadow: 0 2px 8px rgba(255,214,0,0.4); }
+  .settings-panel { display: none; width: 100%; max-width: 560px; flex-direction: column; align-items: center; gap: 8px; }
+  .settings-panel.active { display: flex; }
+  .settings-section { width: 100%; max-width: 560px; margin: 4px 0; }
+  .settings-label { font-size: 13px; font-weight: bold; color: var(--amarillo); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+  
+  .avatar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(48px, 1fr)); gap: 6px; justify-content: center; }
+  .avatar-option { font-size: 28px; padding: 6px 4px; border-radius: 10px; cursor: pointer; border: 2px solid transparent; transition: all 0.15s; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .avatar-option.selected { border-color: var(--amarillo); background: rgba(255,214,0,0.25); transform: scale(1.08); }
+  
+  .speed-slider-wrap { display: flex; align-items: center; gap: 12px; width: 100%; max-width: 400px; justify-content: center; }
+  input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; border-radius: 4px; background: linear-gradient(90deg, #4caf50 0%, #ffd600 50%, #e53935 100%); outline: none; cursor: pointer; touch-action: manipulation; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 3px solid var(--amarillo); cursor: pointer; box-shadow: 0 0 10px rgba(255,214,0,0.6); }
+  input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 3px solid var(--amarillo); cursor: pointer; }
+  .speed-value { font-size: 16px; font-weight: bold; color: var(--amarillo); min-width: 55px; text-align: center; background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 8px; }
+  .stage-selector { display: flex; gap: 6px; width: 100%; max-width: 400px; margin-bottom: 8px; justify-content: center; }
+  .stage-btn { flex: 1; background: #263238; color: #fff; border: 2px solid #546e7a; padding: 8px 6px; border-radius: 10px; font-size: 11px; font-weight: 900; cursor: pointer; transition: all 0.15s; text-transform: uppercase; touch-action: manipulation; }
+  .stage-btn.active { background: var(--amarillo); color: #1a1a2e; border-color: var(--amarillo); }
+  .stage-range-hint { font-size: 10px; opacity: 0.7; color: #90caf9; text-align: center; margin-top: 4px; }
+  
+  .toggle-group { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+  .toggle-btn { background: #455a64; color: #fff; border: 2px solid #546e7a; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.15s; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .toggle-btn.active { background: var(--amarillo); color: #1a1a2e; border-color: var(--amarillo); }
+  .toggle-btn:active { transform: scale(0.96); }
+  
+  .voice-select { background: #263238; color: #fff; border: 2px solid #546e7a; padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; max-width: 320px; width: 100%; cursor: pointer; outline: none; touch-action: manipulation; }
+  .voice-hint { font-size: 11px; opacity: 0.7; margin-top: 6px; color: #90caf9; }
+  .voice-status { font-size: 11px; color: #4caf50; margin-top: 4px; min-height: 14px; font-style: italic; }
+  
+  .music-tracks { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 6px; width: 100%; max-width: 500px; margin-top: 8px; }
+  .music-track-card { background: #263238; border: 2px solid #546e7a; border-radius: 10px; padding: 8px 4px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; transition: all 0.15s; color: #fff; text-align: center; touch-action: manipulation; }
+  .music-track-card.active { border-color: var(--amarillo); background: rgba(255,214,0,0.15); transform: scale(1.03); box-shadow: 0 0 12px rgba(255,214,0,0.3); }
+  .music-track-emoji { font-size: 24px; line-height: 1; }
+  .music-track-name { font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .academic-card { width: 100%; max-width: 460px; background: #ffffff; border: 4px solid #ffd600; border-radius: 16px; padding: 16px 20px; margin: 8px 0; text-align: left; color: #1a1a2e; box-shadow: 0 8px 32px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,0,0,0.08); animation: academicPop 0.5s ease-out; }
+  @keyframes academicPop { 0% { transform: scale(0.85); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  .academic-card.hidden { display: none; }
+  .academic-title { font-size: 15px; font-weight: 900; color: #0d1b2a; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
+  .academic-subtitle { font-size: 12px; color: #555; margin-bottom: 12px; font-style: italic; }
+  .academic-equation { background: #f5f5f5; border: 3px solid #0d1b2a; border-radius: 10px; padding: 12px 16px; font-size: clamp(22px, 4.5vw, 32px); font-weight: 900; text-align: center; color: #0d1b2a; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; }
+  .academic-equation .frac { font-size: 0.8em; }
+  .academic-equation .frac .num { border-bottom-width: 3px; }
+  .academic-answers { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .academic-row { flex: 1 1 140px; border-radius: 8px; padding: 8px 12px; display: flex; flex-direction: column; gap: 2px; border-left: 5px solid; }
+  .academic-row.correct { background: #e8f5e9; border-left-color: #2e7d32; }
+  .academic-row.wrong { background: #ffebee; border-left-color: #c62828; }
+  .academic-row-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; }
+  .academic-row.correct .academic-row-label { color: #1b5e20; }
+  .academic-row.wrong .academic-row-label { color: #b71c1c; }
+  .academic-row-value { font-size: clamp(18px, 3.5vw, 24px); font-weight: 900; display: flex; align-items: center; gap: 4px; }
+  .academic-row.correct .academic-row-value { color: #1b5e20; }
+  .academic-row.wrong .academic-row-value { color: #b71c1c; }
+  .academic-row-value .frac { font-size: 0.85em; }
+  .academic-explanation { background: #fff9c4; border-left: 5px solid #f9a825; border-radius: 8px; padding: 10px 12px; }
+  .expl-label { font-size: 11px; font-weight: 900; color: #e65100; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .expl-text { font-size: 13px; line-height: 1.55; color: #212121; font-weight: 500; }
+  .expl-text > div { margin-bottom: 6px; }
+  .expl-text > div:last-child { margin-bottom: 0; }
+  .expl-text b { color: #0d1b2a; font-weight: 900; }
+  .expl-text .tip { color: #0d47a1; font-style: italic; font-weight: 600; }
+  .expl-text .verify { color: #1b5e20; font-weight: 800; }
+  .expl-text .step { color: #bf360c; font-weight: 800; }
+  
+  .feedback { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: clamp(50px, 12vw, 90px); font-weight: 900; z-index: 50; pointer-events: none; animation: feedbackPop 1s ease-out forwards; text-shadow: 0 0 30px rgba(0,0,0,0.8), 0 0 10px currentColor; white-space: nowrap; }
+  @keyframes feedbackPop { 0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; } 25% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; } 70% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -120%) scale(1); opacity: 0; } }
+  
+  .correct-answer-big { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: clamp(50px, 13vw, 100px); font-weight: 900; color: #fff; z-index: 45; pointer-events: none; text-shadow: 0 0 30px var(--amarillo), 0 0 60px var(--rojo); background: rgba(229,57,53,0.85); padding: 20px 50px; border-radius: 20px; border: 4px solid var(--amarillo); animation: correctPop 1.8s ease-out forwards; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .correct-answer-big .frac { font-size: 0.85em; }
+  @keyframes correctPop { 0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; } 20% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; } 80% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 0; } }
+  
+  .ticker { position: absolute; bottom: 0; left: 0; right: 0; background: var(--marcador-bg); color: #fff; padding: 5px 10px; font-size: 11px; display: flex; align-items: center; gap: 6px; z-index: 20; border-top: 2px solid var(--amarillo); overflow: hidden; white-space: nowrap; pointer-events: none; }
+  .ticker .live { background: var(--rojo); padding: 2px 6px; border-radius: 4px; font-weight: bold; animation: blink 1.2s infinite; flex-shrink: 0; font-size: 10px; }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  
+  .stats-panel { position: absolute; top: 10px; right: 60px; display: flex; flex-direction: column; gap: 4px; z-index: 20; pointer-events: none; }
+  .stat-card { background: var(--marcador-bg); color: #fff; padding: 3px 8px; border-radius: 8px; font-size: 11px; display: flex; justify-content: space-between; gap: 8px; min-width: 100px; border: 2px solid #333; }
+  .stat-card .val { color: var(--amarillo); font-weight: bold; }
+  
+  .career-rank-card { width: 100%; max-width: 460px; background: linear-gradient(135deg, #1a1a2e 0%, #2a2a4e 100%); border: 3px solid var(--amarillo); border-radius: 16px; padding: 16px 20px; text-align: center; color: #fff; box-shadow: 0 4px 24px rgba(255,214,0,0.15); }
+  .career-rank-emoji { font-size: 56px; line-height: 1; margin-bottom: 4px; filter: drop-shadow(0 0 20px rgba(255,214,0,0.5)); }
+  .career-rank-name { font-size: 22px; font-weight: 900; color: var(--amarillo); text-transform: uppercase; letter-spacing: 2px; }
+  .career-rank-xp { font-size: 13px; opacity: 0.8; margin-top: 2px; }
+  .career-rank-bar-wrap { background: rgba(0,0,0,0.5); border-radius: 99px; height: 14px; margin: 10px 0 6px; overflow: hidden; border: 2px solid #333; }
+  .career-rank-bar { height: 100%; background: linear-gradient(90deg, #4caf50, #ffd600); border-radius: 99px; transition: width 0.4s ease-out; }
+  .career-rank-next { font-size: 11px; opacity: 0.7; font-style: italic; }
+  .career-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 6px; width: 100%; max-width: 460px; }
+  .career-stat { background: var(--marcador-bg); border: 2px solid #333; border-radius: 10px; padding: 8px 10px; text-align: left; color: #fff; }
+  .career-stat .label { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; display: block; }
+  .career-stat .value { font-size: 18px; font-weight: 900; color: var(--amarillo); }
+  .career-badges-title { font-size: 14px; font-weight: 900; color: var(--amarillo); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 6px; }
+  .career-badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 6px; width: 100%; max-width: 500px; }
+  .badge-card { background: #263238; border: 2px solid #333; border-radius: 10px; padding: 8px; text-align: center; color: #fff; transition: all 0.2s; }
+  .badge-card.unlocked { border-color: var(--amarillo); background: linear-gradient(135deg, #2a2a4e 0%, #1a1a2e 100%); box-shadow: 0 0 12px rgba(255,214,0,0.2); }
+  .badge-card.locked { opacity: 0.4; filter: grayscale(1); }
+  .badge-emoji { font-size: 32px; line-height: 1; margin-bottom: 2px; display: block; }
+  .badge-title { font-size: 11px; font-weight: 900; color: var(--amarillo); }
+  .badge-card.locked .badge-title { color: #999; }
+  .badge-desc { font-size: 9px; opacity: 0.75; margin-top: 2px; line-height: 1.3; }
+  .session-summary { background: rgba(76,175,80,0.15); border: 2px solid #4caf50; border-radius: 10px; padding: 10px 14px; margin: 4px 0; font-size: 13px; font-weight: bold; color: #fff; max-width: 460px; width: 100%; text-align: center; }
+  .session-summary.hidden { display: none; }
+  .session-summary .xp-gain { color: var(--amarillo); font-size: 18px; }
+  .session-summary .new-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(255,214,0,0.2); padding: 3px 10px; border-radius: 99px; margin: 4px 3px 0; font-size: 11px; font-weight: 900; }
+  
+  .confirm-modal { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 200; padding: 20px; }
+  .confirm-modal.hidden { display: none; }
+  .confirm-box { background: var(--marcador-bg); border: 3px solid var(--amarillo); border-radius: 16px; padding: 24px 28px; max-width: 360px; width: 100%; text-align: center; color: #fff; box-shadow: var(--sombra); }
+  .confirm-box .confirm-icon { font-size: 48px; margin-bottom: 8px; }
+  .confirm-box .confirm-title { font-size: 20px; font-weight: 900; color: var(--amarillo); margin-bottom: 8px; }
+  .confirm-box .confirm-text { font-size: 14px; opacity: 0.85; margin-bottom: 16px; }
+  .confirm-box .confirm-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .confirm-box .btn { padding: 10px 20px; font-size: 13px; }
+
+  /* ============================================================
+     ESTILOS NUEVOS PARA MODO PATEADOR
+     ============================================================ */
+  #game-container {
+    --gl: 22%; --gt: 24%; --gw: 56%; --gh: 20%; --gline: 44%;
+    --six-w: 70%; --six-b: 58%; --pen-w: 86%; --pen-b: 89%; --spot: 80%; --arc-h: 6%;
+  }
+  /* Elementos del modo pateador: solo visibles dentro de ese modo */
+  #game-container:not(.shooter-mode) .shooter-targets-container,
+  #game-container:not(.shooter-mode) .player-ball,
+  #game-container:not(.shooter-mode) .aim-line,
+  #game-container:not(.shooter-mode) .ai-keeper { display: none !important; }
+
+  /* Cancha del modo pateador (reemplaza las líneas del modo arquero solo aquí) */
+  #game-container.shooter-mode .pitch::before,
+  #game-container.shooter-mode .pitch::after,
+  #game-container.shooter-mode .penalty-area,
+  #game-container.shooter-mode .goal,
+  #game-container.shooter-mode .goal-line { display: none; }
+  .shooter-field { position: absolute; inset: 0; display: none; pointer-events: none; z-index: 3; }
+  #game-container.shooter-mode .shooter-field { display: block; }
+  .shooter-field > div { position: absolute; }
+  .sf-backdrop {
+    left: 0; right: 0; top: 0; height: var(--gline);
+    background:
+      radial-gradient(rgba(255,255,255,0.10) 1.4px, transparent 1.6px) 0 0 / 11px 11px,
+      linear-gradient(180deg, #0a1020 0%, #14213a 65%, #1f3358 100%);
+  }
+  .sf-goalline { left: 0; right: 0; top: var(--gline); height: 3px; margin-top: -1px; background: rgba(255,255,255,0.92); box-shadow: 0 0 8px rgba(255,255,255,0.35); }
+  .sf-six {
+    left: calc((100% - var(--six-w)) / 2); width: var(--six-w);
+    top: var(--gline); height: calc(var(--six-b) - var(--gline));
+    border: 3px solid rgba(255,255,255,0.85); border-top: none;
+  }
+  .sf-pen {
+    left: calc((100% - var(--pen-w)) / 2); width: var(--pen-w);
+    top: var(--gline); height: calc(var(--pen-b) - var(--gline));
+    border: 3px solid rgba(255,255,255,0.85); border-top: none;
+  }
+  .sf-arc {
+    left: 50%; top: calc(var(--pen-b) - 1.5px); width: 34%; height: var(--arc-h);
+    transform: translateX(-50%);
+    border: 3px solid rgba(255,255,255,0.85); border-top: none;
+    border-radius: 0 0 50% 50% / 0 0 100% 100%;
+  }
+  .sf-spot { left: 50%; top: var(--spot); width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: rgba(255,255,255,0.9); }
+  .sf-goal {
+    left: var(--gl); top: var(--gt); width: var(--gw); height: var(--gh);
+    border: 5px solid #fff; border-bottom: none; border-radius: 5px 5px 0 0;
+    background:
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.20) 0 1px, transparent 1px 9px),
+      repeating-linear-gradient(-45deg, rgba(255,255,255,0.20) 0 1px, transparent 1px 9px),
+      rgba(0,0,0,0.30);
+    box-shadow: 0 0 20px rgba(255,255,255,0.25), inset 0 10px 16px rgba(0,0,0,0.35);
+  }
+
+  .shooter-targets-container {
+    position: absolute;
+    inset: 0;
+    z-index: 13;
+    pointer-events: none;
+  }
+  .shooter-target {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translate(-50%, -50%);
+    filter: drop-shadow(0 0 8px rgba(255,255,255,0.4));
+  }
+  .shooter-target .target-emoji { font-size: 38px; line-height: 1; transition: transform 0.12s; }
+  .shooter-target .target-value {
+    background: rgba(0,0,0,0.85); color: #fff; font-size: 15px; font-weight: bold;
+    padding: 2px 8px; border-radius: 10px; margin-top: -4px;
+    border: 2px solid var(--amarillo); white-space: nowrap;
+    display: flex; align-items: center; justify-content: center; min-height: 26px;
+  }
+  .shooter-target .target-value .frac { font-size: 0.95em; }
+  .shooter-target .target-value .frac .num { border-bottom-width: 2px; padding: 0 3px; min-width: 12px; }
+  .shooter-target .target-value .frac .den { padding: 0 3px; min-width: 12px; }
+  .shooter-target.aimed .target-emoji { transform: scale(1.3); }
+  .shooter-target.aimed .target-value { background: var(--amarillo); color: #1a1a2e; box-shadow: 0 0 14px rgba(255,214,0,0.9); }
+  .shooter-target.correct-hit .target-emoji { animation: popTarget 0.4s ease-out; }
+  .shooter-target.wrong-hit .target-emoji { filter: grayscale(1); opacity: 0.5; }
+  @keyframes popTarget { 0% { transform: scale(1); } 50% { transform: scale(1.5); } 100% { transform: scale(1); } }
+
+  .player-ball {
+    position: absolute;
+    top: var(--spot);
+    left: 50%;
+    width: 1em; height: 1em;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1;
+    transform: translate(-50%, -50%);
+    font-size: 54px;
+    z-index: 15;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6));
+    pointer-events: auto;
+    cursor: grab;
+  }
+  .player-ball::before {
+    content: ''; position: absolute; left: 50%; top: 50%;
+    width: 86px; height: 86px; margin: -43px 0 0 -43px;
+    border: 3px dashed rgba(255,255,255,0.75); border-radius: 50%;
+    pointer-events: none; animation: ringPulse 1.6s ease-in-out infinite;
+  }
+  .player-ball.flying::before { display: none; }
+  @keyframes ringPulse { 0%,100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.12); opacity: 0.5; } }
+  .player-ball:active { cursor: grabbing; }
+  .player-ball.hidden { display: none; }
+
+  .aim-line {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 14;
+    display: none;
+  }
+  .aim-line.active { display: block; }
+  .aim-line svg {
+    width: 100%; height: 100%;
+    overflow: visible;
+  }
+  .aim-line path {
+    stroke: rgba(255, 214, 0, 0.9);
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-dasharray: 10 10;
+    fill: none;
+    filter: drop-shadow(0 0 8px rgba(255, 214, 0, 0.9));
+  }
+
+  .ai-keeper {
+    position: absolute;
+    top: calc(var(--gline) - 5%);
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 54px;
+    z-index: 11;
+    filter: drop-shadow(0 0 10px rgba(255,255,255,0.6));
+    pointer-events: none;
+    transition: left 0.28s cubic-bezier(0.25, 1, 0.5, 1), top 0.28s cubic-bezier(0.25, 1, 0.5, 1), transform 0.28s ease-out;
+    display: none;
+  }
+  .ai-keeper.active { display: block; }
+  .ai-keeper.dive-left { left: 20%; }
+  .ai-keeper.dive-right { left: 80%; }
+  .ai-keeper.dive-center { left: 50%; }
+
+  @media (max-width: 600px) {
+    .ball .ball-emoji { font-size: 34px; }
+    .ball .ball-value { font-size: 13px; min-width: 28px; padding: 1px 6px; }
+    .goalkeeper { font-size: 42px; width: 50px; height: 50px; }
+    .equation-box { padding: 8px 18px; top: 56px; font-size: clamp(18px, 5vw, 28px); }
+    .score-card { padding: 3px 7px; font-size: 10px; }
+    .score-card .value { font-size: 12px; }
+    .avatar-option { font-size: 22px; }
+    .btn-exit-game { width: 36px; height: 36px; font-size: 15px; }
+    .stats-panel { right: 52px; }
+    .btn { padding: 12px 28px; font-size: 16px; }
+    .academic-card { padding: 12px 14px; }
+    .academic-equation { padding: 10px 12px; }
+    .settings-tab { font-size: 11px; padding: 8px 4px; }
+    .career-badges { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+    .music-tracks { grid-template-columns: repeat(3, 1fr); }
+    .player-ball { font-size: 46px; }
+    .player-ball::before { width: 74px; height: 74px; margin: -37px 0 0 -37px; }
+    .shooter-target .target-emoji { font-size: 30px; }
+    .shooter-target .target-value { font-size: 12px; }
+    .ai-keeper { font-size: 46px; }
+  }
+</style>
+</head>
+<body>
+<div id="game-container">
+  <div class="pitch"></div>
+  <div class="penalty-area"></div>
+  <div class="goal"></div>
+  <div class="goal-line"></div>
+  <div class="shooter-field">
+    <div class="sf-backdrop"></div>
+    <div class="sf-pen"></div>
+    <div class="sf-six"></div>
+    <div class="sf-arc"></div>
+    <div class="sf-spot"></div>
+    <div class="sf-goalline"></div>
+    <div class="sf-goal"></div>
+  </div>
+
+  <div class="scoreboard">
+    <div class="score-card"><span class="label">Nivel</span><span class="value" id="ui-level">1</span></div>
+    <div class="score-card"><span class="label">Goles</span><span class="value" id="ui-goals">0</span></div>
+    <div class="score-card"><span class="label">Atajadas</span><span class="value" id="ui-saves">0</span></div>
+    <div class="score-card"><span class="label">Racha</span><span class="value" id="ui-streak">0</span></div>
+  </div>
+
+  <div class="stats-panel">
+    <div class="stat-card"><span>🛡️ Vidas</span><span class="val" id="ui-lives">❤️❤️❤️</span></div>
+  </div>
+
+  <button class="btn-exit-game hidden" id="btn-exit-game" title="Salir al menú">🏠</button>
+
+  <div class="lives" id="ui-lives-icons"></div>
+  <div class="equation-box" id="ui-equation">2 + 3</div>
+
+  <!-- Keeper Mode Elements -->
+  <div class="goalkeeper" id="ui-keeper">
+    <span class="keeper-halo"></span>
+    <span id="ui-keeper-emoji">🧤</span>
+  </div>
+
+  <!-- Shooter Mode Elements -->
+  <div class="shooter-targets-container" id="shooter-targets"></div>
+  <div class="player-ball hidden" id="player-ball">⚽</div>
+  <div class="aim-line" id="aim-line">
+    <svg><path id="aim-path" d=""></path></svg>
+  </div>
+  <div class="ai-keeper" id="ai-keeper">🧤</div>
+
+  <div class="cursor-dot" id="cursor-dot"></div>
+  <div class="controls-hint" id="controls-hint">Mueve al arquero por el área</div>
+
+  <div class="ticker">
+    <span class="live">🔴 EN VIVO</span>
+    <span id="ui-ticker">Bienvenidos al Estadio Matemático.</span>
+  </div>
+
+  <div class="overlay" id="overlay-menu">
+    <div class="title">⚽ ARQUERO MATEMÁTICO ⚽</div>
+    <div class="subtitle">Ataja con el arquero o patea para hacer goles</div>
+    <div class="subtitle" style="font-size:13px;opacity:0.7;">🖱️ Mouse · ⌨️ Flechas/WASD · 📱 Touch</div>
+    <button class="btn" id="btn-tournament">🏆 MODO TORNEO</button>
+    <button class="btn secondary" id="btn-levels">🎯 ELEGIR NIVEL</button>
+    <button class="btn secondary" id="btn-career">🥾 MI CARRERA</button>
+    <button class="btn secondary" id="btn-settings">⚙️ AJUSTES</button>
+    <div class="settings-label" style="margin-top:6px;">Modo de juego</div>
+    <div class="toggle-group" id="mode-selector">
+      <button class="toggle-btn active" data-mode="keeper">🧤 ARQUERO</button>
+      <button class="toggle-btn" data-mode="shooter">🎯 PATEADOR</button>
+    </div>
+  </div>
+
+  <div class="overlay hidden" id="overlay-levels">
+    <div class="title">🎯 ELIGE NIVEL</div>
+    <div class="level-grid" id="level-grid"></div>
+    <button class="btn secondary" id="btn-back-levels">⬅️ VOLVER</button>
+  </div>
+
+  <div class="overlay hidden" id="overlay-settings">
+    <div class="title">⚙️ AJUSTES</div>
+    <div class="settings-tabs" id="settings-tabs">
+      <button class="settings-tab active" data-tab="tab-numbers">🔢 Números</button>
+      <button class="settings-tab" data-tab="tab-avatars">🎭 Avatares</button>
+      <button class="settings-tab" data-tab="tab-audio">🎙️ Audio</button>
+    </div>
+
+    <div class="settings-panel active" id="tab-numbers">
+      <div class="settings-section">
+        <div class="settings-label">⚡ Velocidad de los balones</div>
+        <div class="stage-selector" id="stage-selector">
+          <button class="stage-btn active" data-stage="1">🐢 Etapa 1</button>
+          <button class="stage-btn" data-stage="2">⚡ Etapa 2</button>
+          <button class="stage-btn" data-stage="3">🚀 Etapa 3</button>
+        </div>
+        <div class="speed-slider-wrap">
+          <input type="range" id="speed-slider" min="0" max="10" step="1" value="5">
+          <span class="speed-value" id="speed-value">0.7x</span>
+        </div>
+        <div class="stage-range-hint" id="stage-range-hint">Etapa 1: 0.3x → 1.1x</div>
+      </div>
+      <div class="settings-section" style="margin-top:8px;">
+        <div class="settings-label">🔢 Tipos de números</div>
+        <div class="toggle-group" id="number-type-toggles">
+          <button class="toggle-btn active" data-type="natural">Naturales (1,2,3)</button>
+          <button class="toggle-btn active" data-type="negative">Negativos (−5,−3)</button>
+          <button class="toggle-btn active" data-type="fraction">Fraccionarios (½, ¾)</button>
+        </div>
+        <div class="voice-hint">La frecuencia de negativos y fracciones aumenta con el nivel 🎲</div>
+      </div>
+    </div>
+
+    <div class="settings-panel" id="tab-avatars">
+      <div class="settings-section">
+        <div class="settings-label">🧤 Avatar del Arquero (Jugador)</div>
+        <div class="avatar-grid" id="keeper-avatars"></div>
+      </div>
+      <div class="settings-section" style="margin-top:8px;">
+        <div class="settings-label">⚽ Bandera/Emoji del Lanzador</div>
+        <div class="avatar-grid" id="shooter-avatars"></div>
+      </div>
+    </div>
+
+    <div class="settings-panel" id="tab-audio">
+      <div class="settings-section">
+        <div class="settings-label">🔊 Sonido (beeps)</div>
+        <button class="btn" id="btn-sound-toggle" style="padding:6px 20px;font-size:13px;">ON</button>
+      </div>
+      <div class="settings-section" style="margin-top:8px;">
+        <div class="settings-label">🎙️ Narración por voz</div>
+        <button class="btn" id="btn-voice-toggle" style="padding:6px 20px;font-size:13px;">ON</button>
+        <div id="voice-selector-wrap" style="margin-top:8px;">
+          <select class="voice-select" id="voice-select">
+            <option value="">Cargando voces...</option>
+          </select>
+          <div class="voice-hint" id="voice-hint">Selecciona la voz del relator</div>
+          <div class="voice-status" id="voice-status"></div>
+        </div>
+        <button class="btn secondary" id="btn-voice-test" style="margin-top:8px;padding:6px 20px;font-size:12px;">🔊 Probar voz</button>
+      </div>
+      <div class="settings-section" style="margin-top:12px;">
+        <div class="settings-label">🎵 Música de fondo</div>
+        <button class="btn" id="btn-music-toggle" style="padding:6px 20px;font-size:13px;">ON</button>
+        <div class="music-tracks" id="music-tracks"></div>
+      </div>
+    </div>
+
+    <button class="btn secondary" id="btn-back-settings" style="margin-top:8px;">⬅️ VOLVER</button>
+  </div>
+
+  <div class="overlay hidden" id="overlay-career">
+    <div class="title">🏅 Mi Carrera</div>
+    <div class="career-rank-card" id="career-rank"></div>
+    <div class="career-stats" id="career-stats"></div>
+    <div class="career-badges-title">🏆 Logros</div>
+    <div class="career-badges" id="career-badges"></div>
+    <button class="btn secondary" id="btn-back-career" style="margin-top:8px;">⬅️ VOLVER</button>
+  </div>
+
+  <div class="overlay hidden" id="overlay-gameover">
+    <div class="title" id="go-title">¡GOL EN CONTRA!</div>
+    <div class="subtitle" id="go-subtitle"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:6px 0;">
+      <div class="score-card" style="font-size:14px;padding:8px 16px;"><span class="label">Goles</span><span class="value" id="go-goals">0</span></div>
+      <div class="score-card" style="font-size:14px;padding:8px 16px;"><span class="label">Atajadas</span><span class="value" id="go-saves">0</span></div>
+      <div class="score-card" style="font-size:14px;padding:8px 16px;"><span class="label">Racha</span><span class="value" id="go-streak">0</span></div>
+    </div>
+    <div class="session-summary hidden" id="go-session-summary"></div>
+    <div class="academic-card hidden" data-academic="go">
+      <div class="academic-title">📚 Repaso del partido</div>
+      <div class="academic-subtitle">Repasemos una que se te complicó:</div>
+      <div class="academic-equation" data-role="equation"></div>
+      <div class="academic-answers">
+        <div class="academic-row correct">
+          <span class="academic-row-label">✅ Correcto</span>
+          <span class="academic-row-value" data-role="correct"></span>
+        </div>
+        <div class="academic-row wrong">
+          <span class="academic-row-label">❌ Tu respuesta</span>
+          <span class="academic-row-value" data-role="wrong"></span>
+        </div>
+      </div>
+      <div class="academic-explanation">
+        <div class="expl-label">💡 Explicación</div>
+        <div class="expl-text" data-role="explanation"></div>
+      </div>
+    </div>
+    <button class="btn" id="btn-retry">🔄 REINTENTAR</button>
+    <button class="btn secondary" id="btn-menu-go">🏠 MENÚ</button>
+  </div>
+
+  <div class="overlay hidden" id="overlay-levelup">
+    <div class="title" id="lu-title">¡NIVEL SUPERADO!</div>
+    <div class="subtitle" id="lu-subtitle"></div>
+    <div class="session-summary hidden" id="lu-session-summary"></div>
+    <div class="academic-card hidden" data-academic="lu">
+      <div class="academic-title">📚 Repaso del nivel</div>
+      <div class="academic-subtitle">Repasemos una que se te complicó:</div>
+      <div class="academic-equation" data-role="equation"></div>
+      <div class="academic-answers">
+        <div class="academic-row correct">
+          <span class="academic-row-label">✅ Correcto</span>
+          <span class="academic-row-value" data-role="correct"></span>
+        </div>
+        <div class="academic-row wrong">
+          <span class="academic-row-label">❌ Tu respuesta</span>
+          <span class="academic-row-value" data-role="wrong"></span>
+        </div>
+      </div>
+      <div class="academic-explanation">
+        <div class="expl-label">💡 Explicación</div>
+        <div class="expl-text" data-role="explanation"></div>
+      </div>
+    </div>
+    <button class="btn" id="btn-next-level">➡️ SIGUIENTE NIVEL</button>
+    <button class="btn secondary" id="btn-menu-lu">🏠 MENÚ</button>
+  </div>
+
+  <div class="feedback hidden" id="ui-feedback"></div>
+
+  <div class="confirm-modal hidden" id="confirm-exit-modal">
+    <div class="confirm-box">
+      <div class="confirm-icon">🏠</div>
+      <div class="confirm-title">¿Salir al menú?</div>
+      <div class="confirm-text">Perderás el progreso de esta partida.</div>
+      <div class="confirm-buttons">
+        <button class="btn secondary" id="btn-confirm-cancel">CANCELAR</button>
+        <button class="btn" id="btn-confirm-exit">SALIR</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CONFIGURACIÓN
+   ============================================================ */
+const KEEPER_AVATARS = ['🧤','🤲','🙌','👐','🤜','✋','🖐️','👊','🦸','🧍','🏃','🦁','🐯','🐻','🦅','⚽','🥅','🧢','🎽','👤'];
+const SHOOTER_AVATARS = ['⚽','🔴','🟠','🟡','🟢','🔵','🟣','⚪','⚫','🇦🇷','🇧🇷','🇪🇸','🇲🇽','🇨🇴','🇺🇾','🇨🇱','🇵🇪','🇫🇷','🇩🇪','🇮🇹','🇬🇧','🇺🇸','🇯🇵','🇰🇷','🇳🇬','🇿🇦','🇦🇺','🇨🇦','🇵🇹','🏐','🏀'];
+
+const LEVELS = [
+  { id:1, name:'Principiante', desc:'Solo sumas y restas', ops:['+','-'], maxNum:10, speed:0.9, balls:3, target:5, lives:3, rarity:1 },
+  { id:2, name:'Fácil', desc:'Sumas y restas', ops:['+','-'], maxNum:20, speed:1.1, balls:3, target:6, lives:3, rarity:2 },
+  { id:3, name:'Intermedio', desc:'+ Multiplicación', ops:['+','-','×'], maxNum:12, speed:1.3, balls:4, target:7, lives:3, rarity:3 },
+  { id:4, name:'Avanzado', desc:'+ División', ops:['+','-','×','÷'], maxNum:15, speed:1.5, balls:4, target:8, lives:3, rarity:4 },
+  { id:5, name:'Experto', desc:'+ Raíz cuadrada', ops:['+','-','×','÷','√'], maxNum:20, speed:1.7, balls:4, target:9, lives:3, rarity:5 },
+  { id:6, name:'Maestro', desc:'+ Logaritmo', ops:['+','-','×','÷','√','log'], maxNum:25, speed:1.9, balls:5, target:10, lives:3, rarity:6 },
+  { id:7, name:'Leyenda', desc:'Todas las operaciones', ops:['+','-','×','÷','√','log'], maxNum:30, speed:2.2, balls:5, target:12, lives:2, rarity:7 },
+  { id:8, name:'Imposible', desc:'Velocidad máxima', ops:['+','-','×','÷','√','log'], maxNum:40, speed:2.6, balls:6, target:15, lives:2, rarity:8 },
+];
+
+function getRarityChance(rarity) {
+  const minChance = 0.05, maxChance = 0.65;
+  const t = (rarity - 1) / 7;
+  return minChance + t * (maxChance - minChance);
+}
+function getRarityLabel(rarity) {
+  const pct = Math.round(getRarityChance(rarity) * 100);
+  return `🎲 especiales: ${pct}%`;
+}
+
+const state = {
+  mode: 'menu',
+  playMode: 'keeper',
+  levelIndex: 0, goals: 0, saves: 0, streak: 0, bestStreak: 0,
+  lives: 3, maxLives: 3, currentEquation: null, correctAnswer: null,
+  balls: [], animationId: null, lastTime: 0,
+  keeperX: 0, keeperY: 0, keeperW: 60, keeperH: 60, keeperSpeedPx: 340,
+  keys: { left: false, right: false, up: false, down: false },
+  pointerActive: false, pointerX: 0, pointerY: 0,
+  soundOn: true,
+  voiceEnabled: true,
+  voices: [], selectedVoiceName: null, hasSpokenOnce: false,
+  keeperAvatar: '🧤', shooterAvatar: '⚽', isTournament: false,
+  audioCtx: null, active: false, roundLocked: false,
+  globalSpeedMultiplier: 0.7,
+  velocityStage: 1,
+  sliderPos: 5,
+  musicEnabled: true,
+  musicTrackIndex: 0,
+  numberTypes: { natural: true, negative: true, fraction: true },
+  area: { left: 0, right: 0, top: 0, bottom: 0 },
+  goalLineY: 0, goalRect: { left: 0, right: 0, top: 0, bottom: 0 },
+  gamePaused: false, narrationTimer: null, pendingSpeakTimer: null,
+  mistakes: [],
+  sessionStats: { fractionSaves: 0, negativeSaves: 0, logSaves: 0, sqrtSaves: 0 },
+  // Shooter Mode specific
+  shooterTargets: [],
+  isAiming: false,
+  aimX: 0, aimY: 0,
+  playerBallX: 0, playerBallY: 0,
+};
+
+/* ============================================================
+   MÓDULO DE PROGRESO (XP + insignias + localStorage)
+   ============================================================ */
+const RANKS = [
+  { xp: 0,    name: 'Amateur',     emoji: '🥾' },
+  { xp: 100,  name: 'Juvenil',     emoji: '🥅' },
+  { xp: 300,  name: 'Semi-pro',    emoji: '⚽' },
+  { xp: 700,  name: 'Profesional', emoji: '🎽' },
+  { xp: 1500, name: 'Estrella',    emoji: '⭐' },
+  { xp: 3000, name: 'Leyenda',     emoji: '🏆' },
+  { xp: 6000, name: 'Ídolo',       emoji: '👑' },
+];
+
+const BADGES = [
+  { id: 'first_win',       emoji: '🌟', title: 'Primer paso',          desc: 'Completá tu primer nivel',                    check: (p) => p.levelsCompleted >= 1 },
+  { id: 'streak_5',        emoji: '🔥', title: 'En llamas',            desc: 'Racha de 5 atajadas seguidas',                check: (p) => p.bestStreak >= 5 },
+  { id: 'streak_10',       emoji: '💥', title: 'Imparable',            desc: 'Racha de 10 atajadas seguidas',               check: (p) => p.bestStreak >= 10 },
+  { id: 'no_goal_level',   emoji: '🧱', title: 'Muro',                 desc: 'Completá un nivel sin goles en contra',       check: (p) => p.hasPerfectLevel },
+  { id: 'no_miss_level',   emoji: '🎯', title: 'Preciso',              desc: 'Completá un nivel sin atajar mal',            check: (p) => p.hasFlawlessLevel },
+  { id: 'fractions_20',    emoji: '🍕', title: 'Fraccionista',         desc: 'Atajá 20 balones con fracciones',             check: (p) => p.fractionSaves >= 20 },
+  { id: 'negatives_20',    emoji: '➖', title: 'Verdugo de negativos', desc: 'Atajá 20 balones con negativos',              check: (p) => p.negativeSaves >= 20 },
+  { id: 'log_10',          emoji: '📊', title: 'Logarítmico',          desc: 'Atajá 10 balones con logaritmos',             check: (p) => p.logSaves >= 10 },
+  { id: 'sqrt_10',         emoji: '√',  title: 'Radical',              desc: 'Atajá 10 balones con raíces',                 check: (p) => p.sqrtSaves >= 10 },
+  { id: 'level_8',         emoji: '👑', title: 'Nivel imposible',      desc: 'Alcanzá el nivel 8',                          check: (p) => p.maxLevelReached >= 8 },
+  { id: 'tournament',      emoji: '🏆', title: 'Campeón',              desc: 'Ganá un torneo completo',                     check: (p) => p.tournamentWins >= 1 },
+  { id: 'saves_100',       emoji: '🧤', title: 'Guantes de acero',     desc: '100 atajadas totales',                        check: (p) => p.totalSaves >= 100 },
+  { id: 'xp_1000',         emoji: '⭐', title: 'Veterano',             desc: 'Alcanzá 1000 XP',                             check: (p) => p.xp >= 1000 },
+];
+
+const Progress = (function() {
+  const KEY = 'arquero-matematico-progress-v1';
+  const defaults = {
+    xp: 0, levelsCompleted: 0, maxLevelReached: 0, bestStreak: 0,
+    totalSaves: 0, totalGoals: 0, totalSessions: 0,
+    fractionSaves: 0, negativeSaves: 0, logSaves: 0, sqrtSaves: 0,
+    hasPerfectLevel: false, hasFlawlessLevel: false, tournamentWins: 0,
+    unlockedBadges: [],
+    preferences: { musicEnabled: true, musicTrack: 0, velocityStage: 1, sliderPos: 5 },
+  };
+  let data = JSON.parse(JSON.stringify(defaults));
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        data = { ...data, ...parsed };
+        data.preferences = { ...defaults.preferences, ...(parsed.preferences || {}) };
+      }
+    } catch(e) {}
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(data)); } catch(e) {}
+  }
+  function getRank(xp) {
+    let r = RANKS[0];
+    for (const rk of RANKS) if (xp >= rk.xp) r = rk;
+    return r;
+  }
+  function getNextRank(xp) {
+    for (const rk of RANKS) if (xp < rk.xp) return rk;
+    return null;
+  }
+  function recordSession(session) {
+    data.totalSaves += session.saves;
+    data.totalGoals += session.goals;
+    data.totalSessions++;
+    data.fractionSaves += session.fractionSaves || 0;
+    data.negativeSaves += session.negativeSaves || 0;
+    data.logSaves += session.logSaves || 0;
+    data.sqrtSaves += session.sqrtSaves || 0;
+    if (session.completed) {
+      data.levelsCompleted++;
+      if (session.level + 1 > data.maxLevelReached) data.maxLevelReached = session.level + 1;
+    }
+    if (session.bestStreak > data.bestStreak) data.bestStreak = session.bestStreak;
+    if (session.goals === 0 && session.completed) data.hasPerfectLevel = true;
+    if (session.mistakes === 0 && session.completed) data.hasFlawlessLevel = true;
+    if (session.tournamentWin) data.tournamentWins++;
+
+    let xpGained = 0;
+    xpGained += session.saves * 10;
+    xpGained += session.bestStreak * 5;
+    if (session.completed) {
+      xpGained += 50;
+      xpGained += (session.level + 1) * 10;
+      if (session.goals === 0) xpGained += 100;
+      if (session.mistakes === 0) xpGained += 50;
+    }
+    data.xp += xpGained;
+
+    const newBadges = [];
+    for (const b of BADGES) {
+      if (!data.unlockedBadges.includes(b.id) && b.check(data)) {
+        data.unlockedBadges.push(b.id);
+        newBadges.push(b);
+      }
+    }
+    save();
+    return { xpGained, newBadges };
+  }
+  function getData() { return data; }
+  function getRankData() { return getRank(data.xp); }
+  function getNextRankData() { return getNextRank(data.xp); }
+  function getBadges() { return BADGES.map(b => ({ ...b, unlocked: data.unlockedBadges.includes(b.id) })); }
+  function savePreference(key, value) { data.preferences[key] = value; save(); }
+  load();
+  return { recordSession, getData, getRankData, getNextRankData, getBadges, savePreference };
+})();
+
+/* ============================================================
+   MÓDULO DE MÚSICA PROCEDURAL (Web Audio API)
+   ============================================================ */
+const GameMusic = (function() {
+  const BPM = 120;
+  const BEAT_DUR = 60 / BPM;
+  const LOOP_BEATS = 20;
+  const LOOP_DUR = LOOP_BEATS * BEAT_DUR;
+  const MUSIC_VOL = 0.28;
+  function mel(beat, note, dur) { return { beat, note, dur: dur || 1 }; }
+  function per(beat, vel) { return { beat, vel: vel === undefined ? 1 : vel }; }
+  const TRACKS = [
+    { id: 'clasico', name: 'Clásico', emoji: '⚽', melody: [mel(0,'E5',0.5), mel(0.5,'G5',0.5), mel(1,'C6',0.5), mel(1.5,'G5',0.5), mel(2,'E5',1), mel(3,'G5',1), mel(4,'D5',0.5), mel(4.5,'G5',0.5), mel(5,'B5',0.5), mel(5.5,'G5',0.5), mel(6,'D5',1), mel(7,'G5',1), mel(8,'E5',0.5), mel(8.5,'A5',0.5), mel(9,'C6',0.5), mel(9.5,'A5',0.5), mel(10,'E5',1), mel(11,'A5',1), mel(12,'F5',0.5), mel(12.5,'A5',0.5), mel(13,'C6',0.5), mel(13.5,'A5',0.5), mel(14,'F5',1), mel(15,'E5',0.5), mel(15.5,'D5',0.5), mel(16,'C5',2), mel(18,'G5',1), mel(19,'E5',1)], bass: [mel(0,'C3',2), mel(2,'G3',2), mel(4,'G3',2), mel(6,'D3',2), mel(8,'A3',2), mel(10,'E3',2), mel(12,'F3',2), mel(14,'C3',2), mel(16,'C3',2), mel(18,'G3',2)], arp: [mel(0,'C4',0.5), mel(1,'E4',0.5), mel(2,'G4',0.5), mel(3,'E4',0.5), mel(4,'G3',0.5), mel(5,'B3',0.5), mel(6,'D4',0.5), mel(7,'B3',0.5), mel(8,'A3',0.5), mel(9,'C4',0.5), mel(10,'E4',0.5), mel(11,'C4',0.5), mel(12,'F3',0.5), mel(13,'A3',0.5), mel(14,'C4',0.5), mel(15,'A3',0.5), mel(16,'C4',0.5), mel(17,'E4',0.5), mel(18,'G4',0.5), mel(19,'E4',0.5)], kick: [per(0), per(2,0.9), per(4), per(6,0.9), per(8), per(10,0.9), per(12), per(14,0.9), per(16), per(18,0.9)], snare: [per(2), per(6), per(10), per(14), per(18)], hihat: Array.from({length: 40}, (_, i) => per(i * 0.5, i % 2 === 0 ? 1 : 0.5)) },
+    { id: 'fiesta', name: 'Fiesta', emoji: '🎉', melody: [mel(0,'A4',0.5), mel(0.5,'C5',0.5), mel(1,'E5',0.5), mel(1.5,'A5',0.5), mel(2,'G5',0.5), mel(2.5,'E5',0.5), mel(3,'C5',1), mel(4,'F5',0.5), mel(4.5,'A5',0.5), mel(5,'C6',0.5), mel(5.5,'A5',0.5), mel(6,'F5',1), mel(7,'C5',1), mel(8,'E5',0.5), mel(8.5,'G5',0.5), mel(9,'C6',0.5), mel(9.5,'G5',0.5), mel(10,'E5',1), mel(11,'G5',1), mel(12,'D5',0.5), mel(12.5,'G5',0.5), mel(13,'B5',0.5), mel(13.5,'G5',0.5), mel(14,'D5',1), mel(15,'G5',0.5), mel(15.5,'F5',0.5), mel(16,'E5',2), mel(18,'A4',2)], bass: [mel(0,'A2',1), mel(1.5,'A3',0.5), mel(2,'E3',1), mel(3.5,'A3',0.5), mel(4,'F2',1), mel(5.5,'F3',0.5), mel(6,'C3',1), mel(7.5,'F3',0.5), mel(8,'C3',1), mel(9.5,'C4',0.5), mel(10,'G3',1), mel(11.5,'C4',0.5), mel(12,'G2',1), mel(13.5,'G3',0.5), mel(14,'D3',1), mel(15.5,'G3',0.5), mel(16,'A2',2), mel(18,'E3',2)], arp: [mel(0,'A3',0.5), mel(1,'C4',0.5), mel(2,'E4',0.5), mel(3,'C4',0.5), mel(4,'F3',0.5), mel(5,'A3',0.5), mel(6,'C4',0.5), mel(7,'A3',0.5), mel(8,'C4',0.5), mel(9,'E4',0.5), mel(10,'G4',0.5), mel(11,'E4',0.5), mel(12,'G3',0.5), mel(13,'B3',0.5), mel(14,'D4',0.5), mel(15,'B3',0.5), mel(16,'A3',0.5), mel(17,'C4',0.5), mel(18,'E4',0.5), mel(19,'C4',0.5)], kick: [per(0), per(3), per(4), per(7), per(8), per(11), per(12), per(15), per(16), per(19)], snare: [per(2), per(6), per(10), per(14), per(18)], hihat: Array.from({length: 40}, (_, i) => per(i * 0.5, i % 2 === 0 ? 1 : 0.55)) },
+    { id: 'estadio', name: 'Estadio', emoji: '🏟️', melody: [mel(0,'D5',1), mel(1,'F5',1), mel(2,'A5',1), mel(3,'D5',1), mel(4,'Bb4',1), mel(5,'D5',1), mel(6,'F5',1), mel(7,'D5',1), mel(8,'A4',1), mel(9,'C5',1), mel(10,'F5',1), mel(11,'C5',1), mel(12,'G4',1), mel(13,'C5',1), mel(14,'E5',1), mel(15,'C5',1), mel(16,'D5',2), mel(18,'A4',2)], bass: [mel(0,'D3',2), mel(2,'A3',2), mel(4,'Bb2',2), mel(6,'F3',2), mel(8,'F2',2), mel(10,'C3',2), mel(12,'C3',2), mel(14,'G3',2), mel(16,'D3',2), mel(18,'A3',2)], arp: [mel(0,'D4',1), mel(1,'F4',1), mel(2,'A4',1), mel(3,'F4',1), mel(4,'Bb3',1), mel(5,'D4',1), mel(6,'F4',1), mel(7,'D4',1), mel(8,'F3',1), mel(9,'A3',1), mel(10,'C4',1), mel(11,'A3',1), mel(12,'C4',1), mel(13,'E4',1), mel(14,'G4',1), mel(15,'E4',1), mel(16,'D4',1), mel(17,'F4',1), mel(18,'A4',1), mel(19,'F4',1)], kick: [per(0), per(2,0.9), per(4), per(6,0.9), per(8), per(10,0.9), per(12), per(14,0.9), per(16), per(18,0.9)], snare: [per(2), per(6), per(10), per(14), per(18)], hihat: Array.from({length: 40}, (_, i) => per(i * 0.5, i % 2 === 0 ? 0.9 : 0.45)), crash: [per(0)] },
+    { id: 'arcade', name: 'Arcade', emoji: '🕹️', melody: [mel(0,'E5',0.5), mel(0.5,'G5',0.5), mel(1,'B5',0.5), mel(1.5,'E6',0.5), mel(2,'B5',0.5), mel(2.5,'G5',0.5), mel(3,'E5',1), mel(4,'C5',0.5), mel(4.5,'E5',0.5), mel(5,'G5',0.5), mel(5.5,'C6',0.5), mel(6,'G5',0.5), mel(6.5,'E5',0.5), mel(7,'C5',1), mel(8,'G4',0.5), mel(8.5,'B4',0.5), mel(9,'D5',0.5), mel(9.5,'G5',0.5), mel(10,'D5',0.5), mel(10.5,'B4',0.5), mel(11,'G4',1), mel(12,'D5',0.5), mel(12.5,'F#5',0.5), mel(13,'A5',0.5), mel(13.5,'D6',0.5), mel(14,'A5',0.5), mel(14.5,'F#5',0.5), mel(15,'D5',1), mel(16,'E5',2), mel(18,'B5',2)], bass: [mel(0,'E3',2), mel(2,'B2',2), mel(4,'C3',2), mel(6,'G3',2), mel(8,'G3',2), mel(10,'D3',2), mel(12,'D3',2), mel(14,'A3',2), mel(16,'E3',2), mel(18,'B3',2)], arp: [mel(0,'E4',0.25), mel(0.5,'G4',0.25), mel(1,'B4',0.25), mel(1.5,'G4',0.25), mel(2,'B3',0.25), mel(2.5,'D4',0.25), mel(3,'F#4',0.25), mel(3.5,'D4',0.25), mel(4,'C4',0.25), mel(4.5,'E4',0.25), mel(5,'G4',0.25), mel(5.5,'E4',0.25), mel(6,'G3',0.25), mel(6.5,'B3',0.25), mel(7,'D4',0.25), mel(7.5,'B3',0.25), mel(8,'G3',0.25), mel(8.5,'B3',0.25), mel(9,'D4',0.25), mel(9.5,'B3',0.25), mel(10,'D4',0.25), mel(10.5,'F#4',0.25), mel(11,'A4',0.25), mel(11.5,'F#4',0.25), mel(12,'D4',0.25), mel(12.5,'F#4',0.25), mel(13,'A4',0.25), mel(13.5,'F#4',0.25), mel(14,'A3',0.25), mel(14.5,'C#4',0.25), mel(15,'E4',0.25), mel(15.5,'C#4',0.25), mel(16,'E4',0.5), mel(17,'G4',0.5), mel(18,'B4',0.5), mel(19,'G4',0.5)], kick: [per(0), per(1), per(2), per(3), per(4), per(5), per(6), per(7), per(8), per(9), per(10), per(11), per(12), per(13), per(14), per(15), per(16), per(17), per(18), per(19)], snare: [per(2), per(6), per(10), per(14), per(18)], hihat: Array.from({length: 80}, (_, i) => per(i * 0.25, i % 4 === 0 ? 0.7 : (i % 2 === 0 ? 0.5 : 0.35))) },
+    { id: 'penales', name: 'Penales', emoji: '🥅', melody: [mel(0,'B4',1), mel(1,'D5',1), mel(2,'F#5',1), mel(3,'B5',1), mel(4,'G4',1), mel(5,'B4',1), mel(6,'D5',1), mel(7,'B4',1), mel(8,'D5',1), mel(9,'F#5',1), mel(10,'A5',1), mel(11,'F#5',1), mel(12,'A4',1), mel(13,'C#5',1), mel(14,'E5',1), mel(15,'C#5',1), mel(16,'B4',2), mel(18,'F#5',2)], bass: [mel(0,'B2',2), mel(2,'F#3',2), mel(4,'G2',2), mel(6,'D3',2), mel(8,'D3',2), mel(10,'A3',2), mel(12,'A3',2), mel(14,'E3',2), mel(16,'B2',2), mel(18,'F#3',2)], arp: [mel(0,'B3',1), mel(1,'D4',1), mel(2,'F#4',1), mel(3,'D4',1), mel(4,'G3',1), mel(5,'B3',1), mel(6,'D4',1), mel(7,'B3',1), mel(8,'D4',1), mel(9,'F#4',1), mel(10,'A4',1), mel(11,'F#4',1), mel(12,'A3',1), mel(13,'C#4',1), mel(14,'E4',1), mel(15,'C#4',1), mel(16,'B3',1), mel(17,'D4',1), mel(18,'F#4',1), mel(19,'D4',1)], kick: [per(0), per(4), per(8), per(12), per(16)], snare: [per(2), per(6), per(10), per(14), per(18)], hihat: Array.from({length: 20}, (_, i) => per(i + 0.5, 0.6)) },
+  ];
+  let ac = null, masterGain = null, musicGain = null;
+  let muted = false, isPlaying = false;
+  let currentTrackIndex = 0;
+  let currentEvents = [];
+  let nextEventIdx = 0;
+  let loopStart = 0;
+  let schedulerTimer = null;
+  function noteFreq(name) {
+    if (typeof name === 'number') return name;
+    const map = { 'C':0,'C#':1,'D':2,'D#':3,'E':4,'F':5,'F#':6,'G':7,'G#':8,'A':9,'A#':10,'B':11 };
+    const m = name.match(/^([A-G]#?)(-?\d+)$/);
+    if (!m) return 440;
+    const midi = (parseInt(m[2]) + 1) * 12 + map[m[1]];
+    return 440 * Math.pow(2, (midi - 69) / 12);
+  }
+  function playSynth(time, freq, dur, type, gain) {
+    const osc = ac.createOscillator(); const g = ac.createGain();
+    osc.type = type; osc.frequency.value = freq;
+    const attack = 0.01, release = 0.06;
+    g.gain.setValueAtTime(0.0001, time);
+    g.gain.linearRampToValueAtTime(gain, time + attack);
+    g.gain.setValueAtTime(gain, Math.max(time + attack, time + dur - release));
+    g.gain.exponentialRampToValueAtTime(0.0001, time + dur);
+    osc.connect(g); g.connect(musicGain);
+    osc.start(time); osc.stop(time + dur + 0.02);
+  }
+  function playKick(time, vel) {
+    const osc = ac.createOscillator(); const g = ac.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(150, time);
+    osc.frequency.exponentialRampToValueAtTime(40, time + 0.15);
+    g.gain.setValueAtTime(0.55 * vel, time);
+    g.gain.exponentialRampToValueAtTime(0.0001, time + 0.28);
+    osc.connect(g); g.connect(musicGain);
+    osc.start(time); osc.stop(time + 0.32);
+  }
+  function playSnare(time, vel) {
+    const buf = ac.createBuffer(1, Math.floor(ac.sampleRate * 0.15), ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const src = ac.createBufferSource(); src.buffer = buf;
+    const filter = ac.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = 2000; filter.Q.value = 1;
+    const g = ac.createGain();
+    g.gain.setValueAtTime(0.22 * vel, time);
+    g.gain.exponentialRampToValueAtTime(0.0001, time + 0.14);
+    src.connect(filter); filter.connect(g); g.connect(musicGain);
+    src.start(time); src.stop(time + 0.18);
+  }
+  function playHihat(time, vel) {
+    const buf = ac.createBuffer(1, Math.floor(ac.sampleRate * 0.04), ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const src = ac.createBufferSource(); src.buffer = buf;
+    const filter = ac.createBiquadFilter(); filter.type = 'highpass'; filter.frequency.value = 8000;
+    const g = ac.createGain();
+    g.gain.setValueAtTime(0.1 * vel, time);
+    g.gain.exponentialRampToValueAtTime(0.0001, time + 0.035);
+    src.connect(filter); filter.connect(g); g.connect(musicGain);
+    src.start(time); src.stop(time + 0.05);
+  }
+  function playCrash(time) {
+    const buf = ac.createBuffer(1, Math.floor(ac.sampleRate * 0.5), ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const src = ac.createBufferSource(); src.buffer = buf;
+    const filter = ac.createBiquadFilter(); filter.type = 'highpass'; filter.frequency.value = 3000;
+    const g = ac.createGain();
+    g.gain.setValueAtTime(0.25, time);
+    g.gain.exponentialRampToValueAtTime(0.0001, time + 0.5);
+    src.connect(filter); filter.connect(g); g.connect(musicGain);
+    src.start(time); src.stop(time + 0.55);
+  }
+  function buildEvents(track) {
+    const evs = [];
+    function addLayer(arr, type, gain) {
+      for (const e of arr || []) evs.push({ time: e.beat, type, note: e.note, dur: (e.dur || 1) * BEAT_DUR, vel: e.vel ?? 1, gain });
+    }
+    addLayer(track.melody, 'melody', 0.16);
+    addLayer(track.bass, 'bass', 0.26);
+    addLayer(track.arp, 'arp', 0.07);
+    addLayer(track.kick, 'kick', 0);
+    addLayer(track.snare, 'snare', 0);
+    addLayer(track.hihat, 'hihat', 0);
+    addLayer(track.crash, 'crash', 0);
+    evs.sort((a, b) => a.time - b.time);
+    return evs;
+  }
+  function playEvent(ev, time) {
+    if (ev.type === 'kick') return playKick(time, ev.vel);
+    if (ev.type === 'snare') return playSnare(time, ev.vel);
+    if (ev.type === 'hihat') return playHihat(time, ev.vel);
+    if (ev.type === 'crash') return playCrash(time);
+    const freq = noteFreq(ev.note);
+    const synthMap = { melody: 'square', bass: 'triangle', arp: 'sine' };
+    playSynth(time, freq, ev.dur, synthMap[ev.type] || 'sine', ev.gain * ev.vel);
+  }
+  function scheduleAhead() {
+    if (!ac || !isPlaying || !currentEvents.length) return;
+    const now = ac.currentTime;
+    const lookahead = 0.2;
+    while (true) {
+      if (nextEventIdx >= currentEvents.length) {
+        loopStart += LOOP_DUR; nextEventIdx = 0;
+        if (!currentEvents.length) break;
+        continue;
+      }
+      const ev = currentEvents[nextEventIdx];
+      const playTime = loopStart + ev.time * BEAT_DUR;
+      if (playTime > now + lookahead) break;
+      if (playTime >= now - 0.05) playEvent(ev, playTime);
+      nextEventIdx++;
+    }
+  }
+  function startScheduler() { if (schedulerTimer) return; schedulerTimer = setInterval(scheduleAhead, 25); }
+  function stopScheduler() { if (schedulerTimer) { clearInterval(schedulerTimer); schedulerTimer = null; } }
+  function loadTrack(index) {
+    currentTrackIndex = index;
+    currentEvents = buildEvents(TRACKS[index]);
+    nextEventIdx = 0;
+    loopStart = ac.currentTime + 0.1;
+  }
+  function init() {
+    if (ac) return true;
+    try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { return false; }
+    masterGain = ac.createGain(); musicGain = ac.createGain();
+    musicGain.gain.value = muted ? 0 : MUSIC_VOL;
+    musicGain.connect(masterGain); masterGain.connect(ac.destination);
+    return true;
+  }
+  function start() {
+    if (!init()) return;
+    if (ac.state === 'suspended') ac.resume().catch(()=>{});
+    if (isPlaying) return;
+    isPlaying = true; loadTrack(currentTrackIndex); startScheduler();
+    musicGain.gain.cancelScheduledValues(ac.currentTime);
+    musicGain.gain.setValueAtTime(muted ? 0 : MUSIC_VOL, ac.currentTime);
+  }
+  function stop() {
+    isPlaying = false; stopScheduler();
+    if (musicGain && ac) {
+      try {
+        musicGain.gain.cancelScheduledValues(ac.currentTime);
+        musicGain.gain.setValueAtTime(musicGain.gain.value, ac.currentTime);
+        musicGain.gain.linearRampToValueAtTime(0, ac.currentTime + 0.1);
+      } catch(e) {}
+    }
+  }
+  function setMuted(v) {
+    muted = !!v;
+    if (musicGain && ac) {
+      try {
+        const now = ac.currentTime;
+        musicGain.gain.cancelScheduledValues(now);
+        musicGain.gain.setValueAtTime(musicGain.gain.value, now);
+        musicGain.gain.linearRampToValueAtTime(muted ? 0 : MUSIC_VOL, now + 0.05);
+      } catch(e) {}
+    }
+  }
+  function setTrack(index) {
+    if (index < 0 || index >= TRACKS.length || index === currentTrackIndex) return;
+    currentTrackIndex = index;
+    if (!isPlaying || !ac) return;
+    const now = ac.currentTime;
+    try {
+      musicGain.gain.cancelScheduledValues(now);
+      musicGain.gain.setValueAtTime(musicGain.gain.value, now);
+      musicGain.gain.linearRampToValueAtTime(0, now + 0.05);
+    } catch(e) {}
+    setTimeout(() => {
+      if (!isPlaying || !ac) return;
+      loadTrack(index);
+      const t = ac.currentTime;
+      try {
+        musicGain.gain.cancelScheduledValues(t);
+        musicGain.gain.setValueAtTime(0, t);
+        musicGain.gain.linearRampToValueAtTime(muted ? 0 : MUSIC_VOL, t + 0.05);
+      } catch(e) {}
+    }, 60);
+  }
+  function getBeat() {
+    if (!isPlaying || !ac) return 0;
+    const elapsed = ac.currentTime - loopStart;
+    return ((elapsed / BEAT_DUR) % LOOP_BEATS + LOOP_BEATS) % LOOP_BEATS;
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (!ac) return;
+    if (document.hidden) { try { ac.suspend(); } catch(e) {} }
+    else if (isPlaying) { try { ac.resume(); } catch(e) {} }
+  });
+  return { start, stop, setMuted, isMuted: () => muted, isPlaying: () => isPlaying, setTrack, getCurrentTrack: () => currentTrackIndex, getTracks: () => TRACKS.map((t, i) => ({ index: i, id: t.id, name: t.name, emoji: t.emoji })), getBeat };
+})();
+
+/* ============================================================
+   FRACCIONES - Utilidades
+   ============================================================ */
+const FRACTION_MAX_DEN = 24;
+function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { const t = b; b = a % b; a = t; } return a || 1; }
+function lcm(a, b) { return (a * b) / gcd(a, b); }
+function simplify(num, den) { if (den === 0) den = 1; if (den < 0) { num = -num; den = -den; } const g = gcd(num, den); return { num: num/g, den: den/g }; }
+function fracHTML(num, den) { const s = simplify(num, den); return `<span class="frac"><span class="num">${s.num}</span><span class="den">${s.den}</span></span>`; }
+function decimalToFraction(dec, maxDen = FRACTION_MAX_DEN) {
+  if (Number.isInteger(dec)) return { num: dec, den: 1, value: dec };
+  const sign = dec < 0 ? -1 : 1;
+  const absDec = Math.abs(dec);
+  let bestNum = 1, bestDen = 1, bestErr = Infinity;
+  for (let den = 1; den <= maxDen; den++) {
+    const num = Math.round(absDec * den);
+    const err = Math.abs(absDec - num/den);
+    if (err < bestErr - 1e-9) { bestErr = err; bestNum = num; bestDen = den; }
+  }
+  const g = gcd(bestNum, bestDen);
+  return { num: sign * bestNum/g, den: bestDen/g, value: dec };
+}
+function numHTML(value, opts = {}) {
+  const { parentheses = false, maxDen = FRACTION_MAX_DEN } = opts;
+  if (Number.isInteger(value)) { if (value < 0 && parentheses) return `(−${Math.abs(value)})`; return String(value); }
+  const f = decimalToFraction(value, maxDen);
+  if (f.den === 1) { if (f.num < 0 && parentheses) return `(−${Math.abs(f.num)})`; return String(f.num); }
+  const absNum = Math.abs(f.num);
+  const fracPart = fracHTML(absNum, f.den);
+  if (f.num < 0) return parentheses ? `(−${fracPart})` : `−${fracPart}`;
+  return fracPart;
+}
+function numText(value) { if (Number.isInteger(value)) return String(value); const f = decimalToFraction(value); if (f.den === 1) return String(f.num); return `${f.num}/${f.den}`; }
+function explainNum(v) { if (Number.isInteger(v)) return v < 0 ? `(−${Math.abs(v)})` : String(v); return numText(v); }
+function approxEqual(a, b) { return Math.abs(a - b) < 1e-6; }
+function sameFraction(a, b) { if (approxEqual(a, b)) return true; const fa = decimalToFraction(a); const fb = decimalToFraction(b); return fa.num === fb.num && fa.den === fb.den; }
+const randInt = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+const randChoice = arr => arr[Math.floor(Math.random()*arr.length)];
+
+/* ============================================================
+   AUDIO (beeps)
+   ============================================================ */
+function initAudio() {
+  if (!state.audioCtx) { try { state.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {} }
+  if (state.audioCtx && state.audioCtx.state === 'suspended') state.audioCtx.resume().catch(()=>{});
+}
+function playTone(freq, dur, type='sine', vol=0.15) {
+  if (!state.soundOn || !state.audioCtx) return;
+  try {
+    const osc = state.audioCtx.createOscillator(); const gain = state.audioCtx.createGain();
+    osc.type = type; osc.frequency.setValueAtTime(freq, state.audioCtx.currentTime);
+    gain.gain.setValueAtTime(vol, state.audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, state.audioCtx.currentTime + dur);
+    osc.connect(gain); gain.connect(state.audioCtx.destination);
+    osc.start(); osc.stop(state.audioCtx.currentTime + dur);
+  } catch(e) {}
+}
+function soundSave() { playTone(880,0.1,'square',0.12); setTimeout(()=>playTone(1320,0.15,'square',0.12),70); }
+function soundGoal() { playTone(220,0.35,'sawtooth',0.16); setTimeout(()=>playTone(160,0.4,'sawtooth',0.13),200); }
+function soundWhistle() { playTone(1200,0.12,'sine',0.1); setTimeout(()=>playTone(1450,0.18,'sine',0.1),110); }
+function soundClick() { playTone(600,0.06,'square',0.08); }
+function soundLevelUp() { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f,0.2,'sine',0.12),i*100)); }
+function soundCrowd() {
+  if (!state.soundOn || !state.audioCtx) return;
+  try {
+    const sz = state.audioCtx.sampleRate * 0.5;
+    const buf = state.audioCtx.createBuffer(1, sz, state.audioCtx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i=0;i<sz;i++) d[i] = (Math.random()*2-1)*0.05*Math.exp(-i/sz*3);
+    const src = state.audioCtx.createBufferSource(); const g = state.audioCtx.createGain();
+    src.buffer = buf;
+    g.gain.setValueAtTime(0.3, state.audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, state.audioCtx.currentTime+0.5);
+    src.connect(g); g.connect(state.audioCtx.destination); src.start();
+  } catch(e) {}
+}
+
+/* ============================================================
+   NARRACIÓN
+   ============================================================ */
+const PHRASES = {
+  levelStart: ['¡Comienza el partido!', '¡Rueda el balón!', '¡Arranca el juego!', '¡Todo listo en el estadio!'],
+  preShoot: ['Se prepara...', 'Toma distancia...', 'Va a rematar...', 'El delantero se acomoda...', 'Carga la pierna...'],
+  shoot: ['¡Y patea!', '¡Disparo!', '¡Va el centro!', '¡Remata!', '¡Al arco!'],
+  save: ['¡Atajada espectacular!', '¡Qué manos!', '¡La sacó!', '¡Gran atajada!', '¡Manos de oro!', '¡Qué reflejos!'],
+  saveStreak3: ['¡Tres al hilo!', '¡Está imparable!', '¡Racha increíble!'],
+  saveStreak5: ['¡Cinco seguidas!', '¡Es una muralla!', '¡Nadie lo puede vencer!'],
+  goal: ['¡Gol del visitante!', '¡Se le escapó!', '¡Adentro!', '¡Gol en contra!', '¡Se le coló!'],
+  wrongBall: ['¡No era ese!', '¡Error!', '¡Mal calculado!', '¡Por poco!'],
+  levelComplete: ['¡Termina el primer tiempo!', '¡Nivel superado!', '¡Buen trabajo, arquero!', '¡Se queda con el arco en cero!'],
+  gameOver: ['¡Final del partido!', '¡Se acabó!', '¡Terminó el encuentro!'],
+  tournamentWin: ['¡Campeón! ¡Campeón!', '¡Levanta la copa!', '¡Es una leyenda!'],
+  shooterGoal: ['¡Goooool!', '¡Adentro!', '¡Qué golazo!', '¡La clavó en el ángulo!', '¡Gol de otro partido!'],
+  shooterMiss: ['¡Afuera!', '¡Se fue desviado!', '¡Increíble fallo!', '¡La tiró a las nubes!', '¡Por poco!'],
+  shooterSave: ['¡Atajadón!', '¡El arquero la sacó!', '¡Qué paradón!', '¡Voló el arquero!', '¡No entra!']
+};
+function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function initVoices() {
+  if (!('speechSynthesis' in window)) {
+    const hint = document.getElementById('voice-hint');
+    if (hint) hint.textContent = '⚠️ Tu navegador no soporta narración por voz';
+    const btn = document.getElementById('btn-voice-toggle');
+    if (btn) btn.disabled = true;
+    return;
+  }
+  const loadVoices = () => {
+    const all = speechSynthesis.getVoices();
+    const spanish = all.filter(v => v.lang.toLowerCase().startsWith('es'));
+    state.voices = spanish.length > 0 ? spanish : all;
+    if (!state.selectedVoiceName && state.voices.length > 0) state.selectedVoiceName = state.voices[0].name;
+    if (state.selectedVoiceName && !state.voices.find(v => v.name === state.selectedVoiceName)) {
+      state.selectedVoiceName = state.voices.length > 0 ? state.voices[0].name : null;
+    }
+    updateVoiceSelector();
+  };
+  loadVoices();
+  if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = loadVoices;
+  setTimeout(loadVoices, 200); setTimeout(loadVoices, 800); setTimeout(loadVoices, 2000);
+}
+function updateVoiceSelector() {
+  const sel = document.getElementById('voice-select');
+  const hint = document.getElementById('voice-hint');
+  if (!sel) return;
+  sel.innerHTML = '';
+  if (state.voices.length === 0) { sel.innerHTML = '<option value="">No hay voces disponibles</option>'; if (hint) hint.textContent = '⚠️ No se detectaron voces'; return; }
+  state.voices.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v.name; opt.textContent = `${v.name} (${v.lang})`;
+    if (v.name === state.selectedVoiceName) opt.selected = true;
+    sel.appendChild(opt);
+  });
+  const spanishCount = state.voices.filter(v => v.lang.toLowerCase().startsWith('es')).length;
+  if (hint) hint.textContent = spanishCount > 0 ? `✅ ${spanishCount} voz(ces) en español` : `ℹ️ ${state.voices.length} voz(ces) disponibles (sin español)`;
+}
+function updateVoiceStatus(msg) { const el = document.getElementById('voice-status'); if (el) el.textContent = msg || ''; }
+
+function speakDirect(text, opts = {}) {
+  if (!('speechSynthesis' in window)) return;
+  if (!text || !text.trim()) return;
+  if (!state.voiceEnabled && !opts.force) return;
+  if (state.pendingSpeakTimer) { clearTimeout(state.pendingSpeakTimer); state.pendingSpeakTimer = null; }
+  const doSpeak = () => {
+    try {
+      try { speechSynthesis.resume(); } catch(e) {}
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = opts.rate || 1.05; u.pitch = opts.pitch || 1.15;
+      u.volume = opts.volume !== undefined ? opts.volume : 1.0;
+      let voiceAssigned = false;
+      if (state.selectedVoiceName && state.voices.length > 0) {
+        const v = state.voices.find(v => v.name === state.selectedVoiceName);
+        if (v) { u.voice = v; u.lang = v.lang || 'es-ES'; voiceAssigned = true; }
+      }
+      if (!voiceAssigned) u.lang = 'es-ES';
+      u.onstart = () => { updateVoiceStatus(`🎙️ Hablando: "${text.slice(0, 30)}..."`); };
+      u.onend = () => { updateVoiceStatus(''); };
+      u.onerror = (e) => {
+        const err = (e && e.error) || '';
+        if (err === 'canceled' || err === 'interrupted') return;
+        if (err === 'voice-unavailable' || err === 'language-unavailable') {
+          updateVoiceStatus('🎙️ Usando voz por defecto');
+          try {
+            const u2 = new SpeechSynthesisUtterance(text);
+            u2.rate = opts.rate || 1.05; u2.pitch = opts.pitch || 1.15;
+            u2.volume = opts.volume !== undefined ? opts.volume : 1.0;
+            u2.lang = 'es-ES';
+            speechSynthesis.speak(u2);
+          } catch(_) {}
+          return;
+        }
+        updateVoiceStatus(`⚠️ ${err || 'error'}`);
+      };
+      speechSynthesis.speak(u);
+      state.hasSpokenOnce = true;
+    } catch(e) { updateVoiceStatus(`⚠️ ${e.message || 'error'}`); }
+  };
+  if (!state.hasSpokenOnce) { doSpeak(); return; }
+  if (!opts.noCancel) { try { if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); } catch(e) {} }
+  const delay = opts.noCancel ? 0 : 120;
+  if (delay === 0) { doSpeak(); }
+  else { state.pendingSpeakTimer = setTimeout(() => { doSpeak(); state.pendingSpeakTimer = null; }, delay); }
+}
+function cancelSpeech() {
+  if (!('speechSynthesis' in window)) return;
+  try { speechSynthesis.cancel(); } catch(e) {}
+  if (state.narrationTimer) { clearTimeout(state.narrationTimer); state.narrationTimer = null; }
+  if (state.pendingSpeakTimer) { clearTimeout(state.pendingSpeakTimer); state.pendingSpeakTimer = null; }
+  updateVoiceStatus('');
+}
+function narrateCategory(category, opts = {}) {
+  if (!state.voiceEnabled) return;
+  const arr = PHRASES[category]; if (!arr) return;
+  speakDirect(pickRandom(arr), opts);
+}
+function narrateShot() {
+  if (!state.voiceEnabled) return;
+  speakDirect(pickRandom(PHRASES.preShoot), { rate: 1.0, pitch: 1.05 });
+  state.narrationTimer = setTimeout(() => {
+    if (state.mode !== 'playing' || !state.active) return;
+    speakDirect(pickRandom(PHRASES.shoot), { rate: 1.3, pitch: 1.4, noCancel: true });
+    state.narrationTimer = null;
+  }, 1400);
+}
+function narrateSave() {
+  if (!state.voiceEnabled) return;
+  if (state.streak >= 5) speakDirect(pickRandom(PHRASES.saveStreak5), { rate: 1.25, pitch: 1.4 });
+  else if (state.streak >= 3) speakDirect(pickRandom(PHRASES.saveStreak3), { rate: 1.2, pitch: 1.35 });
+  else speakDirect(pickRandom(PHRASES.save), { rate: 1.15, pitch: 1.3 });
+}
+
+/* ============================================================
+   GENERACIÓN CON RAREZA
+   ============================================================ */
+function pickNumberType(level) {
+  const types = [];
+  if (state.numberTypes.natural) types.push('natural');
+  if (state.numberTypes.negative) types.push('negative');
+  if (state.numberTypes.fraction) types.push('fraction');
+  if (types.length === 0) return 'natural';
+  if (types.length === 1) return types[0];
+  const specialChance = getRarityChance(level ? level.rarity : 1);
+  if (!state.numberTypes.natural) return randChoice(types);
+  const specialsActive = [];
+  if (state.numberTypes.negative) specialsActive.push('negative');
+  if (state.numberTypes.fraction) specialsActive.push('fraction');
+  if (specialsActive.length === 0) return 'natural';
+  if (Math.random() < specialChance) return randChoice(specialsActive);
+  return 'natural';
+}
+function makeOperand(level, forcedType = null) {
+  const type = forcedType || pickNumberType(level);
+  if (type === 'natural') { const n = randInt(1, level.maxNum); return { value: n, type, num: n, den: 1 }; }
+  if (type === 'negative') {
+    const maxAbs = Math.min(level.maxNum, 5 + level.rarity * 3);
+    const abs = randInt(1, maxAbs);
+    const sign = Math.random() < 0.75 ? -1 : 1;
+    const n = sign * abs;
+    return { value: n, type: 'negative', num: n, den: 1 };
+  }
+  const denChoices = level.rarity <= 3 ? [2, 3, 4] : (level.rarity <= 6 ? [2, 3, 4, 5, 6] : [2, 3, 4, 5, 6, 8]);
+  const den = randChoice(denChoices);
+  let num = randInt(1, den * 2);
+  if (num % den === 0) num += 1;
+  if (state.numberTypes.negative && Math.random() < 0.25) num = -num;
+  const s = simplify(num, den);
+  return { value: s.num / s.den, type: 'fraction', num: s.num, den: s.den };
+}
+function operandHTML(o) {
+  if (o.type === 'fraction') {
+    if (o.num < 0) return `(−${fracHTML(Math.abs(o.num), o.den)})`;
+    return fracHTML(o.num, o.den);
+  }
+  if (o.value < 0) return `(−${Math.abs(o.value)})`;
+  return String(o.value);
+}
+
+const FRAC_DIFF_PAIRS = [[2, 4], [3, 6], [2, 6], [2, 3], [3, 4], [2, 5], [4, 6], [3, 5]];
+function makeDifferentDenFractions(op) {
+  for (let attempt = 0; attempt < 8; attempt++) {
+    const [d1, d2] = randChoice(FRAC_DIFF_PAIRS);
+    const n1 = randInt(1, d1 - 1);
+    const n2 = randInt(1, d2 - 1);
+    const f1 = simplify(n1, d1);
+    const f2 = simplify(n2, d2);
+    if (f1.den === 1 || f2.den === 1) continue;
+    if (op === '-') {
+      const v1 = f1.num / f1.den;
+      const v2 = f2.num / f2.den;
+      if (v1 < v2 || v1 === v2) continue;
+    }
+    const L = lcm(f1.den, f2.den);
+    const newNum1 = (L / f1.den) * f1.num;
+    const newNum2 = (L / f2.den) * f2.num;
+    let resultNum = op === '+' ? newNum1 + newNum2 : newNum1 - newNum2;
+    const resultFrac = simplify(resultNum, L);
+    if (resultFrac.den > 15) continue;
+    return {
+      o1: { value: f1.num/f1.den, type:'fraction', num: f1.num, den: f1.den },
+      o2: { value: f2.num/f2.den, type:'fraction', num: f2.num, den: f2.den },
+      answer: resultFrac.num / resultFrac.den,
+    };
+  }
+  return null;
+}
+
+function generateEquation(level) {
+  const op = level.ops[randInt(0, level.ops.length-1)];
+  let textHTML = '';
+  let answer = null;
+  let opA = null, opB = null;
+  const fractionActive = state.numberTypes.fraction;
+  const negativeActive = state.numberTypes.negative;
+
+  switch(op) {
+    case '+': {
+      if (fractionActive && Math.random() < getRarityChance(level.rarity) * 0.9) {
+        const useDiff = Math.random() < (negativeActive ? 0.3 : 0.55);
+        let made = useDiff ? makeDifferentDenFractions('+') : null;
+        if (made) {
+          textHTML = `${operandHTML(made.o1)} + ${operandHTML(made.o2)}`;
+          answer = made.answer; opA = made.o1.value; opB = made.o2.value;
+        } else {
+          const denChoices = level.rarity <= 3 ? [2, 3, 4] : [2, 3, 4, 5, 6, 8];
+          const den = randChoice(denChoices);
+          let n1 = randInt(1, den * 2), n2 = randInt(1, den * 2);
+          if (negativeActive) { if (Math.random() < 0.25) n1 = -n1; if (Math.random() < 0.25) n2 = -n2; }
+          const o1 = { value: n1/den, type:'fraction', num: n1, den };
+          const o2 = { value: n2/den, type:'fraction', num: n2, den };
+          textHTML = `${operandHTML(o1)} + ${operandHTML(o2)}`;
+          answer = (n1 + n2) / den; opA = n1/den; opB = n2/den;
+        }
+      } else {
+        const o1 = makeOperand(level), o2 = makeOperand(level);
+        textHTML = `${operandHTML(o1)} + ${operandHTML(o2)}`;
+        answer = o1.value + o2.value; opA = o1.value; opB = o2.value;
+      }
+      break;
+    }
+    case '-': {
+      if (fractionActive && Math.random() < getRarityChance(level.rarity) * 0.9) {
+        const useDiff = Math.random() < (negativeActive ? 0.3 : 0.55);
+        let made = useDiff ? makeDifferentDenFractions('-') : null;
+        if (made) {
+          textHTML = `${operandHTML(made.o1)} − ${operandHTML(made.o2)}`;
+          answer = made.answer; opA = made.o1.value; opB = made.o2.value;
+        } else {
+          const denChoices = level.rarity <= 3 ? [2, 3, 4] : [2, 3, 4, 5, 6, 8];
+          const den = randChoice(denChoices);
+          let n1 = randInt(1, den * 2), n2 = randInt(1, den * 2);
+          if (!negativeActive && n1 < n2) { const t = n1; n1 = n2; n2 = t; }
+          if (negativeActive) { if (Math.random() < 0.25) n1 = -n1; if (Math.random() < 0.25) n2 = -n2; }
+          const o1 = { value: n1/den, type:'fraction', num: n1, den };
+          const o2 = { value: n2/den, type:'fraction', num: n2, den };
+          textHTML = `${operandHTML(o1)} − ${operandHTML(o2)}`;
+          answer = (n1 - n2) / den; opA = n1/den; opB = n2/den;
+        }
+      } else {
+        const o1 = makeOperand(level);
+        let o2 = makeOperand(level);
+        if (!negativeActive && o1.value < o2.value) { const tmp = { ...o1 }; Object.assign(o1, o2); Object.assign(o2, tmp); }
+        textHTML = `${operandHTML(o1)} − ${operandHTML(o2)}`;
+        answer = o1.value - o2.value; opA = o1.value; opB = o2.value;
+      }
+      break;
+    }
+    case '×': {
+      if (fractionActive && Math.random() < getRarityChance(level.rarity) * 0.85) {
+        const denChoices = level.rarity <= 3 ? [2, 3] : [2, 3, 4, 5];
+        const den = randChoice(denChoices);
+        let num = randInt(1, 4), ent = randInt(2, Math.min(6, level.maxNum));
+        if (negativeActive) { if (Math.random() < 0.25) num = -num; if (Math.random() < 0.25) ent = -ent; }
+        const o1 = { value: num/den, type:'fraction', num, den };
+        const o2 = { value: ent, type:'natural', num: ent, den: 1 };
+        textHTML = `${operandHTML(o1)} × ${operandHTML(o2)}`;
+        answer = (num * ent) / den; opA = num/den; opB = ent;
+      } else {
+        const maxF = Math.min(12, level.maxNum);
+        let a = randInt(1, maxF), b = randInt(1, maxF);
+        if (negativeActive) {
+          const negChance = getRarityChance(level.rarity) * 0.7;
+          if (Math.random() < negChance) a = -a;
+          if (Math.random() < negChance) b = -b;
+        }
+        const o1 = { value: a, type: 'natural', num: a, den: 1 };
+        const o2 = { value: b, type: 'natural', num: b, den: 1 };
+        textHTML = `${operandHTML(o1)} × ${operandHTML(o2)}`;
+        answer = a * b; opA = a; opB = b;
+      }
+      break;
+    }
+    case '÷': {
+      if (fractionActive && Math.random() < getRarityChance(level.rarity) * 0.85) {
+        const denChoices = level.rarity <= 3 ? [2, 3] : [2, 3, 4];
+        const den = randChoice(denChoices);
+        let num = randInt(1, 6);
+        const div = randInt(2, 4);
+        if (negativeActive && Math.random() < 0.25) num = -num;
+        const o1 = { value: num/den, type:'fraction', num, den };
+        const o2 = { value: div, type:'natural', num: div, den: 1 };
+        textHTML = `${operandHTML(o1)} ÷ ${operandHTML(o2)}`;
+        answer = num / (den * div); opA = num/den; opB = div;
+      } else {
+        const maxF = Math.min(12, level.maxNum);
+        const b = randInt(2, maxF);
+        const q = randInt(2, maxF);
+        let a = b * q;
+        let sign = 1;
+        if (negativeActive && Math.random() < getRarityChance(level.rarity) * 0.7) sign = -1;
+        a = a * sign;
+        const o1 = { value: a, type:'natural', num: a, den: 1 };
+        const o2 = { value: b, type:'natural', num: b, den: 1 };
+        textHTML = `${operandHTML(o1)} ÷ ${operandHTML(o2)}`;
+        answer = sign * q; opA = a; opB = b;
+      }
+      break;
+    }
+    case '√': {
+      const root = randInt(2, Math.min(15, level.maxNum));
+      const a = root * root;
+      textHTML = `√${a}`; answer = root; opA = a; opB = null;
+      break;
+    }
+    case 'log': {
+      const exp = randInt(1, 4);
+      const a = Math.pow(10, exp);
+      textHTML = `log₁₀(${a})`; answer = exp; opA = a; opB = null;
+      break;
+    }
+    default: {
+      const a = randInt(1, 10), b = randInt(1, 10);
+      textHTML = `${a} + ${b}`; answer = a + b; opA = a; opB = b;
+    }
+  }
+  answer = Math.round(answer * 10000) / 10000;
+  const options = generateOptions(answer, level);
+  for (let i=options.length-1;i>0;i--) { const j = Math.floor(Math.random()*(i+1)); [options[i],options[j]] = [options[j],options[i]]; }
+  return { textHTML, answer, options, op, opA, opB };
+}
+
+function generateOptions(answer, level) {
+  const options = [answer];
+  const wrongs = new Set();
+  const answerIsFrac = !Number.isInteger(answer);
+  let tries = 0;
+  while (wrongs.size < 6 && tries < 500) {
+    tries++;
+    let candidate;
+    if (answerIsFrac) {
+      const f = decimalToFraction(answer);
+      if (Math.random() < 0.6) {
+        const newNum = f.num + randChoice([-2,-1,1,2]);
+        candidate = newNum / f.den;
+      } else {
+        const newDen = Math.max(1, f.den + randChoice([-1,1,2]));
+        candidate = f.num / newDen;
+      }
+      if (Number.isInteger(candidate) && Math.random() < 0.7) continue;
+    } else {
+      const step = Math.max(1, Math.round(Math.abs(answer) * 0.2));
+      const offset = randChoice([-step, -Math.ceil(step/2), -1, 1, Math.ceil(step/2), step]);
+      candidate = answer + offset;
+      if (candidate === answer) candidate += 1;
+    }
+    candidate = Math.round(candidate * 10000) / 10000;
+    if (sameFraction(candidate, answer)) continue;
+    let duplicate = false;
+    for (const w of wrongs) { if (sameFraction(candidate, w)) { duplicate = true; break; } }
+    if (duplicate) continue;
+    wrongs.add(candidate);
+  }
+  wrongs.forEach(w => options.push(w));
+  return options;
+}
+
+/* ============================================================
+   EXPLICACIONES DIDÁCTICAS
+   ============================================================ */
+function generateExplanation(mistake) {
+  const { op, opA, opB, correctAnswer, chosenAnswer, type } = mistake;
+  const ansText = explainNum(correctAnswer);
+  const lines = [];
+  const isFracA = opA !== null && !Number.isInteger(opA);
+  const isFracB = opB !== null && !Number.isInteger(opB);
+  const hasFrac = isFracA || isFracB;
+  const hasNeg = (opA !== null && opA < 0) || (opB !== null && opB < 0);
+
+  switch(op) {
+    case '+': {
+      if (hasFrac) {
+        const fA = decimalToFraction(opA), fB = decimalToFraction(opB);
+        if (fA.den === fB.den) {
+          lines.push(`Cuando sumás fracciones con el <b>mismo denominador</b>, sumás los numeradores y mantenés el denominador.`);
+          lines.push(`<span class="tip">Numeradores: ${fA.num} + ${fB.num} = ${fA.num + fB.num} → mantenés el denominador ${fA.den}.</span>`);
+          lines.push(`Resultado: ${explainNum(opA)} + ${explainNum(opB)} = <b>${ansText}</b>`);
+        } else {
+          const L = lcm(fA.den, fB.den);
+          const newNumA = (L / fA.den) * fA.num, newNumB = (L / fB.den) * fB.num;
+          lines.push(`Cuando sumás fracciones con <b>distinto denominador</b>, primero hallás el <b>Mínimo Común Múltiplo (MCM)</b> de los denominadores.`);
+          lines.push(`<span class="step">Paso 1 — MCM:</span> MCM(${fA.den}, ${fB.den}) = <b>${L}</b>.`);
+          lines.push(`<span class="step">Paso 2 — Convertir:</span> ${fA.num}/${fA.den} = ${newNumA}/${L} y ${fB.num}/${fB.den} = ${newNumB}/${L}.`);
+          lines.push(`<span class="step">Paso 3 — Sumar numeradores:</span> ${newNumA} + ${newNumB} = ${newNumA + newNumB}.`);
+          lines.push(`Resultado: <b>${ansText}</b>`);
+        }
+      } else if (hasNeg) {
+        lines.push(`Recordá: <b>sumar un número negativo es como restar</b>. Por ejemplo, 5 + (−3) = 5 − 3 = 2.`);
+        lines.push(`${explainNum(opA)} + ${explainNum(opB)} = <b>${ansText}</b>`);
+      } else {
+        lines.push(`Sumamos ${opA} + ${opB}.`);
+        lines.push(`Resultado: <b>${ansText}</b>`);
+      }
+      break;
+    }
+    case '-': {
+      if (hasFrac) {
+        const fA = decimalToFraction(opA), fB = decimalToFraction(opB);
+        if (fA.den === fB.den) {
+          lines.push(`Con el <b>mismo denominador</b>, restás los numeradores y mantenés el denominador.`);
+          lines.push(`<span class="tip">Numeradores: ${fA.num} − ${fB.num} = ${fA.num - fB.num} → mantenés el denominador ${fA.den}.</span>`);
+          lines.push(`Resultado: ${explainNum(opA)} − ${explainNum(opB)} = <b>${ansText}</b>`);
+        } else {
+          const L = lcm(fA.den, fB.den);
+          const newNumA = (L / fA.den) * fA.num, newNumB = (L / fB.den) * fB.num;
+          lines.push(`Cuando restás fracciones con <b>distinto denominador</b>, primero hallás el <b>Mínimo Común Múltiplo (MCM)</b> de los denominadores.`);
+          lines.push(`<span class="step">Paso 1 — MCM:</span> MCM(${fA.den}, ${fB.den}) = <b>${L}</b>.`);
+          lines.push(`<span class="step">Paso 2 — Convertir:</span> ${fA.num}/${fA.den} = ${newNumA}/${L} y ${fB.num}/${fB.den} = ${newNumB}/${L}.`);
+          lines.push(`<span class="step">Paso 3 — Restar numeradores:</span> ${newNumA} − ${newNumB} = ${newNumA - newNumB}.`);
+          lines.push(`Resultado: <b>${ansText}</b>`);
+        }
+      } else if (hasNeg) {
+        lines.push(`Recordá: <b>restar un número negativo es como sumar</b>. Por ejemplo, 5 − (−3) = 5 + 3 = 8.`);
+        lines.push(`${explainNum(opA)} − ${explainNum(opB)} = <b>${ansText}</b>`);
+      } else {
+        lines.push(`Restamos ${opA} − ${opB}.`);
+        lines.push(`<span class="verify">Verificación: si ${ansText} + ${opB} = ${opA}, entonces la resta está bien.</span>`);
+        lines.push(`Resultado: <b>${ansText}</b>`);
+      }
+      break;
+    }
+    case '×': {
+      if (hasFrac) {
+        lines.push(`<b>Fracción × entero:</b> multiplicás el numerador por el entero y mantenés el denominador.`);
+        const fracOperand = isFracA ? opA : opB, intOperand = isFracA ? opB : opA;
+        const f = decimalToFraction(fracOperand);
+        lines.push(`<span class="tip">${f.num}/${f.den} × ${intOperand} = (${f.num} × ${intOperand}) / ${f.den} = <b>${ansText}</b></span>`);
+      } else if (hasNeg) {
+        lines.push(`<b>Regla de signos:</b> (−) × (+) = (−) y (−) × (−) = (+).`);
+        lines.push(`${explainNum(opA)} × ${explainNum(opB)} = <b>${ansText}</b>`);
+      } else {
+        lines.push(`Multiplicar ${opA} × ${opB} = <b>${ansText}</b>.`);
+      }
+      break;
+    }
+    case '÷': {
+      if (hasFrac) {
+        lines.push(`<b>Fracción ÷ entero:</b> multiplicás el denominador por el entero.`);
+        const f = decimalToFraction(opA);
+        lines.push(`<span class="tip">${f.num}/${f.den} ÷ ${opB} = ${f.num}/(${f.den} × ${opB}) = <b>${ansText}</b></span>`);
+      } else if (hasNeg) {
+        lines.push(`<b>Regla de signos en la división:</b> (−) ÷ (+) = (−) y (−) ÷ (−) = (+).`);
+        lines.push(`${explainNum(opA)} ÷ ${explainNum(opB)} = <b>${ansText}</b>`);
+      } else {
+        lines.push(`División: <b>¿cuántas veces cabe ${opB} en ${opA}?</b>`);
+        lines.push(`<span class="verify">Verificación: ${ansText} × ${opB} = ${opA}.</span>`);
+        lines.push(`Resultado: <b>${ansText}</b>`);
+      }
+      break;
+    }
+    case '√': {
+      lines.push(`La raíz cuadrada de ${opA} es el número que <b>multiplicado por sí mismo</b> da ${opA}.`);
+      lines.push(`<span class="tip">${correctAnswer} × ${correctAnswer} = ${opA}, entonces √${opA} = <b>${correctAnswer}</b>.</span>`);
+      break;
+    }
+    case 'log': {
+      lines.push(`El logaritmo en base 10 nos dice <b>a qué exponente elevar 10</b> para obtener ${opA}.`);
+      lines.push(`<span class="tip">10<sup>${correctAnswer}</sup> = ${opA}, entonces log₁₀(${opA}) = <b>${correctAnswer}</b>.</span>`);
+      break;
+    }
+    default: lines.push(`Resultado correcto: <b>${ansText}</b>`);
+  }
+
+  if (type === 'wrongBall') {
+    if (sameFraction(chosenAnswer, correctAnswer)) {
+      lines.push(`⚠️ Hubo un problema al evaluar esta respuesta. ¡La respuesta era correcta!`);
+    } else {
+      lines.push(`❌ Elegiste <b>${explainNum(chosenAnswer)}</b>, pero la respuesta correcta era <b>${ansText}</b>.`);
+    }
+  } else if (type === 'missed') {
+    lines.push(`⚽ Dejaste pasar el balón correcto (<b>${ansText}</b>) y fue gol en contra.`);
+  }
+  return lines;
+}
+
+function fillAcademicCard(selector, mistake) {
+  const card = document.querySelector(selector);
+  if (!card) return false;
+  card.classList.remove('hidden');
+  card.querySelector('[data-role="equation"]').innerHTML = mistake.textHTML + ' = ?';
+  card.querySelector('[data-role="correct"]').innerHTML = numHTML(mistake.correctAnswer);
+  const wrongEl = card.querySelector('[data-role="wrong"]');
+  if (mistake.type === 'wrongBall') wrongEl.innerHTML = numHTML(mistake.chosenAnswer);
+  else wrongEl.innerHTML = '<span style="font-size:14px;font-weight:normal;opacity:0.9;">Dejaste pasar el correcto</span>';
+  const lines = generateExplanation(mistake);
+  card.querySelector('[data-role="explanation"]').innerHTML = lines.map(l => `<div>${l}</div>`).join('');
+  return true;
+}
+function hideAcademicCard(selector) { const card = document.querySelector(selector); if (card) card.classList.add('hidden'); }
+function hideAllAcademicCards() { document.querySelectorAll('.academic-card').forEach(c => c.classList.add('hidden')); }
+function showEndAcademicCard(overlayId) {
+  const selector = `#${overlayId} .academic-card`;
+  if (state.mistakes.length === 0) { hideAcademicCard(selector); return; }
+  const randomMistake = state.mistakes[Math.floor(Math.random() * state.mistakes.length)];
+  fillAcademicCard(selector, randomMistake);
+}
+
+/* ============================================================
+   UI REFS
+   ============================================================ */
+const container = document.getElementById('game-container');
+const uiEquation = document.getElementById('ui-equation');
+const uiLevel = document.getElementById('ui-level');
+const uiGoals = document.getElementById('ui-goals');
+const uiSaves = document.getElementById('ui-saves');
+const uiStreak = document.getElementById('ui-streak');
+const uiLives = document.getElementById('ui-lives');
+const uiLivesIcons = document.getElementById('ui-lives-icons');
+const uiKeeper = document.getElementById('ui-keeper');
+const uiKeeperEmoji = document.getElementById('ui-keeper-emoji');
+const uiTicker = document.getElementById('ui-ticker');
+const uiFeedback = document.getElementById('ui-feedback');
+const cursorDot = document.getElementById('cursor-dot');
+const controlsHint = document.getElementById('controls-hint');
+const btnExitGame = document.getElementById('btn-exit-game');
+const confirmExitModal = document.getElementById('confirm-exit-modal');
+const btnSoundToggle = document.getElementById('btn-sound-toggle');
+const btnVoiceToggle = document.getElementById('btn-voice-toggle');
+const btnMusicToggle = document.getElementById('btn-music-toggle');
+const btnCareer = document.getElementById('btn-career');
+
+// Shooter elements
+const shooterTargetsEl = document.getElementById('shooter-targets');
+const playerBallEl = document.getElementById('player-ball');
+const aimLineEl = document.getElementById('aim-line');
+const aimPathEl = document.getElementById('aim-path');
+const aiKeeperEl = document.getElementById('ai-keeper');
+
+function updateUI() {
+  uiLevel.textContent = state.levelIndex + 1;
+  uiGoals.textContent = state.goals;
+  uiSaves.textContent = state.saves;
+  uiStreak.textContent = state.streak;
+  let hearts = '';
+  for (let i=0;i<state.maxLives;i++) hearts += i<state.lives ? '❤️' : '🖤';
+  uiLives.textContent = hearts;
+  uiLivesIcons.textContent = hearts;
+}
+function setTicker(t){ uiTicker.textContent = t; }
+function showFeedback(text, color) {
+  uiFeedback.textContent = text;
+  uiFeedback.style.color = color;
+  uiFeedback.classList.remove('hidden');
+  void uiFeedback.offsetWidth;
+  uiFeedback.style.animation = 'none';
+  void uiFeedback.offsetWidth;
+  uiFeedback.style.animation = 'feedbackPop 1s ease-out forwards';
+  setTimeout(()=>uiFeedback.classList.add('hidden'), 1000);
+}
+function showCorrectAnswerBig(value) {
+  const div = document.createElement('div');
+  div.className = 'correct-answer-big';
+  div.innerHTML = numHTML(value, { parentheses: false });
+  container.appendChild(div);
+  setTimeout(()=>div.remove(), 1900);
+}
+function syncSoundToggle() { if (!btnSoundToggle) return; btnSoundToggle.textContent = state.soundOn ? 'ON' : 'OFF'; btnSoundToggle.classList.toggle('toggle-off', !state.soundOn); }
+function syncVoiceToggle() { if (!btnVoiceToggle) return; btnVoiceToggle.textContent = state.voiceEnabled ? 'ON' : 'OFF'; btnVoiceToggle.classList.toggle('toggle-off', !state.voiceEnabled); }
+function syncMusicToggle() { if (!btnMusicToggle) return; btnMusicToggle.textContent = state.musicEnabled ? 'ON' : 'OFF'; btnMusicToggle.classList.toggle('toggle-off', !state.musicEnabled); }
+function updateCareerButton() { if (!btnCareer) return; const r = Progress.getRankData(); btnCareer.textContent = `${r.emoji} MI CARRERA`; }
+
+/* ============================================================
+   ÁREA Y LÍMITES
+   ============================================================ */
+function recalcArea() {
+  const rect = container.getBoundingClientRect();
+  const W = rect.width, H = rect.height;
+  state.area = { left: W * 0.10, right: W * 0.90, top: H * 0.48, bottom: H * 0.88 };
+  state.goalLineY = H * 0.78;
+  state.goalRect = { left: W * 0.30, right: W * 0.70, top: H * 0.60, bottom: H * 0.78 };
+  const kw = uiKeeper.offsetWidth || 60, kh = uiKeeper.offsetHeight || 60;
+  state.keeperW = kw; state.keeperH = kh;
+  state.keeperX = Math.max(state.area.left + kw/2, Math.min(state.area.right - kw/2, state.keeperX));
+  state.keeperY = Math.max(state.area.top + kh/2, Math.min(state.area.bottom - kh/2, state.keeperY));
+}
+function resetKeeperPosition() {
+  recalcArea();
+  const rect = container.getBoundingClientRect();
+  state.keeperX = rect.width / 2; state.keeperY = rect.height * 0.75;
+  renderKeeper();
+}
+function renderKeeper() {
+  uiKeeper.style.left = state.keeperX + 'px';
+  uiKeeper.style.top = state.keeperY + 'px';
+  uiKeeper.style.transform = 'translate(-50%, -50%)';
+}
+
+/* ============================================================
+   MOVIMIENTO (Keeper Mode)
+   ============================================================ */
+function updateKeeper(dt) {
+  if (state.mode !== 'playing' || !state.active || state.gamePaused) return;
+  if (state.playMode !== 'keeper') return;
+
+  let dx = 0, dy = 0;
+  if (state.keys.left) dx -= 1;
+  if (state.keys.right) dx += 1;
+  if (state.keys.up) dy -= 1;
+  if (state.keys.down) dy += 1;
+  if (state.pointerActive && dx === 0 && dy === 0) {
+    const diffX = state.pointerX - state.keeperX, diffY = state.pointerY - state.keeperY;
+    const dist = Math.hypot(diffX, diffY);
+    if (dist > 6) { dx = diffX / dist; dy = diffY / dist; }
+  }
+  const mag = Math.hypot(dx, dy);
+  if (mag > 0) { dx /= mag; dy /= mag; }
+  state.keeperX += dx * state.keeperSpeedPx * dt;
+  state.keeperY += dy * state.keeperSpeedPx * dt;
+  const kw = state.keeperW / 2, kh = state.keeperH / 2;
+  state.keeperX = Math.max(state.area.left + kw, Math.min(state.area.right - kw, state.keeperX));
+  state.keeperY = Math.max(state.area.top + kh, Math.min(state.area.bottom - kh, state.keeperY));
+  renderKeeper();
+}
+
+/* ============================================================
+   BALONES (Keeper Mode)
+   ============================================================ */
+function getValueClass(val) {
+  if (val < 0 && !Number.isInteger(val)) return 'ball-value negative fraction';
+  if (val < 0) return 'ball-value negative';
+  if (!Number.isInteger(val)) return 'ball-value fraction';
+  return 'ball-value';
+}
+function spawnBalls() {
+  state.balls.forEach(b => b.el.remove());
+  state.balls = [];
+  const level = LEVELS[state.levelIndex];
+  const eq = generateEquation(level);
+  state.currentEquation = eq;
+  state.correctAnswer = eq.answer;
+  uiEquation.innerHTML = eq.textHTML + ' = ?';
+
+  const numBalls = Math.min(level.balls, eq.options.length);
+  let picked = [...eq.options].sort(()=>Math.random()-0.5).slice(0, numBalls);
+  if (!picked.some(v => approxEqual(v, eq.answer))) {
+    picked[0] = eq.answer;
+    picked.sort(()=>Math.random()-0.5);
+  }
+  const rect = container.getBoundingClientRect();
+  const w = rect.width;
+  const colWidth = (w - 100) / picked.length;
+
+  picked.forEach((val, i) => {
+    const el = document.createElement('div');
+    el.className = 'ball';
+    el.innerHTML = `<span class="ball-emoji">${state.shooterAvatar}</span><span class="${getValueClass(val)}">${numHTML(val, { parentheses: false })}</span>`;
+    const colCenter = 50 + colWidth * i + colWidth/2;
+    const jitter = (Math.random() - 0.5) * colWidth * 0.3;
+    const startX = Math.max(20, Math.min(w - 70, colCenter + jitter - 25));
+    const startY = -90 - i * 90 - Math.random()*40;
+    el.style.left = startX + 'px'; el.style.top = startY + 'px';
+    container.appendChild(el);
+    const baseSpeed = 55 * level.speed * state.globalSpeedMultiplier;
+    state.balls.push({
+      el, value: val, x: startX, y: startY,
+      speed: baseSpeed * (0.85 + Math.random()*0.3),
+      isCorrect: approxEqual(val, eq.answer),
+      resolved: false,
+    });
+  });
+  state.active = true;
+  state.roundLocked = false;
+  controlsHint.classList.add('show');
+  setTimeout(()=>controlsHint.classList.remove('show'), 2500);
+  narrateShot();
+}
+
+/* ============================================================
+   MODO PATEADOR - Lógica Mejorada
+   ============================================================ */
+function shooterGeom() {
+  const r = container.getBoundingClientRect();
+  const narrow = r.width < 600;
+  const gw = narrow ? 0.72 : 0.56;
+  return {
+    gw, gl: (1 - gw) / 2, gt: 0.24, gh: 0.20, gline: 0.44,
+    sixW: Math.min(0.94, gw + 0.14), sixB: 0.58,
+    penW: Math.min(0.96, gw + 0.30), penB: 0.89,
+    spot: 0.80, arcH: 0.06,
+  };
+}
+function applyShooterGeom() {
+  const g = shooterGeom();
+  const pc = v => (v * 100).toFixed(2) + '%';
+  const s = container.style;
+  s.setProperty('--gl', pc(g.gl)); s.setProperty('--gt', pc(g.gt));
+  s.setProperty('--gw', pc(g.gw)); s.setProperty('--gh', pc(g.gh));
+  s.setProperty('--gline', pc(g.gline));
+  s.setProperty('--six-w', pc(g.sixW)); s.setProperty('--six-b', pc(g.sixB));
+  s.setProperty('--pen-w', pc(g.penW)); s.setProperty('--pen-b', pc(g.penB));
+  s.setProperty('--spot', pc(g.spot)); s.setProperty('--arc-h', pc(g.arcH));
+  return g;
+}
+function updateBallSpot() {
+  const r = container.getBoundingClientRect();
+  const g = shooterGeom();
+  state.playerBallX = r.width * 0.5;
+  state.playerBallY = r.height * g.spot;
+}
+function layoutShooterTargets() {
+  const g = shooterGeom();
+  const n = state.shooterTargets.length;
+  if (!n) return;
+  const innerL = g.gl + g.gw * 0.07, innerW = g.gw * 0.86;
+  const twoRows = n > 4;
+  state.shooterTargets.forEach((t, i) => {
+    t.nx = innerL + innerW * (i + 0.5) / n;
+    t.ny = g.gt + g.gh * (twoRows ? (i % 2 === 0 ? 0.30 : 0.62) : 0.42);
+    t.el.style.left = (t.nx * 100) + '%';
+    t.el.style.top = (t.ny * 100) + '%';
+  });
+}
+
+function spawnShooterTargets() {
+  shooterTargetsEl.innerHTML = '';
+  state.shooterTargets = [];
+  state.isAiming = false;
+  aimLineEl.classList.remove('active');
+  const level = LEVELS[state.levelIndex];
+  const eq = generateEquation(level);
+  state.currentEquation = eq;
+  state.correctAnswer = eq.answer;
+  uiEquation.innerHTML = eq.textHTML + ' = ?';
+
+  const numBalls = Math.min(level.balls, eq.options.length);
+  let picked = [...eq.options].sort(()=>Math.random()-0.5).slice(0, numBalls);
+  if (!picked.some(v => approxEqual(v, eq.answer))) {
+    picked[0] = eq.answer;
+    picked.sort(()=>Math.random()-0.5);
+  }
+
+  picked.forEach((val) => {
+    const el = document.createElement('div');
+    el.className = 'shooter-target';
+    el.innerHTML = `<span class="target-emoji">${state.shooterAvatar}</span><span class="target-value">${numHTML(val, { parentheses: false })}</span>`;
+    shooterTargetsEl.appendChild(el);
+    state.shooterTargets.push({
+      el, value: val, nx: 0.5, ny: 0.3,
+      isCorrect: approxEqual(val, eq.answer),
+      resolved: false,
+    });
+  });
+  applyShooterGeom();
+  layoutShooterTargets();
+
+  // El balón SIEMPRE nace en el punto de penal (parte inferior, centrado)
+  playerBallEl.style.left = '';
+  playerBallEl.style.top = '';
+  playerBallEl.style.transform = '';
+  playerBallEl.classList.remove('hidden', 'flying');
+  updateBallSpot();
+
+  // Arquero IA en su posición base
+  aiKeeperEl.className = 'ai-keeper active';
+  aiKeeperEl.style.left = '';
+  aiKeeperEl.style.top = '';
+  aiKeeperEl.style.transform = '';
+
+  state.active = true;
+  state.roundLocked = false;
+  controlsHint.textContent = 'Arrastra desde el balón hacia el arco';
+  controlsHint.classList.add('show');
+  setTimeout(()=>controlsHint.classList.remove('show'), 2500);
+  narrateShot();
+}
+
+/* Objetivo bajo la línea de tiro: distancia perpendicular del centro del objetivo al rayo */
+function findAimTarget(dirX, dirY, sx, sy) {
+  const rect = container.getBoundingClientRect();
+  let best = null;
+  for (const t of state.shooterTargets) {
+    const tx = t.nx * rect.width, ty = t.ny * rect.height;
+    const vx = tx - sx, vy = ty - sy;
+    const along = vx * dirX + vy * dirY;
+    if (along <= 0) continue;
+    const perp = Math.abs(dirX * vy - dirY * vx);
+    const R = Math.max(t.el.offsetWidth, 44) / 2 + 12;
+    if (perp < R && (!best || perp < best.perp)) best = { t, perp, tx, ty };
+  }
+  return best;
+}
+function clearAimed() { state.shooterTargets.forEach(t => t.el.classList.remove('aimed')); }
+
+function beginAim(p, anywhere) {
+  if (!state.active || state.roundLocked || state.gamePaused) return;
+  updateBallSpot();
+  const dist = Math.hypot(p.x - state.playerBallX, p.y - state.playerBallY);
+  if (!anywhere && dist > 120) return;
+  state.isAiming = true;
+  updateAim(p.x, p.y);
+}
+function updateAim(x, y) {
+  state.aimX = x; state.aimY = y;
+  const sx = state.playerBallX, sy = state.playerBallY;
+  const dx = x - sx, dy = y - sy, len = Math.hypot(dx, dy);
+  clearAimed();
+  if (len < 18 || dy > -8) { aimLineEl.classList.remove('active'); return; }
+  const dirX = dx / len, dirY = dy / len;
+  const rect = container.getBoundingClientRect();
+  const g = shooterGeom();
+  const endY = rect.height * (g.gt + g.gh * 0.5);
+  const tt = Math.min(1800, (sy - endY) / (-dirY));
+  aimPathEl.setAttribute('d', `M ${sx} ${sy} L ${sx + dirX * tt} ${sy + dirY * tt}`);
+  aimLineEl.classList.add('active');
+  const hit = findAimTarget(dirX, dirY, sx, sy);
+  if (hit) hit.t.el.classList.add('aimed');
+}
+
+function shootBall() {
+  if (!state.isAiming) return;
+  state.isAiming = false;
+  aimLineEl.classList.remove('active');
+  clearAimed();
+
+  const rect = container.getBoundingClientRect();
+  const W = rect.width, H = rect.height;
+  const sx = state.playerBallX, sy = state.playerBallY;
+  const dx = state.aimX - sx, dy = state.aimY - sy;
+  const len = Math.hypot(dx, dy);
+  if (len < 25 || dy > -12) return; // línea inválida: no gasta el intento
+  state.active = false;
+
+  const dirX = dx / len, dirY = dy / len;
+  const hit = findAimTarget(dirX, dirY, sx, sy);
+  const g = shooterGeom();
+  const gx = v => (v * 100) + '%';
+
+  let endX, endY, isGoal = false, targetHit = null;
+  if (hit) {
+    targetHit = hit.t; endX = hit.tx; endY = hit.ty;
+    if (targetHit.isCorrect) {
+      // Respuesta correcta: GOL seguro, el arquero se tira al lado contrario
+      isGoal = true;
+      targetHit.el.classList.add('correct-hit');
+      const goRight = targetHit.nx < 0.5;
+      aiKeeperEl.style.left = gx(g.gl + g.gw * (goRight ? 0.86 : 0.14));
+      aiKeeperEl.style.transform = `translate(-50%, -50%) rotate(${goRight ? 55 : -55}deg)`;
+    } else {
+      // Respuesta errada: el arquero sí la ataja
+      targetHit.el.classList.add('wrong-hit');
+      aiKeeperEl.style.left = gx(targetHit.nx);
+      aiKeeperEl.style.top = gx(targetHit.ny);
+      aiKeeperEl.style.transform = `translate(-50%, -50%) rotate(${targetHit.nx < 0.5 ? -45 : 45}deg)`;
+    }
+  } else {
+    // Tiro sin objetivo: la pelota sigue su línea y se va afuera
+    const yEnd = H * (g.gt - 0.05);
+    const tt = (sy - yEnd) / (-dirY);
+    endX = sx + dirX * tt; endY = yEnd;
+  }
+
+  playerBallEl.classList.add('flying');
+  const animStart = performance.now();
+  const duration = 480;
+  function animateBall(now) {
+    const t = Math.min(1, (now - animStart) / duration);
+    const e = 1 - Math.pow(1 - t, 2.2);
+    const cx = sx + (endX - sx) * e;
+    const cy = sy + (endY - sy) * e;
+    playerBallEl.style.left = cx + 'px';
+    playerBallEl.style.top = cy + 'px';
+    playerBallEl.style.transform = `translate(-50%, -50%) scale(${1 - 0.4 * e}) rotate(${e * 540}deg)`;
+    if (t < 1) {
+      requestAnimationFrame(animateBall);
+    } else {
+      playerBallEl.classList.add('hidden');
+      setTimeout(() => { resolveShooterRound(isGoal, targetHit); }, 180);
+    }
+  }
+  requestAnimationFrame(animateBall);
+}
+
+function resolveShooterRound(isGoal, targetHit) {
+  playerBallEl.classList.add('hidden');
+
+  if (isGoal) {
+    state.goals++;
+    state.streak++;
+    if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+    soundSave(); soundCrowd();
+    showFeedback('¡GOOOL! ⚽', '#4caf50');
+    setTicker(`¡Golazo! Racha: ${state.streak} 🔥`);
+    narrateCategory('shooterGoal', { rate: 1.2, pitch: 1.3 });
+
+    if (state.currentEquation) {
+      const eq = state.currentEquation;
+      if ((eq.opA !== null && !Number.isInteger(eq.opA)) || (eq.opB !== null && !Number.isInteger(eq.opB))) state.sessionStats.fractionSaves++;
+      if ((eq.opA !== null && eq.opA < 0) || (eq.opB !== null && eq.opB < 0)) state.sessionStats.negativeSaves++;
+      if (eq.op === 'log') state.sessionStats.logSaves++;
+      if (eq.op === '√') state.sessionStats.sqrtSaves++;
+    }
+  } else {
+    state.lives--;
+    state.streak = 0;
+    soundGoal();
+    
+    if (targetHit) {
+      showFeedback('¡ATAJADO! 🧤', '#e53935');
+      setTicker(`¡El arquero la sacó! Era ${numText(state.correctAnswer)}.`);
+      narrateCategory('shooterSave', { rate: 1.1, pitch: 1.1 });
+
+      if (state.currentEquation) {
+        state.mistakes.push({
+          op: state.currentEquation.op, opA: state.currentEquation.opA, opB: state.currentEquation.opB,
+          textHTML: state.currentEquation.textHTML, correctAnswer: state.correctAnswer,
+          chosenAnswer: targetHit.value, type: 'wrongBall',
+        });
+      }
+    } else {
+      showFeedback('¡AFUERA! ❌', '#e53935');
+      setTicker(`¡La tiraste afuera! Era ${numText(state.correctAnswer)}.`);
+      narrateCategory('shooterMiss', { rate: 1.1, pitch: 1.0 });
+      if (state.currentEquation) {
+        state.mistakes.push({
+          op: state.currentEquation.op, opA: state.currentEquation.opA, opB: state.currentEquation.opB,
+          textHTML: state.currentEquation.textHTML, correctAnswer: state.correctAnswer,
+          chosenAnswer: null, type: 'missed',
+        });
+      }
+    }
+  }
+  updateUI();
+  state.roundLocked = true;
+
+  if (isGoal) {
+    if (state.goals >= LEVELS[state.levelIndex].target) {
+      state.active = false;
+      setTimeout(()=>levelComplete(), 700);
+      return;
+    }
+    setTimeout(()=>{ if (state.mode === 'playing') { state.lastTime = 0; spawnShooterTargets(); } }, 1200);
+  } else {
+    if (state.lives <= 0) {
+      state.active = false;
+      setTimeout(()=>gameOver(), 1900);
+      return;
+    }
+    setTimeout(()=>{ if (state.mode === 'playing') { state.lastTime = 0; spawnShooterTargets(); } }, 2100);
+  }
+}
+
+function checkCollisions() {
+  if (!state.active || state.roundLocked || state.gamePaused) return;
+  if (state.playMode !== 'keeper') return;
+
+  const kx = state.keeperX, ky = state.keeperY;
+  const kw = state.keeperW * 0.85, kh = state.keeperH * 0.85;
+  state.balls.forEach(ball => {
+    if (ball.resolved) return;
+    const bw = ball.el.offsetWidth || 44, bh = ball.el.offsetHeight || 60;
+    const bx = ball.x + bw/2, by = ball.y + bh/2;
+    const dx = Math.abs(bx - kx) - (kw/2 + bw/2);
+    const dy = Math.abs(by - ky) - (kh/2 + bh/2);
+    if (dx < 0 && dy < 0) handleCollision(ball);
+  });
+}
+function handleCollision(ball) {
+  if (ball.resolved) return;
+  if (ball.isCorrect) {
+    ball.resolved = true;
+    ball.el.style.transition = 'all 0.3s';
+    ball.el.style.transform = 'scale(0.2)';
+    ball.el.style.opacity = '0';
+    setTimeout(()=>ball.el.remove(), 300);
+    state.saves++; state.streak++;
+    if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+
+    if (state.currentEquation) {
+      const eq = state.currentEquation;
+      if ((eq.opA !== null && !Number.isInteger(eq.opA)) || (eq.opB !== null && !Number.isInteger(eq.opB))) state.sessionStats.fractionSaves++;
+      if ((eq.opA !== null && eq.opA < 0) || (eq.opB !== null && eq.opB < 0)) state.sessionStats.negativeSaves++;
+      if (eq.op === 'log') state.sessionStats.logSaves++;
+      if (eq.op === '√') state.sessionStats.sqrtSaves++;
+    }
+
+    soundSave(); soundCrowd();
+    showFeedback('¡ATAJADA! 🧤', '#4caf50');
+    setTicker(`¡Atajada! Racha: ${state.streak} 🔥`);
+    updateUI(); narrateSave();
+    uiKeeper.style.transform = 'translate(-50%, -50%) scale(1.4)';
+    setTimeout(()=>{ uiKeeper.style.transform = 'translate(-50%, -50%) scale(1)'; }, 200);
+    state.roundLocked = true;
+    if (state.saves >= LEVELS[state.levelIndex].target) {
+      state.active = false;
+      setTimeout(()=>levelComplete(), 700);
+      return;
+    }
+    setTimeout(()=>{ if (state.mode === 'playing') { state.lastTime = 0; spawnBalls(); } }, 900);
+  } else {
+    ball.resolved = true;
+    state.streak = 0;
+    soundGoal();
+    showFeedback('¡NO! ❌', '#e53935');
+    setTicker(`¡Ese no era! Era ${numText(state.correctAnswer)}.`);
+    updateUI();
+    if (state.currentEquation) {
+      state.mistakes.push({
+        op: state.currentEquation.op, opA: state.currentEquation.opA, opB: state.currentEquation.opB,
+        textHTML: state.currentEquation.textHTML, correctAnswer: state.correctAnswer,
+        chosenAnswer: ball.value, type: 'wrongBall',
+      });
+    }
+    narrateCategory('wrongBall', { rate: 1.1, pitch: 1.1 });
+    ball.el.style.transition = 'all 0.5s';
+    ball.el.style.opacity = '0.15';
+    ball.el.style.transform = 'scale(0.5)';
+    ball.el.style.filter = 'grayscale(1)';
+  }
+}
+
+/* ============================================================
+   GAME LOOP
+   ============================================================ */
+function gameLoop(timestamp) {
+  if (state.mode !== 'playing') return;
+  if (state.gamePaused) { state.lastTime = timestamp; state.animationId = requestAnimationFrame(gameLoop); return; }
+  const dt = state.lastTime ? Math.min((timestamp - state.lastTime)/1000, 0.05) : 0.016;
+  state.lastTime = timestamp;
+
+  if (state.playMode === 'keeper') {
+    updateKeeper(dt);
+    const goalY = state.goalLineY;
+    state.balls.forEach(ball => {
+      if (ball.resolved) return;
+      ball.y += ball.speed * dt;
+      ball.el.style.top = ball.y + 'px';
+      if (ball.isCorrect && ball.y > goalY && !ball.resolved) {
+        ball.resolved = true;
+        state.goals++; state.streak = 0; state.lives--;
+        soundGoal();
+        showFeedback('¡GOL! ⚽', '#e53935');
+        setTicker(`¡Gol en contra! Era ${numText(state.correctAnswer)}. Vidas: ${state.lives}`);
+        updateUI();
+        showCorrectAnswerBig(state.correctAnswer);
+        if (state.currentEquation) {
+          state.mistakes.push({
+            op: state.currentEquation.op, opA: state.currentEquation.opA, opB: state.currentEquation.opB,
+            textHTML: state.currentEquation.textHTML, correctAnswer: state.correctAnswer,
+            chosenAnswer: null, type: 'missed',
+          });
+        }
+        narrateCategory('goal', { rate: 1.2, pitch: 1.3 });
+        state.roundLocked = true;
+        state.active = false;
+        if (state.lives <= 0) setTimeout(()=>gameOver(), 1900);
+        else setTimeout(()=>{ if (state.mode === 'playing') { state.lastTime = 0; spawnBalls(); } }, 2100);
+      }
+      if (!ball.isCorrect && ball.y > goalY + 60 && !ball.resolved) {
+        ball.resolved = true;
+        ball.el.style.transition = 'all 0.3s';
+        ball.el.style.opacity = '0';
+        setTimeout(()=>ball.el.remove(), 300);
+      }
+    });
+    checkCollisions();
+  }
+  state.animationId = requestAnimationFrame(gameLoop);
+}
+
+/* ============================================================
+   RESUMEN DE SESIÓN (XP + insignias nuevas)
+   ============================================================ */
+function renderSessionSummary(elId, result) {
+  const el = document.getElementById(elId);
+  if (!el || !result) return;
+  const { xpGained, newBadges } = result;
+  let html = `<div>✨ Ganaste <span class="xp-gain">+${xpGained} XP</span></div>`;
+  if (newBadges && newBadges.length > 0) {
+    for (const b of newBadges) {
+      html += `<div class="new-badge">${b.emoji} ¡Nuevo logro: ${b.title}!</div>`;
+    }
+  }
+  el.innerHTML = html;
+  el.classList.remove('hidden');
+}
+
+/* ============================================================
+   FLUJO
+   ============================================================ */
+function startLevel(index, mode = 'keeper') {
+  initAudio();
+  if (state.musicEnabled) GameMusic.start();
+  state.playMode = mode;
+  syncModeSelector();
+  controlsHint.textContent = mode === 'keeper' ? 'Mueve al arquero por el área' : 'Arrastra desde el balón hacia el arco';
+  state.levelIndex = index;
+  state.mode = 'playing';
+  state.goals = 0; state.saves = 0; state.streak = 0; state.bestStreak = 0;
+  state.lives = LEVELS[index].lives;
+  state.maxLives = LEVELS[index].lives;
+  state.active = false; state.roundLocked = false;
+  state.lastTime = 0; state.pointerActive = false; state.gamePaused = false;
+  state.mistakes = [];
+  state.sessionStats = { fractionSaves: 0, negativeSaves: 0, logSaves: 0, sqrtSaves: 0 };
+
+  container.classList.add('playing');
+  container.classList.remove('keeper-mode', 'shooter-mode');
+  container.classList.add(mode === 'keeper' ? 'keeper-mode' : 'shooter-mode');
+  
+  uiEquation.textContent = '...';
+  updateUI();
+  hideAllOverlays();
+  hideAllAcademicCards();
+  document.getElementById('lu-session-summary').classList.add('hidden');
+  document.getElementById('go-session-summary').classList.add('hidden');
+  confirmExitModal.classList.add('hidden');
+  btnExitGame.classList.remove('hidden');
+  soundWhistle();
+  narrateCategory('levelStart', { rate: 1.05, pitch: 1.2 });
+
+  const lvl = LEVELS[index];
+  const pct = Math.round(getRarityChance(lvl.rarity) * 100);
+  setTicker(`Nivel ${index+1}: ${lvl.name} - ¡${mode === 'keeper' ? 'Ataja' : 'Meté'} ${lvl.target} balones! (Especiales: ${pct}%)`);
+  state.balls.forEach(b => b.el.remove());
+  state.balls = [];
+
+  if (mode === 'keeper') {
+    uiKeeperEmoji.textContent = state.keeperAvatar;
+    uiKeeper.style.display = 'flex';
+    playerBallEl.classList.add('hidden');
+    shooterTargetsEl.innerHTML = '';
+    aiKeeperEl.classList.remove('active');
+    recalcArea(); resetKeeperPosition();
+    setTimeout(()=>{
+      if (state.mode === 'playing') {
+        spawnBalls();
+        if (state.animationId) cancelAnimationFrame(state.animationId);
+        state.animationId = requestAnimationFrame(gameLoop);
+      }
+    }, 1200);
+  } else {
+    // Shooter mode
+    uiKeeper.style.display = 'none'; 
+    applyShooterGeom();
+    recalcArea();
+    setTimeout(()=>{
+      if (state.mode === 'playing') {
+        spawnShooterTargets();
+        if (state.animationId) cancelAnimationFrame(state.animationId);
+        state.animationId = requestAnimationFrame(gameLoop);
+      }
+    }, 1200);
+  }
+}
+
+function exitToMenu() {
+  cancelSpeech();
+  state.mode = 'menu';
+  state.active = false; state.gamePaused = false; state.roundLocked = false;
+  container.classList.remove('playing', 'keeper-mode', 'shooter-mode');
+  if (state.animationId) cancelAnimationFrame(state.animationId);
+  state.balls.forEach(b => b.el.remove());
+  state.balls = [];
+  shooterTargetsEl.innerHTML = '';
+  confirmExitModal.classList.add('hidden');
+  btnExitGame.classList.add('hidden');
+  cursorDot.style.display = 'none';
+  aimLineEl.classList.remove('active');
+  hideAllAcademicCards();
+  updateCareerButton();
+  showOverlay('overlay-menu');
+  setTicker('Bienvenidos al Estadio Matemático. ¡Elige un modo!');
+  soundWhistle();
+}
+
+function levelComplete() {
+  state.mode = 'levelup';
+  state.active = false;
+  container.classList.remove('playing', 'keeper-mode', 'shooter-mode');
+  btnExitGame.classList.add('hidden');
+  soundLevelUp(); soundCrowd();
+  setTicker(`¡Nivel ${state.levelIndex+1} superado! 🏆`);
+  narrateCategory('levelComplete', { rate: 1.1, pitch: 1.25 });
+
+  const isLast = state.levelIndex >= LEVELS.length - 1;
+  if (state.isTournament && isLast) { gameOver(true); return; }
+
+  const result = Progress.recordSession({
+    level: state.levelIndex,
+    saves: state.saves,
+    goals: state.goals,
+    bestStreak: state.bestStreak,
+    mistakes: state.mistakes.length,
+    completed: true,
+    tournamentWin: false,
+    ...state.sessionStats,
+  });
+  renderSessionSummary('lu-session-summary', result);
+
+  document.getElementById('lu-title').textContent = isLast ? '¡CAMPEÓN! 🏆' : '¡NIVEL SUPERADO! ✅';
+  document.getElementById('lu-subtitle').textContent =
+    `Atajadas/Goles: ${state.saves + state.goals} | Errores: ${state.mistakes.length} | Racha máx: ${state.bestStreak}`;
+
+  showEndAcademicCard('overlay-levelup');
+
+  const btnNext = document.getElementById('btn-next-level');
+  if (isLast && !state.isTournament) {
+    btnNext.textContent = '🏆 JUGAR DE NUEVO';
+    btnNext.onclick = () => { soundClick(); state.isTournament=false; startLevel(0, state.playMode); };
+  } else if (state.isTournament) {
+    btnNext.textContent = '➡️ SIGUIENTE NIVEL';
+    btnNext.onclick = () => { soundClick(); state.isTournament=true; startLevel(state.levelIndex+1, state.playMode); };
+  } else {
+    btnNext.textContent = '➡️ SIGUIENTE NIVEL';
+    btnNext.onclick = () => { soundClick(); state.isTournament=false; startLevel(state.levelIndex+1, state.playMode); };
+  }
+  showOverlay('overlay-levelup');
+}
+
+function gameOver(tournamentWin = false) {
+  state.mode = 'gameover';
+  state.active = false;
+  container.classList.remove('playing', 'keeper-mode', 'shooter-mode');
+  btnExitGame.classList.add('hidden');
+  cursorDot.style.display = 'none';
+  if (state.animationId) cancelAnimationFrame(state.animationId);
+  soundWhistle();
+  setTimeout(soundGoal, 300);
+  setTimeout(() => {
+    if (tournamentWin) narrateCategory('tournamentWin', { rate: 1.1, pitch: 1.3 });
+    else narrateCategory('gameOver', { rate: 1.0, pitch: 1.1 });
+  }, 600);
+
+  const result = Progress.recordSession({
+    level: state.levelIndex,
+    saves: state.saves,
+    goals: state.goals,
+    bestStreak: state.bestStreak,
+    mistakes: state.mistakes.length,
+    completed: false,
+    tournamentWin: tournamentWin,
+    ...state.sessionStats,
+  });
+  renderSessionSummary('go-session-summary', result);
+
+  document.getElementById('go-title').textContent = tournamentWin ? '¡TORNEO GANADO! 🏆' : '¡GOL EN CONTRA! 😢';
+  document.getElementById('go-subtitle').textContent = tournamentWin
+    ? '¡Has conquistado todos los niveles! Eres una leyenda.'
+    : `El arquero no pudo atajar. Racha máxima: ${state.bestStreak}`;
+  document.getElementById('go-goals').textContent = state.goals;
+  document.getElementById('go-saves').textContent = state.saves;
+  document.getElementById('go-streak').textContent = state.bestStreak;
+
+  showEndAcademicCard('overlay-gameover');
+  showOverlay('overlay-gameover');
+  setTicker('Fin del partido. ¡Presiona reintentar!');
+}
+
+function hideAllOverlays() { document.querySelectorAll('.overlay').forEach(o => o.classList.add('hidden')); }
+function showOverlay(id) { hideAllOverlays(); document.getElementById(id).classList.remove('hidden'); }
+
+/* ============================================================
+   MI CARRERA — Renderizar
+   ============================================================ */
+function renderCareer() {
+  const data = Progress.getData();
+  const rank = Progress.getRankData();
+  const nextRank = Progress.getNextRankData();
+
+  const rankEl = document.getElementById('career-rank');
+  let barPct = 100;
+  let nextText = '¡Rango máximo alcanzado!';
+  if (nextRank) {
+    const prevXp = rank.xp;
+    const range = nextRank.xp - prevXp;
+    const inRange = data.xp - prevXp;
+    barPct = Math.max(0, Math.min(100, (inRange / range) * 100));
+    nextText = `Faltan ${nextRank.xp - data.xp} XP para ${nextRank.emoji} ${nextRank.name}`;
+  }
+  rankEl.innerHTML = `
+    <div class="career-rank-emoji">${rank.emoji}</div>
+    <div class="career-rank-name">${rank.name}</div>
+    <div class="career-rank-xp">${data.xp} XP totales</div>
+    <div class="career-rank-bar-wrap">
+      <div class="career-rank-bar" style="width:${barPct}%"></div>
+    </div>
+    <div class="career-rank-next">${nextText}</div>
+  `;
+
+  const statsEl = document.getElementById('career-stats');
+  const stats = [
+    { label: 'Atajadas/Goles', value: data.totalSaves + data.totalGoals },
+    { label: 'Mejor racha', value: data.bestStreak },
+    { label: 'Niveles completados', value: data.levelsCompleted },
+    { label: 'Sesiones jugadas', value: data.totalSessions },
+    { label: 'Nivel máximo', value: data.maxLevelReached > 0 ? `N°${data.maxLevelReached}` : '—' },
+  ];
+  statsEl.innerHTML = stats.map(s => `
+    <div class="career-stat">
+      <span class="label">${s.label}</span>
+      <span class="value">${s.value}</span>
+    </div>
+  `).join('');
+
+  const badgesEl = document.getElementById('career-badges');
+  const badges = Progress.getBadges();
+  badgesEl.innerHTML = badges.map(b => `
+    <div class="badge-card ${b.unlocked ? 'unlocked' : 'locked'}">
+      <span class="badge-emoji">${b.emoji}</span>
+      <div class="badge-title">${b.title}</div>
+      <div class="badge-desc">${b.desc}</div>
+    </div>
+  `).join('');
+}
+
+/* ============================================================
+   OVERLAYS
+   ============================================================ */
+function buildLevelGrid() {
+  const grid = document.getElementById('level-grid');
+  grid.innerHTML = '';
+  LEVELS.forEach((lv,i) => {
+    const btn = document.createElement('button');
+    btn.className = 'level-btn';
+    btn.innerHTML = `<span class="lv-num">Nivel ${lv.id}</span><span class="lv-desc">${lv.name}</span><span class="lv-desc">${lv.desc}</span><span class="lv-rarity">${getRarityLabel(lv.rarity)}</span>`;
+    btn.onclick = () => { soundClick(); state.isTournament=false; startLevel(i, state.playMode); };
+    grid.appendChild(btn);
+  });
+}
+function buildAvatarPickers() {
+  const kDiv = document.getElementById('keeper-avatars');
+  const sDiv = document.getElementById('shooter-avatars');
+  kDiv.innerHTML = ''; sDiv.innerHTML = '';
+  KEEPER_AVATARS.forEach(a => {
+    const el = document.createElement('span');
+    el.className = 'avatar-option' + (state.keeperAvatar === a ? ' selected' : '');
+    el.textContent = a;
+    el.onclick = () => { soundClick(); state.keeperAvatar = a; uiKeeperEmoji.textContent = a; buildAvatarPickers(); };
+    kDiv.appendChild(el);
+  });
+  SHOOTER_AVATARS.forEach(a => {
+    const el = document.createElement('span');
+    el.className = 'avatar-option' + (state.shooterAvatar === a ? ' selected' : '');
+    el.textContent = a;
+    el.onclick = () => { soundClick(); state.shooterAvatar = a; buildAvatarPickers(); };
+    sDiv.appendChild(el);
+  });
+}
+function buildNumberTypeToggles() {
+  const group = document.getElementById('number-type-toggles');
+  group.querySelectorAll('.toggle-btn').forEach(btn => {
+    const type = btn.dataset.type;
+    btn.classList.toggle('active', state.numberTypes[type]);
+    btn.onclick = () => {
+      soundClick();
+      const activeCount = Object.values(state.numberTypes).filter(v => v).length;
+      if (state.numberTypes[type] && activeCount <= 1) return;
+      state.numberTypes[type] = !state.numberTypes[type];
+      btn.classList.toggle('active', state.numberTypes[type]);
+    };
+  });
+}
+function setupSettingsTabs() {
+  const tabs = document.querySelectorAll('.settings-tab');
+  const panels = document.querySelectorAll('.settings-panel');
+  tabs.forEach(tab => {
+    onTap(tab, function() {
+      soundClick();
+      const targetId = this.dataset.tab;
+      tabs.forEach(t => t.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      this.classList.add('active');
+      const target = document.getElementById(targetId);
+      if (target) target.classList.add('active');
+      const overlay = document.getElementById('overlay-settings');
+      if (overlay) overlay.scrollTop = 0;
+    });
+  });
+}
+
+/* ============================================================
+   ETAPAS DE VELOCIDAD
+   ============================================================ */
+const STAGE_RANGES = { 1: [0.3, 1.1], 2: [1.1, 1.8], 3: [1.8, 2.5] };
+function applySpeedFromStage() {
+  const range = STAGE_RANGES[state.velocityStage];
+  const t = state.sliderPos / 10;
+  state.globalSpeedMultiplier = range[0] + t * (range[1] - range[0]);
+  state.globalSpeedMultiplier = Math.round(state.globalSpeedMultiplier * 100) / 100;
+  const sv = document.getElementById('speed-value');
+  if (sv) sv.textContent = state.globalSpeedMultiplier.toFixed(1) + 'x';
+  const hint = document.getElementById('stage-range-hint');
+  if (hint) hint.textContent = `Etapa ${state.velocityStage}: ${range[0].toFixed(1)}x → ${range[1].toFixed(1)}x`;
+  Progress.savePreference('velocityStage', state.velocityStage);
+  Progress.savePreference('sliderPos', state.sliderPos);
+}
+function setupStageSelector() {
+  const btns = document.querySelectorAll('.stage-btn');
+  btns.forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.stage) === state.velocityStage);
+    onTap(btn, function() {
+      soundClick();
+      state.velocityStage = parseInt(this.dataset.stage);
+      btns.forEach(b => b.classList.toggle('active', b === this));
+      applySpeedFromStage();
+    });
+  });
+}
+
+/* ============================================================
+   MÚSICA - UI
+   ============================================================ */
+function buildMusicTracks() {
+  const tracksEl = document.getElementById('music-tracks');
+  if (!tracksEl) return;
+  tracksEl.innerHTML = '';
+  const tracks = GameMusic.getTracks();
+  tracks.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'music-track-card' + (t.index === state.musicTrackIndex ? ' active' : '');
+    card.dataset.track = t.index;
+    card.innerHTML = `<div class="music-track-emoji">${t.emoji}</div><div class="music-track-name">${t.name}</div>`;
+    onTap(card, () => {
+      soundClick();
+      state.musicTrackIndex = t.index;
+      GameMusic.setTrack(t.index);
+      Progress.savePreference('musicTrack', t.index);
+      document.querySelectorAll('.music-track-card').forEach(c => {
+        c.classList.toggle('active', parseInt(c.dataset.track) === t.index);
+      });
+    });
+    tracksEl.appendChild(card);
+  });
+}
+
+/* ============================================================
+   CONTROLES
+   ============================================================ */
+window.addEventListener('keydown', (e) => {
+  if (state.mode !== 'playing') return;
+  if (state.playMode === 'keeper') {
+    if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') state.keys.left = true;
+    if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') state.keys.right = true;
+    if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') state.keys.up = true;
+    if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') state.keys.down = true;
+  }
+  if (e.key === 'Escape') {
+    if (!confirmExitModal.classList.contains('hidden')) { confirmExitModal.classList.add('hidden'); state.gamePaused = false; }
+    else if (state.mode === 'playing') { confirmExitModal.classList.remove('hidden'); state.gamePaused = true; }
+  }
+});
+window.addEventListener('keyup', (e) => {
+  if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') state.keys.left = false;
+  if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') state.keys.right = false;
+  if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') state.keys.up = false;
+  if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') state.keys.down = false;
+});
+
+function getPointerPos(e) { const rect = container.getBoundingClientRect(); return { x: e.clientX - rect.left, y: e.clientY - rect.top }; }
+
+function updatePointer(e) {
+  if (state.mode !== 'playing' || state.gamePaused) return;
+  const p = getPointerPos(e);
+  state.pointerX = p.x; state.pointerY = p.y; state.pointerActive = true;
+
+  if (state.playMode === 'keeper') {
+    cursorDot.style.display = 'block';
+    cursorDot.style.left = p.x + 'px'; cursorDot.style.top = p.y + 'px';
+  } else if (state.playMode === 'shooter') {
+    state.aimX = p.x; state.aimY = p.y;
+    if (state.isAiming) updateAim(p.x, p.y);
+    else if (e.pointerType === 'mouse' && state.active && !state.roundLocked) {
+      // En PC: vista previa de la línea al pasar el mouse
+      updateBallSpot();
+      updateAim(p.x, p.y);
+    }
+  }
+}
+
+container.addEventListener('pointermove', (e) => { if (state.mode !== 'playing') return; updatePointer(e); });
+container.addEventListener('pointerdown', (e) => {
+  initAudio();
+  if (state.mode !== 'playing') return;
+  if (!confirmExitModal.classList.contains('hidden')) return;
+  const p = getPointerPos(e);
+
+  if (state.playMode === 'keeper') {
+    updatePointer(e);
+  } else if (state.playMode === 'shooter' && state.active && !state.roundLocked) {
+    if (e.target.closest && e.target.closest('button')) return;
+    // Mouse: se puede apuntar desde cualquier lugar (clic = patear). Touch: desde el balón.
+    beginAim(p, e.pointerType === 'mouse');
+  }
+});
+
+container.addEventListener('pointerleave', (e) => {
+  state.pointerActive = false;
+  cursorDot.style.display = 'none';
+  if (state.playMode === 'shooter' && !state.isAiming) { aimLineEl.classList.remove('active'); clearAimed(); }
+});
+
+container.addEventListener('pointerup', () => {
+  if (state.playMode === 'shooter' && state.isAiming) {
+    shootBall();
+  }
+  setTimeout(()=>{ state.pointerActive = false; }, 250);
+});
+// Si se suelta el mouse fuera del campo, igual se patea
+window.addEventListener('pointerup', () => {
+  if (state.mode === 'playing' && state.playMode === 'shooter' && state.isAiming) shootBall();
+});
+
+container.addEventListener('touchstart', (e) => {
+  initAudio();
+  if (state.mode !== 'playing') return;
+  if (!confirmExitModal.classList.contains('hidden')) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  const p = getPointerPos({ clientX: t.clientX, clientY: t.clientY });
+
+  if (state.playMode === 'keeper') {
+    updatePointer({ clientX: t.clientX, clientY: t.clientY });
+  } else if (state.playMode === 'shooter' && state.active && !state.roundLocked) {
+    if (e.target.closest && e.target.closest('button')) return;
+    beginAim(p, false);
+  }
+}, { passive: false });
+
+container.addEventListener('touchmove', (e) => {
+  if (state.mode !== 'playing' || state.gamePaused) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  updatePointer({ clientX: t.clientX, clientY: t.clientY });
+}, { passive: false });
+
+container.addEventListener('touchend', () => {
+  if (state.playMode === 'shooter' && state.isAiming) {
+    shootBall();
+  }
+  cursorDot.style.display = 'none';
+  setTimeout(()=>{ state.pointerActive = false; }, 250);
+});
+
+function onTap(el, handler) {
+  if (!el) return;
+  let touched = false;
+  el.addEventListener('touchend', (e) => {
+    touched = true;
+    e.preventDefault(); e.stopPropagation();
+    handler.call(el, e);
+    setTimeout(() => { touched = false; }, 400);
+  }, { passive: false });
+  el.addEventListener('click', (e) => {
+    if (touched) return;
+    e.stopPropagation();
+    handler.call(el, e);
+  });
+}
+
+/* ============================================================
+   BOTONES
+   ============================================================ */
+onTap(document.getElementById('btn-tournament'), () => { initAudio(); soundClick(); state.isTournament = true; startLevel(0, state.playMode); });
+onTap(document.getElementById('btn-levels'), () => { soundClick(); buildLevelGrid(); showOverlay('overlay-levels'); });
+onTap(document.getElementById('btn-career'), () => { soundClick(); renderCareer(); showOverlay('overlay-career'); });
+onTap(document.getElementById('btn-settings'), () => {
+  soundClick(); buildAvatarPickers(); buildNumberTypeToggles();
+  updateVoiceSelector(); syncSoundToggle(); syncVoiceToggle(); syncMusicToggle();
+  updateVoiceStatus('');
+  buildMusicTracks();
+  setupStageSelector();
+  applySpeedFromStage();
+  const tabs = document.querySelectorAll('.settings-tab');
+  const panels = document.querySelectorAll('.settings-panel');
+  tabs.forEach((t, i) => { t.classList.toggle('active', i === 0); });
+  panels.forEach((p, i) => { p.classList.toggle('active', i === 0); });
+  showOverlay('overlay-settings');
+  const overlay = document.getElementById('overlay-settings');
+  if (overlay) overlay.scrollTop = 0;
+});
+function syncModeSelector() {
+  document.querySelectorAll('#mode-selector .toggle-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === state.playMode);
+  });
+}
+document.querySelectorAll('#mode-selector .toggle-btn').forEach(b => {
+  onTap(b, () => { soundClick(); state.playMode = b.dataset.mode; syncModeSelector(); });
+});
+syncModeSelector();
+onTap(document.getElementById('btn-back-levels'), () => { soundClick(); showOverlay('overlay-menu'); });
+onTap(document.getElementById('btn-back-settings'), () => { soundClick(); showOverlay('overlay-menu'); });
+onTap(document.getElementById('btn-back-career'), () => { soundClick(); showOverlay('overlay-menu'); });
+onTap(btnSoundToggle, function() { state.soundOn = !state.soundOn; syncSoundToggle(); soundClick(); });
+onTap(btnVoiceToggle, function() {
+  state.voiceEnabled = !state.voiceEnabled;
+  syncVoiceToggle(); soundClick();
+  if (state.voiceEnabled) speakDirect('Narración activada', { rate: 1.05, pitch: 1.15 });
+  else { cancelSpeech(); updateVoiceStatus('Narración desactivada'); }
+});
+onTap(btnMusicToggle, function() {
+  state.musicEnabled = !state.musicEnabled;
+  syncMusicToggle(); soundClick();
+  Progress.savePreference('musicEnabled', state.musicEnabled);
+  if (state.musicEnabled) { GameMusic.start(); GameMusic.setMuted(false); }
+  else { GameMusic.setMuted(true); }
+});
+onTap(document.getElementById('btn-voice-test'), () => { soundClick(); speakDirect('¡Se prepara... y patea! ¡Gooool!', { rate: 1.15, pitch: 1.3, force: true }); });
+onTap(document.getElementById('btn-retry'), () => { soundClick(); state.isTournament=false; startLevel(state.levelIndex, state.playMode); });
+onTap(document.getElementById('btn-menu-go'), () => {
+  soundClick(); cancelSpeech(); state.mode='menu'; container.classList.remove('playing', 'keeper-mode', 'shooter-mode');
+  updateCareerButton(); showOverlay('overlay-menu');
+  setTicker('Bienvenidos al Estadio Matemático.');
+});
+onTap(document.getElementById('btn-menu-lu'), () => {
+  soundClick(); cancelSpeech(); state.mode='menu'; container.classList.remove('playing', 'keeper-mode', 'shooter-mode');
+  updateCareerButton(); showOverlay('overlay-menu');
+  setTicker('Bienvenidos al Estadio Matemático.');
+});
+onTap(btnExitGame, () => { soundClick(); state.gamePaused = true; confirmExitModal.classList.remove('hidden'); });
+onTap(document.getElementById('btn-confirm-cancel'), () => { soundClick(); confirmExitModal.classList.add('hidden'); state.gamePaused = false; state.lastTime = 0; });
+onTap(document.getElementById('btn-confirm-exit'), () => { soundClick(); exitToMenu(); });
+
+const voiceSelect = document.getElementById('voice-select');
+voiceSelect.addEventListener('change', (e) => {
+  state.selectedVoiceName = e.target.value;
+  soundClick();
+  if (state.voiceEnabled) speakDirect('Voz seleccionada', { rate: 1.05, pitch: 1.15 });
+});
+
+const speedSlider = document.getElementById('speed-slider');
+speedSlider.addEventListener('input', (e) => {
+  state.sliderPos = parseInt(e.target.value);
+  applySpeedFromStage();
+});
+
+/* ============================================================
+   INICIALIZACIÓN
+   ============================================================ */
+updateUI();
+setTicker('Bienvenidos al Estadio Matemático. ¡Elige un modo!');
+buildLevelGrid();
+uiKeeperEmoji.textContent = state.keeperAvatar;
+syncSoundToggle(); syncVoiceToggle(); syncMusicToggle();
+updateCareerButton();
+initVoices();
+setupSettingsTabs();
+
+(function restorePrefs() {
+  const prefs = Progress.getData().preferences || {};
+  if (typeof prefs.musicEnabled === 'boolean') state.musicEnabled = prefs.musicEnabled;
+  if (typeof prefs.musicTrack === 'number') state.musicTrackIndex = prefs.musicTrack;
+  if (typeof prefs.velocityStage === 'number') state.velocityStage = prefs.velocityStage;
+  if (typeof prefs.sliderPos === 'number') state.sliderPos = prefs.sliderPos;
+  speedSlider.value = state.sliderPos;
+  applySpeedFromStage();
+  syncMusicToggle();
+})();
+
+window.addEventListener('resize', () => {
+  recalcArea();
+  if (state.mode === 'playing' && state.playMode === 'keeper') {
+    const kw = state.keeperW/2, kh = state.keeperH/2;
+    state.keeperX = Math.max(state.area.left + kw, Math.min(state.area.right - kw, state.keeperX));
+    state.keeperY = Math.max(state.area.top + kh, Math.min(state.area.bottom - kh, state.keeperY));
+    renderKeeper();
+  }
+});
+window.addEventListener('resize', () => {
+  if (state.mode === 'playing' && state.playMode === 'shooter') { applyShooterGeom(); layoutShooterTargets(); updateBallSpot(); }
+});
+setTimeout(() => { recalcArea(); resetKeeperPosition(); }, 100);
+
+function globalFirstInteraction() {
+  initAudio();
+  if (state.musicEnabled) {
+    GameMusic.start();
+    GameMusic.setMuted(false);
+  }
+}
+document.addEventListener('touchstart', globalFirstInteraction, { once: true, passive: true });
+document.addEventListener('click', globalFirstInteraction, { once: true });
+</script>
+</body>
+</html>
