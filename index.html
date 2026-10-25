@@ -240,6 +240,66 @@
   .ai-keeper.dive-right { left: 80%; }
   .ai-keeper.dive-center { left: 50%; }
 
+  /* ============================================================
+     MODO WORLDCUP - Barrera y compañeros
+     ============================================================ */
+  .wall-player {
+    position: absolute;
+    z-index: 12;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.7));
+    pointer-events: none;
+    transition: opacity 0.35s ease-out, transform 0.35s ease-out;
+    transform: translate(-50%, -50%);
+    letter-spacing: -0.3em;
+    white-space: nowrap;
+  }
+  .wall-player.fade-out { opacity: 0; transform: translate(-50%, -80%); }
+  .teammate-player {
+    position: absolute;
+    z-index: 13;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s;
+  }
+  .teammate-player .tm-emoji { font-size: 44px; line-height: 1; filter: drop-shadow(0 0 12px rgba(255,214,0,0.85)); transition: transform 0.15s; }
+  .teammate-player .tm-label {
+    background: var(--amarillo);
+    color: #1a1a2e;
+    font-size: 9px;
+    font-weight: 900;
+    padding: 2px 8px;
+    border-radius: 8px;
+    letter-spacing: 1px;
+    animation: tmPulse 1.2s ease-in-out infinite;
+  }
+  .teammate-player.aimed .tm-emoji { transform: scale(1.35); filter: drop-shadow(0 0 22px rgba(255,214,0,1)); }
+  .teammate-player.aimed .tm-label { background: #4caf50; color: #fff; }
+  .teammate-player.fade-out { opacity: 0; transition: opacity 0.3s; }
+  @keyframes tmPulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+  /* Etiqueta PASE oculta por defecto, visible al apuntar */
+  .teammate-player .tm-label { display: none; }
+  .teammate-player.aimed .tm-label { display: block; }
+
+  /* Línea cian punteada del compañero */
+  .tm-line { position: absolute; inset: 0; pointer-events: none; z-index: 14; display: none; }
+  .tm-line.active { display: block; }
+  .tm-line svg { width: 100%; height: 100%; overflow: visible; }
+  .tm-line path { stroke: rgba(77, 208, 225, 0.95); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 8 9; fill: none; filter: drop-shadow(0 0 7px rgba(77, 208, 225, 0.85)); animation: tmLineFlow 0.9s linear infinite; }
+  @keyframes tmLineFlow { to { stroke-dashoffset: -34; } }
+  .shooter-target.tm-aimed .target-emoji { transform: scale(1.22); }
+  .shooter-target.tm-aimed .target-value { background: #4dd0e1; color: #002b36; box-shadow: 0 0 16px rgba(77, 208, 225, 0.95); }
+
   .mat-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; pointer-events: none; }
   .mat-mascot { position: relative; width: 16em; height: 22em; font-size: 4px; filter: drop-shadow(0 2px 0 rgba(0,0,0,0.45)); }
   .mat-px {
@@ -324,9 +384,6 @@
   }
   .toast.hidden { display: none; }
 
-  /* ============================================================
-     CONTROLES DE AUDIO (fondo · narración · celebración)
-     ============================================================ */
   .audio-quick { display: flex; gap: 6px; }
   .aq-btn { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; width: 46px; height: 46px; padding: 0; border-radius: 12px; cursor: pointer; color: #fff; font-family: inherit;
     background: rgba(13,27,42,0.85); border: 2px solid var(--amarillo); box-shadow: var(--sombra); touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: transform 0.1s, background 0.15s; }
@@ -336,17 +393,26 @@
   .aq-btn.off { background: rgba(38,50,56,0.88); border-color: #78909c; color: #b0bec5; }
   .aq-btn.off .aq-ico { opacity: 0.45; filter: grayscale(1); }
   .aq-btn.off::after { content: ''; position: absolute; left: 7px; right: 7px; top: 50%; height: 3px; margin-top: -4px; background: #ef5350; border-radius: 2px; transform: rotate(-35deg); box-shadow: 0 0 0 1px rgba(0,0,0,0.5); }
-  /* En partida: columna bajo el botón de salir */
   #audio-hud { position: absolute; top: 58px; right: 10px; z-index: 30; flex-direction: column; display: none; }
   #game-container.playing #audio-hud { display: flex; }
   #audio-hud .aq-btn { width: 40px; height: 40px; }
   #audio-hud .aq-btn .aq-ico { font-size: 17px; }
-  /* En el menú: fila centrada */
   #audio-menu { justify-content: center; margin: 2px 0 4px; }
   #audio-menu .aq-btn { width: 74px; height: 48px; }
   #audio-menu .aq-btn .aq-ico { font-size: 20px; }
   #audio-menu .aq-btn .aq-lbl { font-size: 9px; }
   @media (max-width: 600px) { #audio-hud { top: 54px; } #audio-hud .aq-btn { width: 36px; height: 36px; } #audio-hud .aq-btn .aq-ico { font-size: 15px; } #audio-hud .aq-btn .aq-lbl { display: none; } }
+
+  /* Mod tag para indicar worldcup activo */
+  .mod-tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+    color: #fff; padding: 4px 12px; border-radius: 99px;
+    font-size: 11px; font-weight: 900; letter-spacing: 1px;
+    box-shadow: 0 2px 8px rgba(76,175,80,0.4);
+    margin-top: 4px;
+  }
+  .mod-tag.hidden { display: none !important; }
 
   @media (max-width: 600px) {
     .ball .ball-emoji { font-size: 34px; }
@@ -372,6 +438,7 @@
     .challenge-preview { padding: 10px 12px; }
     .challenge-preview .cp-row { font-size: 12px; }
     .challenge-input { font-size: 13px; padding: 8px 12px; }
+    .teammate-player .tm-emoji { font-size: 34px; }
   }
 </style>
 </head>
@@ -440,6 +507,7 @@
     <div class="brand-tag">Manos · Arco · Tiro</div>
     <div class="subtitle">Ataja con el arquero o patea para hacer goles</div>
     <div class="subtitle" style="font-size:13px;opacity:0.7;">🖱️ Mouse · ⌨️ Flechas/WASD · 📱 Touch</div>
+    <div class="mod-tag hidden" id="ui-mod-tag">🌍 WORLDCUP ACTIVO</div>
     <div class="audio-quick" id="audio-menu">
       <button class="aq-btn" data-audio="music" title="Música de fondo" aria-label="Música de fondo"><span class="aq-ico">🎵</span><span class="aq-lbl">FONDO</span></button>
       <button class="aq-btn" data-audio="voice" title="Narración" aria-label="Narración"><span class="aq-ico">🎙️</span><span class="aq-lbl">VOZ</span></button>
@@ -472,6 +540,11 @@
     </div>
 
     <div class="settings-panel active" id="tab-numbers">
+      <div class="settings-section" style="margin-bottom:10px;">
+        <div class="settings-label">🌍 Modo WorldCup</div>
+        <button class="btn" id="btn-worldcup-toggle" style="padding:6px 20px;font-size:13px;">OFF</button>
+        <div class="voice-hint">Arquero: balones en movimiento · Pateador: barrera + pase obligatorio a un compañero (acercate a cada uno para ver a qué balón apunta)</div>
+      </div>
       <div class="settings-section">
         <div class="settings-label">⚡ Velocidad de los balones</div>
         <div class="stage-selector" id="stage-selector">
@@ -699,77 +772,55 @@ const LEVELS = [
   { id:7, name:'Leyenda', desc:'Todas las operaciones', ops:['+','-','×','÷','√','log'], maxNum:30, speed:2.2, balls:5, target:12, lives:2, rarity:7 },
   { id:8, name:'Imposible', desc:'Velocidad máxima', ops:['+','-','×','÷','√','log'], maxNum:40, speed:2.6, balls:6, target:15, lives:2, rarity:8 },
 ];
-
-function getRarityChance(rarity) {
-  const minChance = 0.05, maxChance = 0.65;
-  const t = (rarity - 1) / 7;
-  return minChance + t * (maxChance - minChance);
-}
-function getRarityLabel(rarity) {
-  const pct = Math.round(getRarityChance(rarity) * 100);
-  return `🎲 especiales: ${pct}%`;
-}
+function getRarityChance(rarity) { const min=0.05,max=0.65; const t=(rarity-1)/7; return min+t*(max-min); }
+function getRarityLabel(rarity) { return `🎲 especiales: ${Math.round(getRarityChance(rarity)*100)}%`; }
 
 const state = {
-  mode: 'menu',
-  playMode: 'keeper',
-  levelIndex: 0, goals: 0, saves: 0, streak: 0, bestStreak: 0,
+  mode: 'menu', playMode: 'keeper', levelIndex: 0, goals: 0, saves: 0, streak: 0, bestStreak: 0,
   lives: 3, maxLives: 3, currentEquation: null, correctAnswer: null,
   balls: [], animationId: null, lastTime: 0,
   keeperX: 0, keeperY: 0, keeperW: 60, keeperH: 60, keeperSpeedPx: 340,
   keys: { left: false, right: false, up: false, down: false },
   pointerActive: false, pointerX: 0, pointerY: 0,
-  soundOn: true,
-  voiceEnabled: false,
-  celebrationEnabled: true,
+  soundOn: true, voiceEnabled: false, celebrationEnabled: true,
   voices: [], selectedVoiceName: null, hasSpokenOnce: false,
   keeperAvatar: '🧤', shooterAvatar: '⚽', isTournament: false,
   audioCtx: null, active: false, roundLocked: false,
-  globalSpeedMultiplier: 0.7,
-  velocityStage: 1,
-  sliderPos: 5,
-  attemptsPerLife: 1,
-  failedAttempts: 0,
-  musicEnabled: true,
-  musicTrackIndex: 0,
+  globalSpeedMultiplier: 0.7, velocityStage: 1, sliderPos: 5,
+  attemptsPerLife: 1, failedAttempts: 0,
+  musicEnabled: true, musicTrackIndex: 0,
+  worldcupEnabled: false,
   numberTypes: { natural: true, negative: true, fraction: true },
   area: { left: 0, right: 0, top: 0, bottom: 0 },
   goalLineY: 0, goalRect: { left: 0, right: 0, top: 0, bottom: 0 },
   gamePaused: false, narrationTimer: null, pendingSpeakTimer: null,
-  mistakes: [],
-  sessionStats: { fractionSaves: 0, negativeSaves: 0, logSaves: 0, sqrtSaves: 0 },
-  shooterTargets: [],
-  isAiming: false,
-  aimX: 0, aimY: 0,
-  playerBallX: 0, playerBallY: 0,
-  incomingChallenge: null,
-  pendingIncomingChallenge: null,
-  shareResultReturnTo: 'overlay-menu',
+  mistakes: [], sessionStats: { fractionSaves: 0, negativeSaves: 0, logSaves: 0, sqrtSaves: 0 },
+  shooterTargets: [], isAiming: false, aimX: 0, aimY: 0, playerBallX: 0, playerBallY: 0,
+  // WorldCup shooter-specific
+  wallElements: [], teammate: null, teammates: [], hoveredTeammate: null, passPhase: 'normal', aimedAtTeammate: false,
+  incomingChallenge: null, pendingIncomingChallenge: null, shareResultReturnTo: 'overlay-menu',
 };
 
 const RANKS = [
-  { xp: 0,    name: 'Amateur',     emoji: '🥾' },
-  { xp: 100,  name: 'Juvenil',     emoji: '🥅' },
-  { xp: 300,  name: 'Semi-pro',    emoji: '⚽' },
-  { xp: 700,  name: 'Profesional', emoji: '🎽' },
-  { xp: 1500, name: 'Estrella',    emoji: '⭐' },
-  { xp: 3000, name: 'Leyenda',     emoji: '🏆' },
-  { xp: 6000, name: 'Ídolo',       emoji: '👑' },
+  { xp: 0, name: 'Amateur', emoji: '🥾' }, { xp: 100, name: 'Juvenil', emoji: '🥅' },
+  { xp: 300, name: 'Semi-pro', emoji: '⚽' }, { xp: 700, name: 'Profesional', emoji: '🎽' },
+  { xp: 1500, name: 'Estrella', emoji: '⭐' }, { xp: 3000, name: 'Leyenda', emoji: '🏆' },
+  { xp: 6000, name: 'Ídolo', emoji: '👑' },
 ];
 const BADGES = [
-  { id: 'first_win',       emoji: '🌟', title: 'Primer paso',          desc: 'Completá tu primer nivel',                    check: (p) => p.levelsCompleted >= 1 },
-  { id: 'streak_5',        emoji: '🔥', title: 'En llamas',            desc: 'Racha de 5 atajadas seguidas',                check: (p) => p.bestStreak >= 5 },
-  { id: 'streak_10',       emoji: '💥', title: 'Imparable',            desc: 'Racha de 10 atajadas seguidas',               check: (p) => p.bestStreak >= 10 },
-  { id: 'no_goal_level',   emoji: '🧱', title: 'Muro',                 desc: 'Completá un nivel sin goles en contra',       check: (p) => p.hasPerfectLevel },
-  { id: 'no_miss_level',   emoji: '🎯', title: 'Preciso',              desc: 'Completá un nivel sin atajar mal',            check: (p) => p.hasFlawlessLevel },
-  { id: 'fractions_20',    emoji: '🍕', title: 'Fraccionista',         desc: 'Atajá 20 balones con fracciones',             check: (p) => p.fractionSaves >= 20 },
-  { id: 'negatives_20',    emoji: '➖', title: 'Verdugo de negativos', desc: 'Atajá 20 balones con negativos',              check: (p) => p.negativeSaves >= 20 },
-  { id: 'log_10',          emoji: '📊', title: 'Logarítmico',          desc: 'Atajá 10 balones con logaritmos',             check: (p) => p.logSaves >= 10 },
-  { id: 'sqrt_10',         emoji: '√',  title: 'Radical',              desc: 'Atajá 10 balones con raíces',                 check: (p) => p.sqrtSaves >= 10 },
-  { id: 'level_8',         emoji: '👑', title: 'Nivel imposible',      desc: 'Alcanzá el nivel 8',                          check: (p) => p.maxLevelReached >= 8 },
-  { id: 'tournament',      emoji: '🏆', title: 'Campeón',              desc: 'Ganá un torneo completo',                     check: (p) => p.tournamentWins >= 1 },
-  { id: 'saves_100',       emoji: '🧤', title: 'Guantes de acero',     desc: '100 atajadas totales',                        check: (p) => p.totalSaves >= 100 },
-  { id: 'xp_1000',         emoji: '⭐', title: 'Veterano',             desc: 'Alcanzá 1000 XP',                             check: (p) => p.xp >= 1000 },
+  { id: 'first_win', emoji: '🌟', title: 'Primer paso', desc: 'Completá tu primer nivel', check: (p) => p.levelsCompleted >= 1 },
+  { id: 'streak_5', emoji: '🔥', title: 'En llamas', desc: 'Racha de 5 atajadas seguidas', check: (p) => p.bestStreak >= 5 },
+  { id: 'streak_10', emoji: '💥', title: 'Imparable', desc: 'Racha de 10 atajadas seguidas', check: (p) => p.bestStreak >= 10 },
+  { id: 'no_goal_level', emoji: '🧱', title: 'Muro', desc: 'Completá un nivel sin goles en contra', check: (p) => p.hasPerfectLevel },
+  { id: 'no_miss_level', emoji: '🎯', title: 'Preciso', desc: 'Completá un nivel sin atajar mal', check: (p) => p.hasFlawlessLevel },
+  { id: 'fractions_20', emoji: '🍕', title: 'Fraccionista', desc: 'Atajá 20 balones con fracciones', check: (p) => p.fractionSaves >= 20 },
+  { id: 'negatives_20', emoji: '➖', title: 'Verdugo de negativos', desc: 'Atajá 20 balones con negativos', check: (p) => p.negativeSaves >= 20 },
+  { id: 'log_10', emoji: '📊', title: 'Logarítmico', desc: 'Atajá 10 balones con logaritmos', check: (p) => p.logSaves >= 10 },
+  { id: 'sqrt_10', emoji: '√', title: 'Radical', desc: 'Atajá 10 balones con raíces', check: (p) => p.sqrtSaves >= 10 },
+  { id: 'level_8', emoji: '👑', title: 'Nivel imposible', desc: 'Alcanzá el nivel 8', check: (p) => p.maxLevelReached >= 8 },
+  { id: 'tournament', emoji: '🏆', title: 'Campeón', desc: 'Ganá un torneo completo', check: (p) => p.tournamentWins >= 1 },
+  { id: 'saves_100', emoji: '🧤', title: 'Guantes de acero', desc: '100 atajadas totales', check: (p) => p.totalSaves >= 100 },
+  { id: 'xp_1000', emoji: '⭐', title: 'Veterano', desc: 'Alcanzá 1000 XP', check: (p) => p.xp >= 1000 },
 ];
 const Progress = (function() {
   const KEY = 'arquero-matematico-progress-v1';
@@ -779,7 +830,7 @@ const Progress = (function() {
     fractionSaves: 0, negativeSaves: 0, logSaves: 0, sqrtSaves: 0,
     hasPerfectLevel: false, hasFlawlessLevel: false, tournamentWins: 0,
     unlockedBadges: [],
-    preferences: { musicEnabled: true, voiceEnabled: false, celebrationEnabled: true, musicTrack: 0, velocityStage: 1, sliderPos: 5, attemptsPerLife: 1, playerName: '' },
+    preferences: { musicEnabled: true, voiceEnabled: false, celebrationEnabled: true, worldcupEnabled: false, musicTrack: 0, velocityStage: 1, sliderPos: 5, attemptsPerLife: 1, playerName: '' },
   };
   let data = JSON.parse(JSON.stringify(defaults));
   function load() {
@@ -841,48 +892,34 @@ const Progress = (function() {
 })();
 
 /* ============================================================
-   GOAL CELEBRATION (Sonidos procedurales de multitud y silbatos)
+   GOAL CELEBRATION
    ============================================================ */
 const GoalCelebration = (function () {
   'use strict';
-
-  let ctx = null;
-  let comp = null;
-  let noiseBuffer = null;
-  let lastPlay = 0;
-  let muted = false;
-
+  let ctx = null, comp = null, noiseBuffer = null, lastPlay = 0, muted = false;
   const SEMITONES = { C:0, D:2, E:4, F:5, G:7, A:9, B:11 };
   function freq(name) {
     const m = /^([A-G])([#b]?)(-?\d)$/.exec(name);
-    const midi = (parseInt(m[3], 10) + 1) * 12 + SEMITONES[m[1]] +
-                 (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0);
+    const midi = (parseInt(m[3], 10) + 1) * 12 + SEMITONES[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0);
     return 440 * Math.pow(2, (midi - 69) / 12);
   }
-
   function init() {
     if (ctx) return;
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return;
     ctx = new AC();
     comp = ctx.createDynamicsCompressor();
-    comp.threshold.value = -14;
-    comp.knee.value      = 20;
-    comp.ratio.value     = 4;
-    comp.attack.value    = 0.003;
-    comp.release.value   = 0.2;
+    comp.threshold.value = -14; comp.knee.value = 20; comp.ratio.value = 4;
+    comp.attack.value = 0.003; comp.release.value = 0.2;
     comp.connect(ctx.destination);
     const len = Math.floor(ctx.sampleRate * 3);
     noiseBuffer = ctx.createBuffer(1, len, ctx.sampleRate);
     const data = noiseBuffer.getChannelData(0);
     for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
-
-    // Desbloqueo de audio en el primer clic
     document.addEventListener('click', function unlock() {
       if (ctx && ctx.state === 'suspended') ctx.resume();
     }, { once: true });
   }
-
   function play() {
     try {
       init();
@@ -895,19 +932,14 @@ const GoalCelebration = (function () {
       const master = ctx.createGain();
       master.gain.value = 0.85;
       master.connect(comp);
-
-      // Multitud
       const crowdGain = ctx.createGain();
       crowdGain.gain.value = 1;
       crowdGain.connect(master);
       const lfo = ctx.createOscillator();
-      lfo.type = 'sine';
-      lfo.frequency.value = 1.8;
-      const lfoG = ctx.createGain();
-      lfoG.gain.value = 0.2;
+      lfo.type = 'sine'; lfo.frequency.value = 1.8;
+      const lfoG = ctx.createGain(); lfoG.gain.value = 0.2;
       lfo.connect(lfoG); lfoG.connect(crowdGain.gain);
       lfo.start(t0); lfo.stop(t0 + 3.4);
-
       function crowdLayer(type, fStart, fMid, vol) {
         const src = ctx.createBufferSource();
         src.buffer = noiseBuffer; src.loop = true;
@@ -924,13 +956,10 @@ const GoalCelebration = (function () {
         src.connect(flt); flt.connect(g); g.connect(crowdGain);
         src.start(t0); src.stop(t0 + 3.3);
       }
-      crowdLayer('lowpass',  280,  550, 0.38);
+      crowdLayer('lowpass', 280, 550, 0.38);
       crowdLayer('bandpass', 800, 1200, 0.28);
       crowdLayer('highpass', 3000, 3000, 0.09);
-
-      // Timbal
-      const timp = ctx.createOscillator();
-      timp.type = 'sine';
+      const timp = ctx.createOscillator(); timp.type = 'sine';
       timp.frequency.setValueAtTime(180, t0);
       timp.frequency.exponentialRampToValueAtTime(60, t0 + 0.3);
       const tg = ctx.createGain();
@@ -939,30 +968,20 @@ const GoalCelebration = (function () {
       tg.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.5);
       timp.connect(tg); tg.connect(master);
       timp.start(t0); timp.stop(t0 + 0.6);
-
-      // Fanfarria
-      const notes = [
-        ['C5', 0.00, 0.12], ['E5', 0.12, 0.12], ['G5', 0.24, 0.12],
-        ['C6', 0.36, 0.18], ['G5', 0.60, 0.12], ['C6', 0.72, 0.55]
-      ];
-      notes.forEach(function (n) {
-        const note = n[0], off = n[1], len = n[2];
-        const osc = ctx.createOscillator();
-        osc.type = 'square';
-        osc.frequency.value = freq(note);
+      const notes = [['C5',0,0.12],['E5',0.12,0.12],['G5',0.24,0.12],['C6',0.36,0.18],['G5',0.6,0.12],['C6',0.72,0.55]];
+      notes.forEach(n => {
+        const osc = ctx.createOscillator(); osc.type = 'square';
+        osc.frequency.value = freq(n[0]);
         const g = ctx.createGain();
-        g.gain.setValueAtTime(0.0001, t0 + off);
-        g.gain.exponentialRampToValueAtTime(0.11, t0 + off + 0.01);
-        g.gain.setValueAtTime(0.11, t0 + off + len * 0.7);
-        g.gain.exponentialRampToValueAtTime(0.0001, t0 + off + len + 0.05);
+        g.gain.setValueAtTime(0.0001, t0 + n[1]);
+        g.gain.exponentialRampToValueAtTime(0.11, t0 + n[1] + 0.01);
+        g.gain.setValueAtTime(0.11, t0 + n[1] + n[2]*0.7);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + n[1] + n[2] + 0.05);
         osc.connect(g); g.connect(master);
-        osc.start(t0 + off); osc.stop(t0 + off + len + 0.1);
+        osc.start(t0 + n[1]); osc.stop(t0 + n[1] + n[2] + 0.1);
       });
-
-      // Silbatos
-      [0.5, 1.2, 1.9, 2.5].forEach(function (off, i) {
-        const osc = ctx.createOscillator();
-        osc.type = 'sine';
+      [0.5, 1.2, 1.9, 2.5].forEach((off, i) => {
+        const osc = ctx.createOscillator(); osc.type = 'sine';
         const base = 2400 + (i % 2) * 400;
         osc.frequency.setValueAtTime(base, t0 + off);
         osc.frequency.exponentialRampToValueAtTime(base * 1.3, t0 + off + 0.08);
@@ -974,62 +993,49 @@ const GoalCelebration = (function () {
         osc.connect(g); g.connect(master);
         osc.start(t0 + off); osc.stop(t0 + off + 0.3);
       });
-
-      setTimeout(function () {
-        try { master.disconnect(); } catch (e) {}
-      }, 4500);
-    } catch (e) {}
+      setTimeout(() => { try { master.disconnect(); } catch(e) {} }, 4500);
+    } catch(e) {}
   }
-
   function setMuted(m) { muted = !!m; }
-
-  return { play: play, setMuted: setMuted, isMuted: function () { return muted; } };
+  return { play, setMuted, isMuted: () => muted };
 })();
 
-
+/* ============================================================
+   MUSIC
+   ============================================================ */
 const GameMusic = (function() {
-  const BPM = 120;
-  const BEAT_DUR = 60 / BPM;
-  const LOOP_BEATS = 20;
-  const LOOP_DUR = LOOP_BEATS * BEAT_DUR;
-  const MUSIC_VOL = 0.28;
-  function mel(beat, note, dur) { return { beat, note, dur: dur || 1 }; }
-  function per(beat, vel) { return { beat, vel: vel === undefined ? 1 : vel }; }
+  const BPM = 120, BEAT_DUR = 60 / BPM, LOOP_BEATS = 20, LOOP_DUR = LOOP_BEATS * BEAT_DUR, MUSIC_VOL = 0.28;
+  function mel(b,n,d){return{beat:b,note:n,dur:d||1};}
+  function per(b,v){return{beat:b,vel:v===undefined?1:v};}
   const TRACKS = [
-    { id: 'clasico', name: 'Clásico', emoji: '⚽', melody: [mel(0,'E5',0.5), mel(0.5,'G5',0.5), mel(1,'C6',0.5), mel(1.5,'G5',0.5), mel(2,'E5',1), mel(3,'G5',1), mel(4,'D5',0.5), mel(4.5,'G5',0.5), mel(5,'B5',0.5), mel(5.5,'G5',0.5), mel(6,'D5',1), mel(7,'G5',1), mel(8,'E5',0.5), mel(8.5,'A5',0.5), mel(9,'C6',0.5), mel(9.5,'A5',0.5), mel(10,'E5',1), mel(11,'A5',1), mel(12,'F5',0.5), mel(12.5,'A5',0.5), mel(13,'C6',0.5), mel(13.5,'A5',0.5), mel(14,'F5',1), mel(15,'E5',0.5), mel(15.5,'D5',0.5), mel(16,'C5',2), mel(18,'G5',1), mel(19,'E5',1)], bass: [mel(0,'C3',2), mel(2,'G3',2), mel(4,'G3',2), mel(6,'D3',2), mel(8,'A3',2), mel(10,'E3',2), mel(12,'F3',2), mel(14,'C3',2), mel(16,'C3',2), mel(18,'G3',2)], arp: [mel(0,'C4',0.5), mel(1,'E4',0.5), mel(2,'G4',0.5), mel(3,'E4',0.5), mel(4,'G3',0.5), mel(5,'B3',0.5), mel(6,'D4',0.5), mel(7,'B3',0.5), mel(8,'A3',0.5), mel(9,'C4',0.5), mel(10,'E4',0.5), mel(11,'C4',0.5), mel(12,'F3',0.5), mel(13,'A3',0.5), mel(14,'C4',0.5), mel(15,'A3',0.5), mel(16,'C4',0.5), mel(17,'E4',0.5), mel(18,'G4',0.5), mel(19,'E4',0.5)], kick: [per(0), per(2,0.9), per(4), per(6,0.9), per(8), per(10,0.9), per(12), per(14,0.9), per(16), per(18,0.9)], snare: [per(2), per(6), per(10), per(14), per(18)], hihat: Array.from({length: 40}, (_, i) => per(i * 0.5, i % 2 === 0 ? 1 : 0.5)) },
-    { id: 'fiesta', name: 'Fiesta', emoji: '🎉', melody: [mel(0,'A4',0.5), mel(0.5,'C5',0.5), mel(1,'E5',0.5), mel(1.5,'A5',0.5), mel(2,'G5',0.5), mel(2.5,'E5',0.5), mel(3,'C5',1), mel(4,'F5',0.5), mel(4.5,'A5',0.5), mel(5,'C6',0.5), mel(5.5,'A5',0.5), mel(6,'F5',1), mel(7,'C5',1), mel(8,'E5',0.5), mel(8.5,'G5',0.5), mel(9,'C6',0.5), mel(9.5,'G5',0.5), mel(10,'E5',1), mel(11,'G5',1), mel(12,'D5',0.5), mel(12.5,'G5',0.5), mel(13,'B5',0.5), mel(13.5,'G5',0.5), mel(14,'D5',1), mel(15,'G5',0.5), mel(15.5,'F5',0.5), mel(16,'E5',2), mel(18,'A4',2)], bass: [mel(0,'A2',1), mel(1.5,'A3',0.5), mel(2,'E3',1), mel(3.5,'A3',0.5), mel(4,'F2',1), mel(5.5,'F3',0.5), mel(6,'C3',1), mel(7.5,'F3',0.5), mel(8,'C3',1), mel(9.5,'C4',0.5), mel(10,'G3',1), mel(11.5,'C4',0.5), mel(12,'G2',1), mel(13.5,'G3',0.5), mel(14,'D3',1), mel(15.5,'G3',0.5), mel(16,'A2',2), mel(18,'E3',2)], arp: [mel(0,'A3',0.5), mel(1,'C4',0.5), mel(2,'E4',0.5), mel(3,'C4',0.5), mel(4,'F3',0.5), mel(5,'A3',0.5), mel(6,'C4',0.5), mel(7,'A3',0.5), mel(8,'C4',0.5), mel(9,'E4',0.5), mel(10,'G4',0.5), mel(11,'E4',0.5), mel(12,'G3',0.5), mel(13,'B3',0.5), mel(14,'D4',0.5), mel(15,'B3',0.5), mel(16,'A3',0.5), mel(17,'C4',0.5), mel(18,'E4',0.5), mel(19,'C4',0.5)], kick: [per(0), per(3), per(4), per(7), per(8), per(11), per(12), per(15), per(16), per(19)], snare: [per(2), per(6), per(10), per(14), per(18)], hihat: Array.from({length: 40}, (_, i) => per(i * 0.5, i % 2 === 0 ? 1 : 0.55)) },
-    { id: 'estadio', name: 'Estadio', emoji: '🏟️', melody: [mel(0,'D5',1), mel(1,'F5',1), mel(2,'A5',1), mel(3,'D5',1), mel(4,'Bb4',1), mel(5,'D5',1), mel(6,'F5',1), mel(7,'D5',1), mel(8,'A4',1), mel(9,'C5',1), mel(10,'F5',1), mel(11,'C5',1), mel(12,'G4',1), mel(13,'C5',1), mel(14,'E5',1), mel(15,'C5',1), mel(16,'D5',2), mel(18,'A4',2)], bass: [mel(0,'D3',2), mel(2,'A3',2), mel(4,'Bb2',2), mel(6,'F3',2), mel(8,'F2',2), mel(10,'C3',2), mel(12,'C3',2), mel(14,'G3',2), mel(16,'D3',2), mel(18,'A3',2)], arp: [mel(0,'D4',1), mel(1,'F4',1), mel(2,'A4',1), mel(3,'F4',1), mel(4,'Bb3',1), mel(5,'D4',1), mel(6,'F4',1), mel(7,'D4',1), mel(8,'F3',1), mel(9,'A3',1), mel(10,'C4',1), mel(11,'A3',1), mel(12,'C4',1), mel(13,'E4',1), mel(14,'G4',1), mel(15,'E4',1), mel(16,'D4',1), mel(17,'F4',1), mel(18,'A4',1), mel(19,'F4',1)], kick: [per(0), per(2,0.9), per(4), per(6,0.9), per(8), per(10,0.9), per(12), per(14,0.9), per(16), per(18,0.9)], snare: [per(2), per(6), per(10), per(14), per(18)], hihat: Array.from({length: 40}, (_, i) => per(i * 0.5, i % 2 === 0 ? 0.9 : 0.45)), crash: [per(0)] },
-    { id: 'arcade', name: 'Arcade', emoji: '🕹️', melody: [mel(0,'E5',0.5), mel(0.5,'G5',0.5), mel(1,'B5',0.5), mel(1.5,'E6',0.5), mel(2,'B5',0.5), mel(2.5,'G5',0.5), mel(3,'E5',1), mel(4,'C5',0.5), mel(4.5,'E5',0.5), mel(5,'G5',0.5), mel(5.5,'C6',0.5), mel(6,'G5',0.5), mel(6.5,'E5',0.5), mel(7,'C5',1), mel(8,'G4',0.5), mel(8.5,'B4',0.5), mel(9,'D5',0.5), mel(9.5,'G5',0.5), mel(10,'D5',0.5), mel(10.5,'B4',0.5), mel(11,'G4',1), mel(12,'D5',0.5), mel(12.5,'F#5',0.5), mel(13,'A5',0.5), mel(13.5,'D6',0.5), mel(14,'A5',0.5), mel(14.5,'F#5',0.5), mel(15,'D5',1), mel(16,'E5',2), mel(18,'B5',2)], bass: [mel(0,'E3',2), mel(2,'B2',2), mel(4,'C3',2), mel(6,'G3',2), mel(8,'G3',2), mel(10,'D3',2), mel(12,'D3',2), mel(14,'A3',2), mel(16,'E3',2), mel(18,'B3',2)], arp: [mel(0,'E4',0.25), mel(0.5,'G4',0.25), mel(1,'B4',0.25), mel(1.5,'G4',0.25), mel(2,'B3',0.25), mel(2.5,'D4',0.25), mel(3,'F#4',0.25), mel(3.5,'D4',0.25), mel(4,'C4',0.25), mel(4.5,'E4',0.25), mel(5,'G4',0.25), mel(5.5,'E4',0.25), mel(6,'G3',0.25), mel(6.5,'B3',0.25), mel(7,'D4',0.25), mel(7.5,'B3',0.25), mel(8,'G3',0.25), mel(8.5,'B3',0.25), mel(9,'D4',0.25), mel(9.5,'B3',0.25), mel(10,'D4',0.25), mel(10.5,'F#4',0.25), mel(11,'A4',0.25), mel(11.5,'F#4',0.25), mel(12,'D4',0.25), mel(12.5,'F#4',0.25), mel(13,'A4',0.25), mel(13.5,'F#4',0.25), mel(14,'A3',0.25), mel(14.5,'C#4',0.25), mel(15,'E4',0.25), mel(15.5,'C#4',0.25), mel(16,'E4',0.5), mel(17,'G4',0.5), mel(18,'B4',0.5), mel(19,'G4',0.5)], kick: [per(0), per(1), per(2), per(3), per(4), per(5), per(6), per(7), per(8), per(9), per(10), per(11), per(12), per(13), per(14), per(15), per(16), per(17), per(18), per(19)], snare: [per(2), per(6), per(10), per(14), per(18)], hihat: Array.from({length: 80}, (_, i) => per(i * 0.25, i % 4 === 0 ? 0.7 : (i % 2 === 0 ? 0.5 : 0.35))) },
-    { id: 'penales', name: 'Penales', emoji: '🥅', melody: [mel(0,'B4',1), mel(1,'D5',1), mel(2,'F#5',1), mel(3,'B5',1), mel(4,'G4',1), mel(5,'B4',1), mel(6,'D5',1), mel(7,'B4',1), mel(8,'D5',1), mel(9,'F#5',1), mel(10,'A5',1), mel(11,'F#5',1), mel(12,'A4',1), mel(13,'C#5',1), mel(14,'E5',1), mel(15,'C#5',1), mel(16,'B4',2), mel(18,'F#5',2)], bass: [mel(0,'B2',2), mel(2,'F#3',2), mel(4,'G2',2), mel(6,'D3',2), mel(8,'D3',2), mel(10,'A3',2), mel(12,'A3',2), mel(14,'E3',2), mel(16,'B2',2), mel(18,'F#3',2)], arp: [mel(0,'B3',1), mel(1,'D4',1), mel(2,'F#4',1), mel(3,'D4',1), mel(4,'G3',1), mel(5,'B3',1), mel(6,'D4',1), mel(7,'B3',1), mel(8,'D4',1), mel(9,'F#4',1), mel(10,'A4',1), mel(11,'F#4',1), mel(12,'A3',1), mel(13,'C#4',1), mel(14,'E4',1), mel(15,'C#4',1), mel(16,'B3',1), mel(17,'D4',1), mel(18,'F#4',1), mel(19,'D4',1)], kick: [per(0), per(4), per(8), per(12), per(16)], snare: [per(2), per(6), per(10), per(14), per(18)], hihat: Array.from({length: 20}, (_, i) => per(i + 0.5, 0.6)) },
+    { id:'clasico', name:'Clásico', emoji:'⚽', melody:[mel(0,'E5',0.5),mel(0.5,'G5',0.5),mel(1,'C6',0.5),mel(1.5,'G5',0.5),mel(2,'E5',1),mel(3,'G5',1),mel(4,'D5',0.5),mel(4.5,'G5',0.5),mel(5,'B5',0.5),mel(5.5,'G5',0.5),mel(6,'D5',1),mel(7,'G5',1),mel(8,'E5',0.5),mel(8.5,'A5',0.5),mel(9,'C6',0.5),mel(9.5,'A5',0.5),mel(10,'E5',1),mel(11,'A5',1),mel(12,'F5',0.5),mel(12.5,'A5',0.5),mel(13,'C6',0.5),mel(13.5,'A5',0.5),mel(14,'F5',1),mel(15,'E5',0.5),mel(15.5,'D5',0.5),mel(16,'C5',2),mel(18,'G5',1),mel(19,'E5',1)], bass:[mel(0,'C3',2),mel(2,'G3',2),mel(4,'G3',2),mel(6,'D3',2),mel(8,'A3',2),mel(10,'E3',2),mel(12,'F3',2),mel(14,'C3',2),mel(16,'C3',2),mel(18,'G3',2)], arp:[mel(0,'C4',0.5),mel(1,'E4',0.5),mel(2,'G4',0.5),mel(3,'E4',0.5),mel(4,'G3',0.5),mel(5,'B3',0.5),mel(6,'D4',0.5),mel(7,'B3',0.5),mel(8,'A3',0.5),mel(9,'C4',0.5),mel(10,'E4',0.5),mel(11,'C4',0.5),mel(12,'F3',0.5),mel(13,'A3',0.5),mel(14,'C4',0.5),mel(15,'A3',0.5),mel(16,'C4',0.5),mel(17,'E4',0.5),mel(18,'G4',0.5),mel(19,'E4',0.5)], kick:[per(0),per(2,0.9),per(4),per(6,0.9),per(8),per(10,0.9),per(12),per(14,0.9),per(16),per(18,0.9)], snare:[per(2),per(6),per(10),per(14),per(18)], hihat:Array.from({length:40},(_,i)=>per(i*0.5,i%2===0?1:0.5)) },
+    { id:'fiesta', name:'Fiesta', emoji:'🎉', melody:[mel(0,'A4',0.5),mel(0.5,'C5',0.5),mel(1,'E5',0.5),mel(1.5,'A5',0.5),mel(2,'G5',0.5),mel(2.5,'E5',0.5),mel(3,'C5',1),mel(4,'F5',0.5),mel(4.5,'A5',0.5),mel(5,'C6',0.5),mel(5.5,'A5',0.5),mel(6,'F5',1),mel(7,'C5',1),mel(8,'E5',0.5),mel(8.5,'G5',0.5),mel(9,'C6',0.5),mel(9.5,'G5',0.5),mel(10,'E5',1),mel(11,'G5',1),mel(12,'D5',0.5),mel(12.5,'G5',0.5),mel(13,'B5',0.5),mel(13.5,'G5',0.5),mel(14,'D5',1),mel(15,'G5',0.5),mel(15.5,'F5',0.5),mel(16,'E5',2),mel(18,'A4',2)], bass:[mel(0,'A2',1),mel(1.5,'A3',0.5),mel(2,'E3',1),mel(3.5,'A3',0.5),mel(4,'F2',1),mel(5.5,'F3',0.5),mel(6,'C3',1),mel(7.5,'F3',0.5),mel(8,'C3',1),mel(9.5,'C4',0.5),mel(10,'G3',1),mel(11.5,'C4',0.5),mel(12,'G2',1),mel(13.5,'G3',0.5),mel(14,'D3',1),mel(15.5,'G3',0.5),mel(16,'A2',2),mel(18,'E3',2)], arp:[mel(0,'A3',0.5),mel(1,'C4',0.5),mel(2,'E4',0.5),mel(3,'C4',0.5),mel(4,'F3',0.5),mel(5,'A3',0.5),mel(6,'C4',0.5),mel(7,'A3',0.5),mel(8,'C4',0.5),mel(9,'E4',0.5),mel(10,'G4',0.5),mel(11,'E4',0.5),mel(12,'G3',0.5),mel(13,'B3',0.5),mel(14,'D4',0.5),mel(15,'B3',0.5),mel(16,'A3',0.5),mel(17,'C4',0.5),mel(18,'E4',0.5),mel(19,'C4',0.5)], kick:[per(0),per(3),per(4),per(7),per(8),per(11),per(12),per(15),per(16),per(19)], snare:[per(2),per(6),per(10),per(14),per(18)], hihat:Array.from({length:40},(_,i)=>per(i*0.5,i%2===0?1:0.55)) },
+    { id:'estadio', name:'Estadio', emoji:'🏟️', melody:[mel(0,'D5',1),mel(1,'F5',1),mel(2,'A5',1),mel(3,'D5',1),mel(4,'Bb4',1),mel(5,'D5',1),mel(6,'F5',1),mel(7,'D5',1),mel(8,'A4',1),mel(9,'C5',1),mel(10,'F5',1),mel(11,'C5',1),mel(12,'G4',1),mel(13,'C5',1),mel(14,'E5',1),mel(15,'C5',1),mel(16,'D5',2),mel(18,'A4',2)], bass:[mel(0,'D3',2),mel(2,'A3',2),mel(4,'Bb2',2),mel(6,'F3',2),mel(8,'F2',2),mel(10,'C3',2),mel(12,'C3',2),mel(14,'G3',2),mel(16,'D3',2),mel(18,'A3',2)], arp:[mel(0,'D4',1),mel(1,'F4',1),mel(2,'A4',1),mel(3,'F4',1),mel(4,'Bb3',1),mel(5,'D4',1),mel(6,'F4',1),mel(7,'D4',1),mel(8,'F3',1),mel(9,'A3',1),mel(10,'C4',1),mel(11,'A3',1),mel(12,'C4',1),mel(13,'E4',1),mel(14,'G4',1),mel(15,'E4',1),mel(16,'D4',1),mel(17,'F4',1),mel(18,'A4',1),mel(19,'F4',1)], kick:[per(0),per(2,0.9),per(4),per(6,0.9),per(8),per(10,0.9),per(12),per(14,0.9),per(16),per(18,0.9)], snare:[per(2),per(6),per(10),per(14),per(18)], hihat:Array.from({length:40},(_,i)=>per(i*0.5,i%2===0?0.9:0.45)), crash:[per(0)] },
+    { id:'arcade', name:'Arcade', emoji:'🕹️', melody:[mel(0,'E5',0.5),mel(0.5,'G5',0.5),mel(1,'B5',0.5),mel(1.5,'E6',0.5),mel(2,'B5',0.5),mel(2.5,'G5',0.5),mel(3,'E5',1),mel(4,'C5',0.5),mel(4.5,'E5',0.5),mel(5,'G5',0.5),mel(5.5,'C6',0.5),mel(6,'G5',0.5),mel(6.5,'E5',0.5),mel(7,'C5',1),mel(8,'G4',0.5),mel(8.5,'B4',0.5),mel(9,'D5',0.5),mel(9.5,'G5',0.5),mel(10,'D5',0.5),mel(10.5,'B4',0.5),mel(11,'G4',1),mel(12,'D5',0.5),mel(12.5,'F#5',0.5),mel(13,'A5',0.5),mel(13.5,'D6',0.5),mel(14,'A5',0.5),mel(14.5,'F#5',0.5),mel(15,'D5',1),mel(16,'E5',2),mel(18,'B5',2)], bass:[mel(0,'E3',2),mel(2,'B2',2),mel(4,'C3',2),mel(6,'G3',2),mel(8,'G3',2),mel(10,'D3',2),mel(12,'D3',2),mel(14,'A3',2),mel(16,'E3',2),mel(18,'B3',2)], arp:[mel(0,'E4',0.25),mel(0.5,'G4',0.25),mel(1,'B4',0.25),mel(1.5,'G4',0.25),mel(2,'B3',0.25),mel(2.5,'D4',0.25),mel(3,'F#4',0.25),mel(3.5,'D4',0.25),mel(4,'C4',0.25),mel(4.5,'E4',0.25),mel(5,'G4',0.25),mel(5.5,'E4',0.25),mel(6,'G3',0.25),mel(6.5,'B3',0.25),mel(7,'D4',0.25),mel(7.5,'B3',0.25),mel(8,'G3',0.25),mel(8.5,'B3',0.25),mel(9,'D4',0.25),mel(9.5,'B3',0.25),mel(10,'D4',0.25),mel(10.5,'F#4',0.25),mel(11,'A4',0.25),mel(11.5,'F#4',0.25),mel(12,'D4',0.25),mel(12.5,'F#4',0.25),mel(13,'A4',0.25),mel(13.5,'F#4',0.25),mel(14,'A3',0.25),mel(14.5,'C#4',0.25),mel(15,'E4',0.25),mel(15.5,'C#4',0.25),mel(16,'E4',0.5),mel(17,'G4',0.5),mel(18,'B4',0.5),mel(19,'G4',0.5)], kick:[per(0),per(1),per(2),per(3),per(4),per(5),per(6),per(7),per(8),per(9),per(10),per(11),per(12),per(13),per(14),per(15),per(16),per(17),per(18),per(19)], snare:[per(2),per(6),per(10),per(14),per(18)], hihat:Array.from({length:80},(_,i)=>per(i*0.25,i%4===0?0.7:(i%2===0?0.5:0.35))) },
+    { id:'penales', name:'Penales', emoji:'🥅', melody:[mel(0,'B4',1),mel(1,'D5',1),mel(2,'F#5',1),mel(3,'B5',1),mel(4,'G4',1),mel(5,'B4',1),mel(6,'D5',1),mel(7,'B4',1),mel(8,'D5',1),mel(9,'F#5',1),mel(10,'A5',1),mel(11,'F#5',1),mel(12,'A4',1),mel(13,'C#5',1),mel(14,'E5',1),mel(15,'C#5',1),mel(16,'B4',2),mel(18,'F#5',2)], bass:[mel(0,'B2',2),mel(2,'F#3',2),mel(4,'G2',2),mel(6,'D3',2),mel(8,'D3',2),mel(10,'A3',2),mel(12,'A3',2),mel(14,'E3',2),mel(16,'B2',2),mel(18,'F#3',2)], arp:[mel(0,'B3',1),mel(1,'D4',1),mel(2,'F#4',1),mel(3,'D4',1),mel(4,'G3',1),mel(5,'B3',1),mel(6,'D4',1),mel(7,'B3',1),mel(8,'D4',1),mel(9,'F#4',1),mel(10,'A4',1),mel(11,'F#4',1),mel(12,'A3',1),mel(13,'C#4',1),mel(14,'E4',1),mel(15,'C#4',1),mel(16,'B3',1),mel(17,'D4',1),mel(18,'F#4',1),mel(19,'D4',1)], kick:[per(0),per(4),per(8),per(12),per(16)], snare:[per(2),per(6),per(10),per(14),per(18)], hihat:Array.from({length:20},(_,i)=>per(i+0.5,0.6)) },
   ];
   let ac = null, masterGain = null, musicGain = null;
   let muted = false, isPlaying = false;
-  let currentTrackIndex = 0;
-  let currentEvents = [];
-  let nextEventIdx = 0;
-  let loopStart = 0;
-  let schedulerTimer = null;
+  let currentTrackIndex = 0, currentEvents = [], nextEventIdx = 0, loopStart = 0, schedulerTimer = null;
   function noteFreq(name) {
     if (typeof name === 'number') return name;
-    const map = { 'C':0,'C#':1,'D':2,'D#':3,'E':4,'F':5,'F#':6,'G':7,'G#':8,'A':9,'A#':10,'B':11 };
+    const map = {'C':0,'C#':1,'D':2,'D#':3,'E':4,'F':5,'F#':6,'G':7,'G#':8,'A':9,'A#':10,'B':11};
     const m = name.match(/^([A-G]#?)(-?\d+)$/);
     if (!m) return 440;
-    const midi = (parseInt(m[2]) + 1) * 12 + map[m[1]];
-    return 440 * Math.pow(2, (midi - 69) / 12);
+    return 440 * Math.pow(2, (((parseInt(m[2])+1)*12 + map[m[1]]) - 69) / 12);
   }
   function playSynth(time, freq, dur, type, gain) {
-    const osc = ac.createOscillator(); const g = ac.createGain();
+    const osc = ac.createOscillator(), g = ac.createGain();
     osc.type = type; osc.frequency.value = freq;
-    const attack = 0.01, release = 0.06;
     g.gain.setValueAtTime(0.0001, time);
-    g.gain.linearRampToValueAtTime(gain, time + attack);
-    g.gain.setValueAtTime(gain, Math.max(time + attack, time + dur - release));
+    g.gain.linearRampToValueAtTime(gain, time + 0.01);
+    g.gain.setValueAtTime(gain, Math.max(time + 0.01, time + dur - 0.06));
     g.gain.exponentialRampToValueAtTime(0.0001, time + dur);
     osc.connect(g); g.connect(musicGain);
     osc.start(time); osc.stop(time + dur + 0.02);
   }
   function playKick(time, vel) {
-    const osc = ac.createOscillator(); const g = ac.createGain();
+    const osc = ac.createOscillator(), g = ac.createGain();
     osc.type = 'sine';
     osc.frequency.setValueAtTime(150, time);
     osc.frequency.exponentialRampToValueAtTime(40, time + 0.15);
@@ -1094,14 +1100,12 @@ const GameMusic = (function() {
     if (ev.type === 'snare') return playSnare(time, ev.vel);
     if (ev.type === 'hihat') return playHihat(time, ev.vel);
     if (ev.type === 'crash') return playCrash(time);
-    const freq = noteFreq(ev.note);
     const synthMap = { melody: 'square', bass: 'triangle', arp: 'sine' };
-    playSynth(time, freq, ev.dur, synthMap[ev.type] || 'sine', ev.gain * ev.vel);
+    playSynth(time, noteFreq(ev.note), ev.dur, synthMap[ev.type] || 'sine', ev.gain * ev.vel);
   }
   function scheduleAhead() {
     if (!ac || !isPlaying || !currentEvents.length) return;
-    const now = ac.currentTime;
-    const lookahead = 0.2;
+    const now = ac.currentTime, lookahead = 0.2;
     while (true) {
       if (nextEventIdx >= currentEvents.length) { loopStart += LOOP_DUR; nextEventIdx = 0; if (!currentEvents.length) break; continue; }
       const ev = currentEvents[nextEventIdx];
@@ -1172,17 +1176,12 @@ const GameMusic = (function() {
       } catch(e) {}
     }, 60);
   }
-  function getBeat() {
-    if (!isPlaying || !ac) return 0;
-    const elapsed = ac.currentTime - loopStart;
-    return ((elapsed / BEAT_DUR) % LOOP_BEATS + LOOP_BEATS) % LOOP_BEATS;
-  }
   document.addEventListener('visibilitychange', () => {
     if (!ac) return;
     if (document.hidden) { try { ac.suspend(); } catch(e) {} }
     else if (isPlaying) { try { ac.resume(); } catch(e) {} }
   });
-  return { start, stop, setMuted, isMuted: () => muted, isPlaying: () => isPlaying, setTrack, getCurrentTrack: () => currentTrackIndex, getTracks: () => TRACKS.map((t, i) => ({ index: i, id: t.id, name: t.name, emoji: t.emoji })), getBeat };
+  return { start, stop, setMuted, isMuted: () => muted, isPlaying: () => isPlaying, setTrack, getCurrentTrack: () => currentTrackIndex, getTracks: () => TRACKS.map((t, i) => ({ index: i, id: t.id, name: t.name, emoji: t.emoji })) };
 })();
 
 const FRACTION_MAX_DEN = 24;
@@ -1427,7 +1426,6 @@ function operandHTML(o) {
   if (o.value < 0) return `(−${Math.abs(o.value)})`;
   return String(o.value);
 }
-
 const FRAC_DIFF_PAIRS = [[2, 4], [3, 6], [2, 6], [2, 3], [3, 4], [2, 5], [4, 6], [3, 5]];
 function makeDifferentDenFractions(op) {
   for (let attempt = 0; attempt < 8; attempt++) {
@@ -1438,55 +1436,40 @@ function makeDifferentDenFractions(op) {
     const f2 = simplify(n2, d2);
     if (f1.den === 1 || f2.den === 1) continue;
     if (op === '-') {
-      const v1 = f1.num / f1.den;
-      const v2 = f2.num / f2.den;
+      const v1 = f1.num / f1.den, v2 = f2.num / f2.den;
       if (v1 < v2 || v1 === v2) continue;
     }
     const L = lcm(f1.den, f2.den);
-    const newNum1 = (L / f1.den) * f1.num;
-    const newNum2 = (L / f2.den) * f2.num;
+    const newNum1 = (L / f1.den) * f1.num, newNum2 = (L / f2.den) * f2.num;
     let resultNum = op === '+' ? newNum1 + newNum2 : newNum1 - newNum2;
     const resultFrac = simplify(resultNum, L);
     if (resultFrac.den > 15) continue;
-    return {
-      o1: { value: f1.num/f1.den, type:'fraction', num: f1.num, den: f1.den },
-      o2: { value: f2.num/f2.den, type:'fraction', num: f2.num, den: f2.den },
-      answer: resultFrac.num / resultFrac.den,
-    };
+    return { o1: { value: f1.num/f1.den, type:'fraction', num: f1.num, den: f1.den }, o2: { value: f2.num/f2.den, type:'fraction', num: f2.num, den: f2.den }, answer: resultFrac.num / resultFrac.den };
   }
   return null;
 }
 
 function generateEquationRaw(level) {
   const op = level.ops[randInt(0, level.ops.length-1)];
-  let textHTML = '';
-  let answer = null;
-  let opA = null, opB = null;
-  const fractionActive = state.numberTypes.fraction;
-  const negativeActive = state.numberTypes.negative;
-
+  let textHTML = '', answer = null, opA = null, opB = null;
+  const fractionActive = state.numberTypes.fraction, negativeActive = state.numberTypes.negative;
   switch(op) {
     case '+': {
       if (fractionActive && Math.random() < getRarityChance(level.rarity) * 0.9) {
         const useDiff = Math.random() < (negativeActive ? 0.3 : 0.55);
         let made = useDiff ? makeDifferentDenFractions('+') : null;
-        if (made) {
-          textHTML = `${operandHTML(made.o1)} + ${operandHTML(made.o2)}`;
-          answer = made.answer; opA = made.o1.value; opB = made.o2.value;
-        } else {
+        if (made) { textHTML = `${operandHTML(made.o1)} + ${operandHTML(made.o2)}`; answer = made.answer; opA = made.o1.value; opB = made.o2.value; }
+        else {
           const denChoices = level.rarity <= 3 ? [2, 3, 4] : [2, 3, 4, 5, 6, 8];
           const den = randChoice(denChoices);
           let n1 = randInt(1, den * 2), n2 = randInt(1, den * 2);
           if (negativeActive) { if (Math.random() < 0.25) n1 = -n1; if (Math.random() < 0.25) n2 = -n2; }
-          const o1 = { value: n1/den, type:'fraction', num: n1, den };
-          const o2 = { value: n2/den, type:'fraction', num: n2, den };
-          textHTML = `${operandHTML(o1)} + ${operandHTML(o2)}`;
-          answer = (n1 + n2) / den; opA = n1/den; opB = n2/den;
+          const o1 = { value: n1/den, type:'fraction', num: n1, den }, o2 = { value: n2/den, type:'fraction', num: n2, den };
+          textHTML = `${operandHTML(o1)} + ${operandHTML(o2)}`; answer = (n1 + n2) / den; opA = n1/den; opB = n2/den;
         }
       } else {
         const o1 = makeOperand(level), o2 = makeOperand(level);
-        textHTML = `${operandHTML(o1)} + ${operandHTML(o2)}`;
-        answer = o1.value + o2.value; opA = o1.value; opB = o2.value;
+        textHTML = `${operandHTML(o1)} + ${operandHTML(o2)}`; answer = o1.value + o2.value; opA = o1.value; opB = o2.value;
       }
       break;
     }
@@ -1494,26 +1477,20 @@ function generateEquationRaw(level) {
       if (fractionActive && Math.random() < getRarityChance(level.rarity) * 0.9) {
         const useDiff = Math.random() < (negativeActive ? 0.3 : 0.55);
         let made = useDiff ? makeDifferentDenFractions('-') : null;
-        if (made) {
-          textHTML = `${operandHTML(made.o1)} − ${operandHTML(made.o2)}`;
-          answer = made.answer; opA = made.o1.value; opB = made.o2.value;
-        } else {
+        if (made) { textHTML = `${operandHTML(made.o1)} − ${operandHTML(made.o2)}`; answer = made.answer; opA = made.o1.value; opB = made.o2.value; }
+        else {
           const denChoices = level.rarity <= 3 ? [2, 3, 4] : [2, 3, 4, 5, 6, 8];
           const den = randChoice(denChoices);
           let n1 = randInt(1, den * 2), n2 = randInt(1, den * 2);
           if (!negativeActive && n1 < n2) { const t = n1; n1 = n2; n2 = t; }
           if (negativeActive) { if (Math.random() < 0.25) n1 = -n1; if (Math.random() < 0.25) n2 = -n2; }
-          const o1 = { value: n1/den, type:'fraction', num: n1, den };
-          const o2 = { value: n2/den, type:'fraction', num: n2, den };
-          textHTML = `${operandHTML(o1)} − ${operandHTML(o2)}`;
-          answer = (n1 - n2) / den; opA = n1/den; opB = n2/den;
+          const o1 = { value: n1/den, type:'fraction', num: n1, den }, o2 = { value: n2/den, type:'fraction', num: n2, den };
+          textHTML = `${operandHTML(o1)} − ${operandHTML(o2)}`; answer = (n1 - n2) / den; opA = n1/den; opB = n2/den;
         }
       } else {
-        const o1 = makeOperand(level);
-        let o2 = makeOperand(level);
+        const o1 = makeOperand(level); let o2 = makeOperand(level);
         if (!negativeActive && o1.value < o2.value) { const tmp = { ...o1 }; Object.assign(o1, o2); Object.assign(o2, tmp); }
-        textHTML = `${operandHTML(o1)} − ${operandHTML(o2)}`;
-        answer = o1.value - o2.value; opA = o1.value; opB = o2.value;
+        textHTML = `${operandHTML(o1)} − ${operandHTML(o2)}`; answer = o1.value - o2.value; opA = o1.value; opB = o2.value;
       }
       break;
     }
@@ -1523,22 +1500,14 @@ function generateEquationRaw(level) {
         const den = randChoice(denChoices);
         let num = randInt(1, 4), ent = randInt(2, Math.min(6, level.maxNum));
         if (negativeActive) { if (Math.random() < 0.25) num = -num; if (Math.random() < 0.25) ent = -ent; }
-        const o1 = { value: num/den, type:'fraction', num, den };
-        const o2 = { value: ent, type:'natural', num: ent, den: 1 };
-        textHTML = `${operandHTML(o1)} × ${operandHTML(o2)}`;
-        answer = (num * ent) / den; opA = num/den; opB = ent;
+        const o1 = { value: num/den, type:'fraction', num, den }, o2 = { value: ent, type:'natural', num: ent, den: 1 };
+        textHTML = `${operandHTML(o1)} × ${operandHTML(o2)}`; answer = (num * ent) / den; opA = num/den; opB = ent;
       } else {
         const maxF = Math.min(12, level.maxNum);
         let a = randInt(1, maxF), b = randInt(1, maxF);
-        if (negativeActive) {
-          const negChance = getRarityChance(level.rarity) * 0.7;
-          if (Math.random() < negChance) a = -a;
-          if (Math.random() < negChance) b = -b;
-        }
-        const o1 = { value: a, type: 'natural', num: a, den: 1 };
-        const o2 = { value: b, type: 'natural', num: b, den: 1 };
-        textHTML = `${operandHTML(o1)} × ${operandHTML(o2)}`;
-        answer = a * b; opA = a; opB = b;
+        if (negativeActive) { const nc = getRarityChance(level.rarity) * 0.7; if (Math.random() < nc) a = -a; if (Math.random() < nc) b = -b; }
+        const o1 = { value: a, type: 'natural', num: a, den: 1 }, o2 = { value: b, type: 'natural', num: b, den: 1 };
+        textHTML = `${operandHTML(o1)} × ${operandHTML(o2)}`; answer = a * b; opA = a; opB = b;
       }
       break;
     }
@@ -1549,10 +1518,8 @@ function generateEquationRaw(level) {
         let num = randInt(1, 6);
         const div = randInt(2, 4);
         if (negativeActive && Math.random() < 0.25) num = -num;
-        const o1 = { value: num/den, type:'fraction', num, den };
-        const o2 = { value: div, type:'natural', num: div, den: 1 };
-        textHTML = `${operandHTML(o1)} ÷ ${operandHTML(o2)}`;
-        answer = num / (den * div); opA = num/den; opB = div;
+        const o1 = { value: num/den, type:'fraction', num, den }, o2 = { value: div, type:'natural', num: div, den: 1 };
+        textHTML = `${operandHTML(o1)} ÷ ${operandHTML(o2)}`; answer = num / (den * div); opA = num/den; opB = div;
       } else {
         const maxF = Math.min(12, level.maxNum);
         const b = randInt(2, maxF);
@@ -1561,29 +1528,14 @@ function generateEquationRaw(level) {
         let sign = 1;
         if (negativeActive && Math.random() < getRarityChance(level.rarity) * 0.7) sign = -1;
         a = a * sign;
-        const o1 = { value: a, type:'natural', num: a, den: 1 };
-        const o2 = { value: b, type:'natural', num: b, den: 1 };
-        textHTML = `${operandHTML(o1)} ÷ ${operandHTML(o2)}`;
-        answer = sign * q; opA = a; opB = b;
+        const o1 = { value: a, type:'natural', num: a, den: 1 }, o2 = { value: b, type:'natural', num: b, den: 1 };
+        textHTML = `${operandHTML(o1)} ÷ ${operandHTML(o2)}`; answer = sign * q; opA = a; opB = b;
       }
       break;
     }
-    case '√': {
-      const root = randInt(2, Math.min(15, level.maxNum));
-      const a = root * root;
-      textHTML = `√${a}`; answer = root; opA = a; opB = null;
-      break;
-    }
-    case 'log': {
-      const exp = randInt(1, 4);
-      const a = Math.pow(10, exp);
-      textHTML = `log₁₀(${a})`; answer = exp; opA = a; opB = null;
-      break;
-    }
-    default: {
-      const a = randInt(1, 10), b = randInt(1, 10);
-      textHTML = `${a} + ${b}`; answer = a + b; opA = a; opB = b;
-    }
+    case '√': { const root = randInt(2, Math.min(15, level.maxNum)); const a = root * root; textHTML = `√${a}`; answer = root; opA = a; opB = null; break; }
+    case 'log': { const exp = randInt(1, 4); const a = Math.pow(10, exp); textHTML = `log₁₀(${a})`; answer = exp; opA = a; opB = null; break; }
+    default: { const a = randInt(1, 10), b = randInt(1, 10); textHTML = `${a} + ${b}`; answer = a + b; opA = a; opB = b; }
   }
   answer = Math.round(answer * 10000) / 10000;
   const options = generateOptions(answer, level);
@@ -1630,16 +1582,12 @@ function equationIsSound(eq) {
   return correct === 1;
 }
 function generateEquation(level) {
-  for (let i = 0; i < 80; i++) {
-    const eq = generateEquationRaw(level);
-    if (equationIsSound(eq)) return eq;
-  }
+  for (let i = 0; i < 80; i++) { const eq = generateEquationRaw(level); if (equationIsSound(eq)) return eq; }
   const a = randInt(1, 10), b = randInt(1, 10);
   const options = generateOptions(a + b, level);
   for (let i = options.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [options[i], options[j]] = [options[j], options[i]]; }
   return { textHTML: `${a} + ${b}`, answer: a + b, options, op: '+', opA: a, opB: b };
 }
-
 function generateOptions(answer, level) {
   const options = [answer];
   const wrongs = new Set();
@@ -1650,13 +1598,8 @@ function generateOptions(answer, level) {
     let candidate;
     if (answerIsFrac) {
       const f = decimalToFraction(answer);
-      if (Math.random() < 0.6) {
-        const newNum = f.num + randChoice([-2,-1,1,2]);
-        candidate = newNum / f.den;
-      } else {
-        const newDen = Math.max(1, f.den + randChoice([-1,1,2]));
-        candidate = f.num / newDen;
-      }
+      if (Math.random() < 0.6) { const newNum = f.num + randChoice([-2,-1,1,2]); candidate = newNum / f.den; }
+      else { const newDen = Math.max(1, f.den + randChoice([-1,1,2])); candidate = f.num / newDen; }
       if (Number.isInteger(candidate) && Math.random() < 0.7) continue;
     } else {
       const step = Math.max(1, Math.round(Math.abs(answer) * 0.2));
@@ -1676,10 +1619,7 @@ function generateOptions(answer, level) {
   return options;
 }
 
-function simpNote(rawNum, rawDen, ansText) {
-  if (gcd(Math.abs(rawNum), rawDen) > 1) return `<span class="step">Simplificar:</span> ${rawNum}/${rawDen} = <b>${ansText}</b>`;
-  return '';
-}
+function simpNote(rawNum, rawDen, ansText) { if (gcd(Math.abs(rawNum), rawDen) > 1) return `<span class="step">Simplificar:</span> ${rawNum}/${rawDen} = <b>${ansText}</b>`; return ''; }
 function generateExplanation(mistake) {
   const { op, opA, opB, correctAnswer, chosenAnswer, type } = mistake;
   const ansText = explainNum(correctAnswer);
@@ -1688,7 +1628,6 @@ function generateExplanation(mistake) {
   const isFracB = opB !== null && !Number.isInteger(opB);
   const hasFrac = isFracA || isFracB;
   const hasNeg = (opA !== null && opA < 0) || (opB !== null && opB < 0);
-
   switch(op) {
     case '+': {
       if (hasFrac) {
@@ -1701,7 +1640,7 @@ function generateExplanation(mistake) {
         } else {
           const L = lcm(fA.den, fB.den);
           const newNumA = (L / fA.den) * fA.num, newNumB = (L / fB.den) * fB.num;
-          lines.push(`Cuando sumás fracciones con <b>distinto denominador</b>, primero hallás el <b>Mínimo Común Múltiplo (MCM)</b> de los denominadores.`);
+          lines.push(`Cuando sumás fracciones con <b>distinto denominador</b>, primero hallás el <b>Mínimo Común Múltiplo (MCM)</b>.`);
           lines.push(`<span class="step">Paso 1 — MCM:</span> MCM(${fA.den}, ${fB.den}) = <b>${L}</b>.`);
           lines.push(`<span class="step">Paso 2 — Convertir:</span> ${fA.num}/${fA.den} = ${newNumA}/${L} y ${fB.num}/${fB.den} = ${newNumB}/${L}.`);
           lines.push(`<span class="step">Paso 3 — Sumar numeradores:</span> ${newNumA} + ${newNumB} = ${newNumA + newNumB}.`);
@@ -1709,7 +1648,7 @@ function generateExplanation(mistake) {
           lines.push(`Resultado: <b>${ansText}</b>`);
         }
       } else if (hasNeg) {
-        lines.push(`Recordá: <b>sumar un número negativo es como restar</b>. Por ejemplo, 5 + (−3) = 5 − 3 = 2.`);
+        lines.push(`Recordá: <b>sumar un número negativo es como restar</b>.`);
         lines.push(`${explainNum(opA)} + ${explainNum(opB)} = <b>${ansText}</b>`);
       } else {
         lines.push(`Sumamos ${opA} + ${opB}.`);
@@ -1728,7 +1667,7 @@ function generateExplanation(mistake) {
         } else {
           const L = lcm(fA.den, fB.den);
           const newNumA = (L / fA.den) * fA.num, newNumB = (L / fB.den) * fB.num;
-          lines.push(`Cuando restás fracciones con <b>distinto denominador</b>, primero hallás el <b>Mínimo Común Múltiplo (MCM)</b> de los denominadores.`);
+          lines.push(`Cuando restás fracciones con <b>distinto denominador</b>, hallá el <b>MCM</b>.`);
           lines.push(`<span class="step">Paso 1 — MCM:</span> MCM(${fA.den}, ${fB.den}) = <b>${L}</b>.`);
           lines.push(`<span class="step">Paso 2 — Convertir:</span> ${fA.num}/${fA.den} = ${newNumA}/${L} y ${fB.num}/${fB.den} = ${newNumB}/${L}.`);
           lines.push(`<span class="step">Paso 3 — Restar numeradores:</span> ${newNumA} − ${newNumB} = ${newNumA - newNumB}.`);
@@ -1736,11 +1675,11 @@ function generateExplanation(mistake) {
           lines.push(`Resultado: <b>${ansText}</b>`);
         }
       } else if (hasNeg) {
-        lines.push(`Recordá: <b>restar un número negativo es como sumar</b>. Por ejemplo, 5 − (−3) = 5 + 3 = 8.`);
+        lines.push(`Recordá: <b>restar un número negativo es como sumar</b>.`);
         lines.push(`${explainNum(opA)} − ${explainNum(opB)} = <b>${ansText}</b>`);
       } else {
         lines.push(`Restamos ${opA} − ${opB}.`);
-        lines.push(`<span class="verify">Verificación: si ${ansText} + ${opB} = ${opA}, entonces la resta está bien.</span>`);
+        lines.push(`<span class="verify">Verificación: si ${ansText} + ${opB} = ${opA}, la resta está bien.</span>`);
         lines.push(`Resultado: <b>${ansText}</b>`);
       }
       break;
@@ -1750,24 +1689,22 @@ function generateExplanation(mistake) {
         lines.push(`<b>Fracción × entero:</b> multiplicás el numerador por el entero y mantenés el denominador.`);
         const fracOperand = isFracA ? opA : opB, intOperand = isFracA ? opB : opA;
         const f = decimalToFraction(fracOperand);
-        lines.push(`<span class="tip">${f.num}/${f.den} × ${explainNum(intOperand)} = (${f.num} × ${explainNum(intOperand)}) / ${f.den} = ${f.num * intOperand}/${f.den}</span>`);
+        lines.push(`<span class="tip">${f.num}/${f.den} × ${explainNum(intOperand)} = ${f.num * intOperand}/${f.den}</span>`);
         lines.push(simpNote(f.num * intOperand, f.den, ansText) || `Resultado: <b>${ansText}</b>`);
       } else if (hasNeg) {
         lines.push(`<b>Regla de signos:</b> (−) × (+) = (−) y (−) × (−) = (+).`);
         lines.push(`${explainNum(opA)} × ${explainNum(opB)} = <b>${ansText}</b>`);
-      } else {
-        lines.push(`Multiplicar ${opA} × ${opB} = <b>${ansText}</b>.`);
-      }
+      } else { lines.push(`Multiplicar ${opA} × ${opB} = <b>${ansText}</b>.`); }
       break;
     }
     case '÷': {
       if (hasFrac) {
         lines.push(`<b>Fracción ÷ entero:</b> multiplicás el denominador por el entero.`);
         const f = decimalToFraction(opA);
-        lines.push(`<span class="tip">${f.num}/${f.den} ÷ ${opB} = ${f.num}/(${f.den} × ${opB}) = ${f.num}/${f.den * opB}</span>`);
+        lines.push(`<span class="tip">${f.num}/${f.den} ÷ ${opB} = ${f.num}/${f.den * opB}</span>`);
         lines.push(simpNote(f.num, f.den * opB, ansText) || `Resultado: <b>${ansText}</b>`);
       } else if (hasNeg) {
-        lines.push(`<b>Regla de signos en la división:</b> (−) ÷ (+) = (−) y (−) ÷ (−) = (+).`);
+        lines.push(`<b>Regla de signos:</b> (−) ÷ (+) = (−) y (−) ÷ (−) = (+).`);
         lines.push(`${explainNum(opA)} ÷ ${explainNum(opB)} = <b>${ansText}</b>`);
       } else {
         lines.push(`División: <b>¿cuántas veces cabe ${opB} en ${opA}?</b>`);
@@ -1776,28 +1713,14 @@ function generateExplanation(mistake) {
       }
       break;
     }
-    case '√': {
-      lines.push(`La raíz cuadrada de ${opA} es el número que <b>multiplicado por sí mismo</b> da ${opA}.`);
-      lines.push(`<span class="tip">${correctAnswer} × ${correctAnswer} = ${opA}, entonces √${opA} = <b>${correctAnswer}</b>.</span>`);
-      break;
-    }
-    case 'log': {
-      lines.push(`El logaritmo en base 10 nos dice <b>a qué exponente elevar 10</b> para obtener ${opA}.`);
-      lines.push(`<span class="tip">10<sup>${correctAnswer}</sup> = ${opA}, entonces log₁₀(${opA}) = <b>${correctAnswer}</b>.</span>`);
-      break;
-    }
+    case '√': { lines.push(`La raíz cuadrada de ${opA} es el número que <b>multiplicado por sí mismo</b> da ${opA}.`); lines.push(`<span class="tip">√${opA} = <b>${correctAnswer}</b>.</span>`); break; }
+    case 'log': { lines.push(`El logaritmo en base 10 nos dice <b>a qué exponente elevar 10</b> para obtener ${opA}.`); lines.push(`<span class="tip">10<sup>${correctAnswer}</sup> = ${opA}, entonces log₁₀(${opA}) = <b>${correctAnswer}</b>.</span>`); break; }
     default: lines.push(`Resultado correcto: <b>${ansText}</b>`);
   }
-
   if (type === 'wrongBall') {
-    if (sameFraction(chosenAnswer, correctAnswer)) {
-      lines.push(`⚠️ Hubo un problema al evaluar esta respuesta. ¡La respuesta era correcta!`);
-    } else {
-      lines.push(`❌ Elegiste <b>${explainNum(chosenAnswer)}</b>, pero la respuesta correcta era <b>${ansText}</b>.`);
-    }
-  } else if (type === 'missed') {
-    lines.push(`⚽ Dejaste pasar el balón correcto (<b>${ansText}</b>) y fue gol en contra.`);
-  }
+    if (sameFraction(chosenAnswer, correctAnswer)) { lines.push(`⚠️ Hubo un problema al evaluar esta respuesta. ¡La respuesta era correcta!`); }
+    else { lines.push(`❌ Elegiste <b>${explainNum(chosenAnswer)}</b>, pero la respuesta correcta era <b>${ansText}</b>.`); }
+  } else if (type === 'missed') { lines.push(`⚽ Dejaste pasar el balón correcto (<b>${ansText}</b>) y fue gol en contra.`); }
   return lines.map(l => l.replace(/(^|[\s(>])-(\d)/g, '$1−$2').replace(/([+−×÷=]) −(\d)/g, '$1 (−$2)'));
 }
 
@@ -1855,6 +1778,13 @@ const aimLineEl = document.getElementById('aim-line');
 const aimPathEl = document.getElementById('aim-path');
 const aiKeeperEl = document.getElementById('ai-keeper');
 
+/* Capa para la línea punteada del compañero (WorldCup) */
+const tmLineEl = document.createElement('div');
+tmLineEl.className = 'tm-line';
+tmLineEl.innerHTML = '<svg><path d=""></path></svg>';
+container.appendChild(tmLineEl);
+const tmLinePath = tmLineEl.querySelector('path');
+
 function updateUI() {
   uiLevel.textContent = state.levelIndex + 1;
   uiGoals.textContent = state.goals;
@@ -1867,12 +1797,8 @@ function updateUI() {
   const failCard = document.getElementById('fail-card');
   const failCounter = document.getElementById('ui-fail-counter');
   if (failCard && failCounter) {
-    if (state.attemptsPerLife > 1) {
-      failCard.style.display = '';
-      failCounter.textContent = `${state.failedAttempts}/${state.attemptsPerLife}`;
-    } else {
-      failCard.style.display = 'none';
-    }
+    if (state.attemptsPerLife > 1) { failCard.style.display = ''; failCounter.textContent = `${state.failedAttempts}/${state.attemptsPerLife}`; }
+    else { failCard.style.display = 'none'; }
   }
 }
 function setTicker(t){ uiTicker.textContent = t; }
@@ -1900,15 +1826,19 @@ function showCorrectAnswerBig(value) {
   container.appendChild(div);
   setTimeout(()=>div.remove(), 1900);
 }
-function syncSoundToggle() {
-  if (!btnSoundToggle) return;
-  btnSoundToggle.textContent = state.soundOn ? 'ON' : 'OFF';
-  btnSoundToggle.classList.toggle('toggle-off', !state.soundOn);
-}
+function syncSoundToggle() { if (!btnSoundToggle) return; btnSoundToggle.textContent = state.soundOn ? 'ON' : 'OFF'; btnSoundToggle.classList.toggle('toggle-off', !state.soundOn); }
+function syncVoiceToggle() { if (!btnVoiceToggle) return; btnVoiceToggle.textContent = state.voiceEnabled ? 'ON' : 'OFF'; btnVoiceToggle.classList.toggle('toggle-off', !state.voiceEnabled); }
+function syncMusicToggle() { if (!btnMusicToggle) return; btnMusicToggle.textContent = state.musicEnabled ? 'ON' : 'OFF'; btnMusicToggle.classList.toggle('toggle-off', !state.musicEnabled); }
 function syncCelebrationToggle() {
   const b = document.getElementById('btn-celebration-toggle');
   if (b) { b.textContent = state.celebrationEnabled ? 'ON' : 'OFF'; b.classList.toggle('toggle-off', !state.celebrationEnabled); }
   if (typeof GoalCelebration !== 'undefined') GoalCelebration.setMuted(!state.celebrationEnabled);
+}
+function syncWorldcupToggle() {
+  const b = document.getElementById('btn-worldcup-toggle');
+  if (b) { b.textContent = state.worldcupEnabled ? 'ON' : 'OFF'; b.classList.toggle('toggle-off', !state.worldcupEnabled); }
+  const tag = document.getElementById('ui-mod-tag');
+  if (tag) tag.classList.toggle('hidden', !state.worldcupEnabled);
 }
 const AUDIO_LABELS = { music: 'Música de fondo', voice: 'Narración', celebration: 'Celebración de goles' };
 function audioFlag(k) { return k === 'music' ? state.musicEnabled : k === 'voice' ? state.voiceEnabled : state.celebrationEnabled; }
@@ -1938,37 +1868,21 @@ function setAudio(k, on, announce) {
   syncAudioButtons();
   if (announce) setTicker((on ? '🔊 ' : '🔇 ') + AUDIO_LABELS[k] + ': ' + (on ? 'ON' : 'OFF'));
 }
-function syncVoiceToggle() { if (!btnVoiceToggle) return; btnVoiceToggle.textContent = state.voiceEnabled ? 'ON' : 'OFF'; btnVoiceToggle.classList.toggle('toggle-off', !state.voiceEnabled); }
-function syncMusicToggle() { if (!btnMusicToggle) return; btnMusicToggle.textContent = state.musicEnabled ? 'ON' : 'OFF'; btnMusicToggle.classList.toggle('toggle-off', !state.musicEnabled); }
 function updateCareerButton() { if (!btnCareer) return; const r = Progress.getRankData(); btnCareer.textContent = `${r.emoji} MI CARRERA`; }
 
-/* ============================================================
-   REGISTRO DE INTENTOS
-   ============================================================ */
 function registerFailure() {
   state.failedAttempts++;
   let lifeLost = false;
-  if (state.failedAttempts >= state.attemptsPerLife) {
-    state.failedAttempts = 0;
-    state.lives--;
-    lifeLost = true;
-  }
+  if (state.failedAttempts >= state.attemptsPerLife) { state.failedAttempts = 0; state.lives--; lifeLost = true; }
   return { lifeLost, gameOver: state.lives <= 0 };
 }
-function registerSuccess() {
-  state.failedAttempts = 0;
-}
+function registerSuccess() { state.failedAttempts = 0; }
 function flashFailCard() {
   const el = document.getElementById('fail-card');
   if (!el) return;
-  el.classList.remove('fail-flash');
-  void el.offsetWidth;
-  el.classList.add('fail-flash');
+  el.classList.remove('fail-flash'); void el.offsetWidth; el.classList.add('fail-flash');
 }
 
-/* ============================================================
-   ÁREA Y LÍMITES
-   ============================================================ */
 function recalcArea() {
   const rect = container.getBoundingClientRect();
   const W = rect.width, H = rect.height;
@@ -1991,7 +1905,6 @@ function renderKeeper() {
   uiKeeper.style.top = state.keeperY + 'px';
   uiKeeper.style.transform = 'translate(-50%, -50%)';
 }
-
 function updateKeeper(dt) {
   if (state.mode !== 'playing' || !state.active || state.gamePaused) return;
   if (state.playMode !== 'keeper') return;
@@ -2021,6 +1934,10 @@ function getValueClass(val) {
   if (!Number.isInteger(val)) return 'ball-value fraction';
   return 'ball-value';
 }
+
+/* ============================================================
+   KEEPER BALLS (con soporte WorldCup)
+   ============================================================ */
 function spawnBalls() {
   state.balls.forEach(b => b.el.remove());
   state.balls = [];
@@ -2036,6 +1953,7 @@ function spawnBalls() {
   const rect = container.getBoundingClientRect();
   const w = rect.width;
   const colWidth = (w - 100) / picked.length;
+
   picked.forEach((val, i) => {
     const el = document.createElement('div');
     el.className = 'ball';
@@ -2047,13 +1965,19 @@ function spawnBalls() {
     el.style.left = startX + 'px'; el.style.top = startY + 'px';
     container.appendChild(el);
     const baseSpeed = 55 * level.speed * state.globalSpeedMultiplier;
-    state.balls.push({
+    const ball = {
       el, value: val, x: startX, y: startY,
       speed: baseSpeed * (0.85 + Math.random()*0.3),
       isCorrect: approxEqual(val, eq.answer),
       resolved: false,
-    });
+      vx: 0,
+    };
+    if (state.worldcupEnabled) {
+      ball.vx = (Math.random() < 0.5 ? -1 : 1) * (25 + Math.random() * 30);
+    }
+    state.balls.push(ball);
   });
+
   state.active = true;
   state.roundLocked = false;
   controlsHint.classList.add('show');
@@ -2061,6 +1985,9 @@ function spawnBalls() {
   narrateShot();
 }
 
+/* ============================================================
+   SHOOTER
+   ============================================================ */
 function shooterGeom() {
   const r = container.getBoundingClientRect();
   const narrow = r.width < 600;
@@ -2099,11 +2026,95 @@ function layoutShooterTargets() {
   });
 }
 
+/* ============================================================
+   WORLDCUP - Barrera y compañeros
+   ============================================================ */
+function setupWorldCupWall() {
+  const g = shooterGeom();
+
+  // --- Barrera: 4 jugadores hombro con hombro, un solo contenedor ---
+  const wallEl = document.createElement('div');
+  wallEl.className = 'wall-player';
+  wallEl.innerHTML = '<span>🧍</span><span>🧍</span><span>🧍</span><span>🧍</span>';
+  wallEl.dataset.nx = '0.5';
+  wallEl.dataset.ny = (g.gline + 0.065).toFixed(5);
+  shooterTargetsEl.appendChild(wallEl);
+  state.wallElements.push(wallEl);
+
+  // --- Compañeros: uno por cada balón del arco ---
+  const targets = state.shooterTargets;
+  const n = targets.length;
+  const correctTarget = targets.find(t => t.isCorrect);
+  const wrongs = targets.filter(t => t !== correctTarget);
+  for (let i = wrongs.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [wrongs[i], wrongs[j]] = [wrongs[j], wrongs[i]];
+  }
+  const correctSlot = Math.floor(Math.random() * n);
+  let wi = 0;
+  for (let i = 0; i < n; i++) {
+    const target = (i === correctSlot) ? correctTarget : wrongs[wi++];
+    const f = n === 1 ? 0.5 : i / (n - 1);
+    const nx = 0.13 + 0.74 * f;
+    const ny = 0.635 + (i % 2) * 0.055;
+    const el = document.createElement('div');
+    el.className = 'teammate-player';
+    el.innerHTML = '<div class="tm-emoji">🏃</div><div class="tm-label">PASE</div>';
+    shooterTargetsEl.appendChild(el);
+    state.teammates.push({ el, nx, ny, x: 0, y: 0, target, isCorrectTarget: target === correctTarget });
+  }
+  layoutWorldCup();
+
+  state.passPhase = 'pass';
+  state.aimedAtTeammate = false;
+  state.teammate = null;
+
+  controlsHint.textContent = 'Pasá la pelota a un compañero 🏃 (acercate para ver su tiro)';
+  controlsHint.classList.add('show');
+  setTimeout(() => controlsHint.classList.remove('show'), 3200);
+}
+
+function layoutWorldCup() {
+  const rect = container.getBoundingClientRect();
+  const W = rect.width, H = rect.height;
+  const fs = Math.max(40, Math.min(56, W * 0.062));
+  state.wallElements.forEach(w => {
+    w.style.left = (parseFloat(w.dataset.nx) * W) + 'px';
+    w.style.top = (parseFloat(w.dataset.ny) * H) + 'px';
+    w.style.fontSize = fs + 'px';
+  });
+  state.teammates.forEach(t => {
+    t.x = t.nx * W; t.y = t.ny * H;
+    t.el.style.left = t.x + 'px';
+    t.el.style.top = t.y + 'px';
+  });
+}
+
+function findTeammateNear(x, y) {
+  if (!state.teammates.length) return null;
+  const rect = container.getBoundingClientRect();
+  const R = Math.max(64, Math.min(110, rect.width * 0.11));
+  let best = null, bestD = R;
+  for (const tm of state.teammates) {
+    const d = Math.hypot(x - tm.x, y - tm.y);
+    if (d < bestD) { bestD = d; best = tm; }
+  }
+  return best;
+}
+
 function spawnShooterTargets() {
   shooterTargetsEl.innerHTML = '';
   state.shooterTargets = [];
+  state.wallElements = [];
+  state.teammates = [];
+  state.hoveredTeammate = null;
+  state.teammate = null;
+  state.passPhase = 'normal';
+  state.aimedAtTeammate = false;
   state.isAiming = false;
   aimLineEl.classList.remove('active');
+  tmLineEl.classList.remove('active');
+
   const level = LEVELS[state.levelIndex];
   const eq = generateEquation(level);
   state.currentEquation = eq;
@@ -2122,16 +2133,27 @@ function spawnShooterTargets() {
   });
   applyShooterGeom();
   layoutShooterTargets();
-  playerBallEl.style.left = ''; playerBallEl.style.top = ''; playerBallEl.style.transform = '';
+
+  playerBallEl.style.left = '';
+  playerBallEl.style.top = '';
+  playerBallEl.style.transform = '';
   playerBallEl.classList.remove('hidden', 'flying');
   updateBallSpot();
+
   aiKeeperEl.className = 'ai-keeper active';
   aiKeeperEl.style.left = ''; aiKeeperEl.style.top = ''; aiKeeperEl.style.transform = '';
+
+  // WorldCup: SIEMPRE barrera + compañeros (el pase es obligatorio)
+  if (state.worldcupEnabled) {
+    setupWorldCupWall();
+  } else {
+    controlsHint.textContent = 'Arrastra desde el balón hacia el arco';
+    controlsHint.classList.add('show');
+    setTimeout(()=>controlsHint.classList.remove('show'), 2500);
+  }
+
   state.active = true;
   state.roundLocked = false;
-  controlsHint.textContent = 'Arrastra desde el balón hacia el arco';
-  controlsHint.classList.add('show');
-  setTimeout(()=>controlsHint.classList.remove('show'), 2500);
   narrateShot();
 }
 
@@ -2149,20 +2171,49 @@ function findAimTarget(dirX, dirY, sx, sy) {
   }
   return best;
 }
-function clearAimed() { state.shooterTargets.forEach(t => t.el.classList.remove('aimed')); }
+function clearAimed() {
+  state.shooterTargets.forEach(t => { t.el.classList.remove('aimed'); t.el.classList.remove('tm-aimed'); });
+  state.teammates.forEach(t => t.el.classList.remove('aimed'));
+  state.hoveredTeammate = null;
+  state.aimedAtTeammate = false;
+  tmLineEl.classList.remove('active');
+}
 
 function beginAim(p, anywhere) {
   if (!state.active || state.roundLocked || state.gamePaused) return;
-  updateBallSpot();
   const dist = Math.hypot(p.x - state.playerBallX, p.y - state.playerBallY);
-  if (!anywhere && dist > 120) return;
+  const free = anywhere || (state.passPhase === 'pass' && state.teammates.length > 0);
+  if (!free && dist > 120) return;
   state.isAiming = true;
   updateAim(p.x, p.y);
 }
+
 function updateAim(x, y) {
   state.aimX = x; state.aimY = y;
   const sx = state.playerBallX, sy = state.playerBallY;
   const dx = x - sx, dy = y - sy, len = Math.hypot(dx, dy);
+
+  // Fase de PASE (WorldCup): se elige compañero por proximidad
+  if (state.passPhase === 'pass' && state.teammates.length) {
+    const tm = findTeammateNear(x, y);
+    clearAimed();
+    if (tm) {
+      state.hoveredTeammate = tm;
+      state.aimedAtTeammate = true;
+      tm.el.classList.add('aimed');
+      tm.target.el.classList.add('tm-aimed');
+      const rect = container.getBoundingClientRect();
+      tmLinePath.setAttribute('d', `M ${tm.x} ${tm.y} L ${tm.target.nx * rect.width} ${tm.target.ny * rect.height}`);
+      tmLineEl.classList.add('active');
+      aimPathEl.setAttribute('d', `M ${sx} ${sy} L ${tm.x} ${tm.y}`);
+      aimLineEl.classList.add('active');
+    } else {
+      aimLineEl.classList.remove('active');
+    }
+    return;
+  }
+
+  // Modo SHOOT directo
   clearAimed();
   if (len < 18 || dy > -8) { aimLineEl.classList.remove('active'); return; }
   const dirX = dx / len, dirY = dy / len;
@@ -2180,6 +2231,20 @@ function shootBall() {
   if (!state.isAiming) return;
   state.isAiming = false;
   aimLineEl.classList.remove('active');
+
+  // PASO 1: Fase de pase al compañero (obligatorio en WorldCup)
+  if (state.passPhase === 'pass') {
+    const tm = state.hoveredTeammate;
+    if (!tm) {
+      clearAimed();
+      setTicker('Pasá la pelota a un compañero 🏃');
+      return;
+    }
+    animatePass(tm);
+    return;
+  }
+
+  // PASO 2: Fase de disparo normal (sin WorldCup)
   clearAimed();
   const rect = container.getBoundingClientRect();
   const H = rect.height;
@@ -2193,6 +2258,7 @@ function shootBall() {
   const g = shooterGeom();
   const gx = v => (v * 100) + '%';
   let endX, endY, isGoal = false, targetHit = null;
+
   if (hit) {
     targetHit = hit.t; endX = hit.tx; endY = hit.ty;
     if (targetHit.isCorrect) {
@@ -2212,9 +2278,11 @@ function shootBall() {
     const tt = (sy - yEnd) / (-dirY);
     endX = sx + dirX * tt; endY = yEnd;
   }
+
   playerBallEl.classList.add('flying');
   const animStart = performance.now();
   const duration = 480;
+
   function animateBall(now) {
     const t = Math.min(1, (now - animStart) / duration);
     const e = 1 - Math.pow(1 - t, 2.2);
@@ -2227,6 +2295,92 @@ function shootBall() {
     else { playerBallEl.classList.add('hidden'); setTimeout(() => { resolveShooterRound(isGoal, targetHit); }, 180); }
   }
   requestAnimationFrame(animateBall);
+}
+
+function animatePass(tm) {
+  state.active = false;
+  clearAimed();
+  tm.target.el.classList.add('tm-aimed');
+  state.wallElements.forEach(w => w.classList.add('fade-out'));
+
+  const sx = state.playerBallX, sy = state.playerBallY;
+  const animStart = performance.now();
+  const duration = 360;
+
+  playerBallEl.classList.remove('hidden');
+  playerBallEl.classList.add('flying');
+
+  function animate(now) {
+    const t = Math.min(1, (now - animStart) / duration);
+    const e = 1 - Math.pow(1 - t, 2);
+    const cx = sx + (tm.x - sx) * e;
+    const cy = sy + (tm.y - sy) * e;
+    playerBallEl.style.left = cx + 'px';
+    playerBallEl.style.top = cy + 'px';
+    playerBallEl.style.transform = `translate(-50%, -50%) rotate(${e * 360}deg)`;
+
+    if (t < 1) { requestAnimationFrame(animate); return; }
+
+    state.playerBallX = tm.x;
+    state.playerBallY = tm.y;
+    playerBallEl.classList.remove('flying');
+    playerBallEl.style.left = tm.x + 'px';
+    playerBallEl.style.top = tm.y + 'px';
+    playerBallEl.style.transform = 'translate(-50%, -50%)';
+    playTone(1100, 0.08, 'sine', 0.1);
+
+    state.wallElements.forEach(w => w.classList.add('fade-out'));
+    state.teammates.forEach(t2 => { if (t2 !== tm) t2.el.classList.add('fade-out'); });
+    setTimeout(() => {
+      state.wallElements.forEach(w => w.remove());
+      state.wallElements = [];
+      state.teammates.forEach(t2 => { if (t2 !== tm) t2.el.remove(); });
+      state.teammates = [tm];
+    }, 300);
+
+    setTimeout(() => teammateShoot(tm), 340);
+  }
+  requestAnimationFrame(animate);
+}
+
+function teammateShoot(tm) {
+  const rect = container.getBoundingClientRect();
+  const g = shooterGeom();
+  const gx = v => (v * 100) + '%';
+  const sx = tm.x, sy = tm.y;
+  const tx = tm.target.nx * rect.width, ty = tm.target.ny * rect.height;
+
+  if (tm.target.isCorrect) {
+    const goRight = tm.target.nx < 0.5;
+    aiKeeperEl.style.left = gx(g.gl + g.gw * (goRight ? 0.86 : 0.14));
+    aiKeeperEl.style.top = '';
+    aiKeeperEl.style.transform = `translate(-50%, -50%) rotate(${goRight ? 55 : -55}deg)`;
+  } else {
+    aiKeeperEl.style.left = gx(tm.target.nx);
+    aiKeeperEl.style.top = gx(tm.target.ny);
+    aiKeeperEl.style.transform = `translate(-50%, -50%) rotate(${tm.target.nx < 0.5 ? -45 : 45}deg)`;
+  }
+
+  playerBallEl.classList.remove('hidden');
+  playerBallEl.classList.add('flying');
+  const start = performance.now();
+  const duration = 320;
+
+  function anim(now) {
+    const t = Math.min(1, (now - start) / duration);
+    const e = 1 - Math.pow(1 - t, 2.2);
+    const cx = sx + (tx - sx) * e;
+    const cy = sy + (ty - sy) * e;
+    playerBallEl.style.left = cx + 'px';
+    playerBallEl.style.top = cy + 'px';
+    playerBallEl.style.transform = `translate(-50%, -50%) scale(${1 - 0.4 * e}) rotate(${e * 480}deg)`;
+    if (t < 1) { requestAnimationFrame(anim); return; }
+    playerBallEl.classList.add('hidden');
+    if (tm.target.isCorrect) tm.target.el.classList.add('correct-hit');
+    else tm.target.el.classList.add('wrong-hit');
+    setTimeout(() => resolveShooterRound(tm.target.isCorrect, tm.target), 170);
+  }
+  requestAnimationFrame(anim);
 }
 
 function resolveShooterRound(isGoal, targetHit) {
@@ -2259,22 +2413,14 @@ function resolveShooterRound(isGoal, targetHit) {
       setTicker(`¡El arquero la sacó! Era ${numText(state.correctAnswer)}.`);
       narrateCategory('shooterSave', { rate: 1.1, pitch: 1.1 });
       if (state.currentEquation) {
-        state.mistakes.push({
-          op: state.currentEquation.op, opA: state.currentEquation.opA, opB: state.currentEquation.opB,
-          textHTML: state.currentEquation.textHTML, shown: state.currentEquation.shown, correctAnswer: state.correctAnswer,
-          chosenAnswer: targetHit.value, type: 'wrongBall',
-        });
+        state.mistakes.push({ op: state.currentEquation.op, opA: state.currentEquation.opA, opB: state.currentEquation.opB, textHTML: state.currentEquation.textHTML, shown: state.currentEquation.shown, correctAnswer: state.correctAnswer, chosenAnswer: targetHit.value, type: 'wrongBall' });
       }
     } else {
       showFeedback('¡AFUERA! ❌', '#e53935');
       setTicker(`¡La tiraste afuera! Era ${numText(state.correctAnswer)}.`);
       narrateCategory('shooterMiss', { rate: 1.1, pitch: 1.0 });
       if (state.currentEquation) {
-        state.mistakes.push({
-          op: state.currentEquation.op, opA: state.currentEquation.opA, opB: state.currentEquation.opB,
-          textHTML: state.currentEquation.textHTML, shown: state.currentEquation.shown, correctAnswer: state.correctAnswer,
-          chosenAnswer: null, type: 'missed',
-        });
+        state.mistakes.push({ op: state.currentEquation.op, opA: state.currentEquation.opA, opB: state.currentEquation.opB, textHTML: state.currentEquation.textHTML, shown: state.currentEquation.shown, correctAnswer: state.correctAnswer, chosenAnswer: null, type: 'missed' });
       }
     }
     const result = registerFailure();
@@ -2308,6 +2454,7 @@ function checkCollisions() {
     if (dx < 0 && dy < 0) handleCollision(ball);
   });
 }
+
 function handleCollision(ball) {
   if (ball.resolved) return;
   if (ball.isCorrect) {
@@ -2343,11 +2490,7 @@ function handleCollision(ball) {
     showFeedback('¡NO! ❌', '#e53935');
     setTicker(`¡Ese no era! Era ${numText(state.correctAnswer)}.`);
     if (state.currentEquation) {
-      state.mistakes.push({
-        op: state.currentEquation.op, opA: state.currentEquation.opA, opB: state.currentEquation.opB,
-        textHTML: state.currentEquation.textHTML, shown: state.currentEquation.shown, correctAnswer: state.correctAnswer,
-        chosenAnswer: ball.value, type: 'wrongBall',
-      });
+      state.mistakes.push({ op: state.currentEquation.op, opA: state.currentEquation.opA, opB: state.currentEquation.opB, textHTML: state.currentEquation.textHTML, shown: state.currentEquation.shown, correctAnswer: state.correctAnswer, chosenAnswer: ball.value, type: 'wrongBall' });
     }
     narrateCategory('wrongBall', { rate: 1.1, pitch: 1.1 });
     state.roundLocked = true;
@@ -2373,18 +2516,33 @@ function handleCollision(ball) {
   }
 }
 
+/* ============================================================
+   GAME LOOP (con soporte WorldCup para balones en movimiento)
+   ============================================================ */
 function gameLoop(timestamp) {
   if (state.mode !== 'playing') return;
   if (state.gamePaused) { state.lastTime = timestamp; state.animationId = requestAnimationFrame(gameLoop); return; }
   const dt = state.lastTime ? Math.min((timestamp - state.lastTime)/1000, 0.05) : 0.016;
   state.lastTime = timestamp;
+
   if (state.playMode === 'keeper') {
     updateKeeper(dt);
     const goalY = state.goalLineY;
+    const rect = container.getBoundingClientRect();
+
     state.balls.forEach(ball => {
       if (ball.resolved) return;
       ball.y += ball.speed * dt;
       ball.el.style.top = ball.y + 'px';
+      if (state.worldcupEnabled && ball.vx) {
+        ball.x += ball.vx * dt;
+        const bw = ball.el.offsetWidth || 50;
+        const minX = 10;
+        const maxX = rect.width - bw - 10;
+        if (ball.x <= minX) { ball.x = minX; ball.vx = Math.abs(ball.vx); }
+        if (ball.x >= maxX) { ball.x = maxX; ball.vx = -Math.abs(ball.vx); }
+        ball.el.style.left = ball.x + 'px';
+      }
       if (ball.isCorrect && ball.y > goalY && !ball.resolved) {
         ball.resolved = true;
         state.streak = 0;
@@ -2446,6 +2604,9 @@ function renderSessionSummary(elId, result) {
   el.classList.remove('hidden');
 }
 
+/* ============================================================
+   FLUJO
+   ============================================================ */
 function startLevel(index, mode = 'keeper') {
   initAudio();
   if (state.musicEnabled) GameMusic.start();
@@ -2462,6 +2623,13 @@ function startLevel(index, mode = 'keeper') {
   state.lastTime = 0; state.pointerActive = false; state.gamePaused = false;
   state.mistakes = [];
   state.sessionStats = { fractionSaves: 0, negativeSaves: 0, logSaves: 0, sqrtSaves: 0 };
+  state.wallElements = [];
+  state.teammate = null;
+  state.teammates = [];
+  state.hoveredTeammate = null;
+  state.passPhase = 'normal';
+  state.aimedAtTeammate = false;
+  tmLineEl.classList.remove('active');
 
   container.classList.add('playing');
   container.classList.remove('keeper-mode', 'shooter-mode');
@@ -2481,7 +2649,8 @@ function startLevel(index, mode = 'keeper') {
 
   const lvl = LEVELS[index];
   const pct = Math.round(getRarityChance(lvl.rarity) * 100);
-  setTicker(`Nivel ${index+1}: ${lvl.name} - ¡${mode === 'keeper' ? 'Ataja' : 'Meté'} ${lvl.target} balones! (Especiales: ${pct}%)`);
+  const modLabel = state.worldcupEnabled ? '🌍 WORLDCUP · ' : '';
+  setTicker(`${modLabel}Nivel ${index+1}: ${lvl.name} - ¡${mode === 'keeper' ? 'Ataja' : 'Meté'} ${lvl.target} balones! (Especiales: ${pct}%)`);
   state.balls.forEach(b => b.el.remove());
   state.balls = [];
 
@@ -2522,6 +2691,11 @@ function exitToMenu() {
   state.balls.forEach(b => b.el.remove());
   state.balls = [];
   shooterTargetsEl.innerHTML = '';
+  state.wallElements = [];
+  state.teammate = null;
+  state.teammates = [];
+  state.hoveredTeammate = null;
+  tmLineEl.classList.remove('active');
   confirmExitModal.classList.add('hidden');
   btnExitGame.classList.add('hidden');
   cursorDot.style.display = 'none';
@@ -3152,6 +3326,7 @@ onTap(document.getElementById('btn-career'), () => { soundClick(); renderCareer(
 onTap(document.getElementById('btn-settings'), () => {
   soundClick(); buildAvatarPickers(); buildNumberTypeToggles();
   updateVoiceSelector(); syncSoundToggle(); syncVoiceToggle(); syncMusicToggle();
+  syncWorldcupToggle();
   updateVoiceStatus('');
   buildMusicTracks();
   setupStageSelector();
@@ -3188,6 +3363,15 @@ onTap(document.getElementById('btn-celebration-toggle'), function() { soundClick
 document.querySelectorAll('.aq-btn[data-audio]').forEach(b => {
   onTap(b, () => { soundClick(); const k = b.dataset.audio; setAudio(k, !audioFlag(k), true); });
 });
+
+onTap(document.getElementById('btn-worldcup-toggle'), function() {
+  state.worldcupEnabled = !state.worldcupEnabled;
+  Progress.savePreference('worldcupEnabled', state.worldcupEnabled);
+  syncWorldcupToggle();
+  soundClick();
+  setTicker(state.worldcupEnabled ? '🌍 MODO WORLDCUP ACTIVADO' : '🌍 MODO WORLDCUP DESACTIVADO');
+});
+
 onTap(document.getElementById('btn-voice-test'), () => { soundClick(); speakDirect('¡Se prepara... y patea! ¡Gooool!', { rate: 1.15, pitch: 1.3, force: true }); });
 onTap(document.getElementById('btn-retry'), () => { soundClick(); state.isTournament=false; startLevel(state.levelIndex, state.playMode); });
 onTap(document.getElementById('btn-menu-go'), () => {
@@ -3204,7 +3388,6 @@ onTap(btnExitGame, () => { soundClick(); state.gamePaused = true; confirmExitMod
 onTap(document.getElementById('btn-confirm-cancel'), () => { soundClick(); confirmExitModal.classList.add('hidden'); state.gamePaused = false; state.lastTime = 0; });
 onTap(document.getElementById('btn-confirm-exit'), () => { soundClick(); exitToMenu(); });
 
-/* --- Botones del sistema de retos --- */
 onTap(document.getElementById('btn-create-challenge'), openCreateChallenge);
 onTap(document.getElementById('btn-back-create'), () => { soundClick(); showOverlay('overlay-menu'); });
 onTap(document.getElementById('btn-generate-challenge'), generateChallengeLink);
@@ -3241,9 +3424,7 @@ if (attemptsSliderEl) {
     state.attemptsPerLife = parseInt(e.target.value);
     document.getElementById('attempts-value').textContent = state.attemptsPerLife;
     Progress.savePreference('attemptsPerLife', state.attemptsPerLife);
-    if (state.mode === 'playing') {
-      updateUI();
-    }
+    if (state.mode === 'playing') updateUI();
   });
 }
 
@@ -3254,7 +3435,7 @@ updateUI();
 setTicker('Bienvenidos a MAT. ¡Elige un modo!');
 buildLevelGrid();
 uiKeeperEmoji.textContent = state.keeperAvatar;
-syncSoundToggle(); syncAudioButtons();
+syncSoundToggle(); syncAudioButtons(); syncWorldcupToggle();
 updateCareerButton();
 initVoices();
 setupSettingsTabs();
@@ -3264,6 +3445,7 @@ setupSettingsTabs();
   if (typeof prefs.musicEnabled === 'boolean') state.musicEnabled = prefs.musicEnabled;
   if (typeof prefs.voiceEnabled === 'boolean') state.voiceEnabled = prefs.voiceEnabled;
   if (typeof prefs.celebrationEnabled === 'boolean') state.celebrationEnabled = prefs.celebrationEnabled;
+  if (typeof prefs.worldcupEnabled === 'boolean') state.worldcupEnabled = prefs.worldcupEnabled;
   if (typeof prefs.musicTrack === 'number') state.musicTrackIndex = prefs.musicTrack;
   if (typeof prefs.velocityStage === 'number') state.velocityStage = prefs.velocityStage;
   if (typeof prefs.sliderPos === 'number') state.sliderPos = prefs.sliderPos;
@@ -3276,6 +3458,7 @@ setupSettingsTabs();
     document.getElementById('attempts-value').textContent = state.attemptsPerLife;
   }
   syncAudioButtons();
+  syncWorldcupToggle();
 })();
 
 window.addEventListener('resize', () => {
@@ -3286,7 +3469,7 @@ window.addEventListener('resize', () => {
     state.keeperY = Math.max(state.area.top + kh, Math.min(state.area.bottom - kh, state.keeperY));
     renderKeeper();
   }
-  if (state.mode === 'playing' && state.playMode === 'shooter') { applyShooterGeom(); layoutShooterTargets(); updateBallSpot(); }
+  if (state.mode === 'playing' && state.playMode === 'shooter') { applyShooterGeom(); layoutShooterTargets(); updateBallSpot(); layoutWorldCup(); }
 });
 setTimeout(() => { recalcArea(); resetKeeperPosition(); }, 100);
 
