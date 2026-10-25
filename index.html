@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>⚽ Arquero Matemático ⚽</title>
+<title>MAT — Manos · Arco · Tiro</title>
 <style>
   :root {
     --verde-campo: #2e7d32;
@@ -361,6 +361,267 @@
   .ai-keeper.dive-right { left: 80%; }
   .ai-keeper.dive-center { left: 50%; }
 
+  /* ============================================================
+     MARCA MAT — Manos · Arco · Tiro  (mascota pixel-art 100% CSS)
+     ============================================================ */
+  .mat-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; pointer-events: none; }
+  .mat-mascot { position: relative; width: 16em; height: 22em; font-size: 4px; filter: drop-shadow(0 2px 0 rgba(0,0,0,0.45)); }
+  .mat-px {
+    position: absolute; left: -1em; top: -1em; width: 1em; height: 1em;
+    box-shadow:
+      4em 1em 0 #23213f,
+      8em 1em 0 #23213f,
+      12em 1em 0 #23213f,
+      3em 2em 0 #23213f,
+      4em 2em 0 #23213f,
+      5em 2em 0 #23213f,
+      7em 2em 0 #23213f,
+      8em 2em 0 #23213f,
+      9em 2em 0 #23213f,
+      11em 2em 0 #23213f,
+      12em 2em 0 #23213f,
+      13em 2em 0 #23213f,
+      2em 3em 0 #23213f,
+      3em 3em 0 #23213f,
+      4em 3em 0 #23213f,
+      5em 3em 0 #23213f,
+      6em 3em 0 #23213f,
+      7em 3em 0 #23213f,
+      8em 3em 0 #23213f,
+      9em 3em 0 #23213f,
+      10em 3em 0 #23213f,
+      11em 3em 0 #23213f,
+      12em 3em 0 #23213f,
+      13em 3em 0 #23213f,
+      14em 3em 0 #23213f,
+      15em 3em 0 #23213f,
+      2em 4em 0 #23213f,
+      3em 4em 0 #23213f,
+      4em 4em 0 #5a58a8,
+      5em 4em 0 #5a58a8,
+      6em 4em 0 #23213f,
+      7em 4em 0 #23213f,
+      8em 4em 0 #23213f,
+      9em 4em 0 #23213f,
+      10em 4em 0 #23213f,
+      11em 4em 0 #23213f,
+      12em 4em 0 #5a58a8,
+      13em 4em 0 #23213f,
+      14em 4em 0 #23213f,
+      15em 4em 0 #23213f,
+      2em 5em 0 #23213f,
+      3em 5em 0 #23213f,
+      4em 5em 0 #ffe1c6,
+      5em 5em 0 #23213f,
+      6em 5em 0 #23213f,
+      7em 5em 0 #ffe1c6,
+      8em 5em 0 #ffe1c6,
+      9em 5em 0 #ffe1c6,
+      10em 5em 0 #ffe1c6,
+      11em 5em 0 #23213f,
+      12em 5em 0 #23213f,
+      13em 5em 0 #ffe1c6,
+      14em 5em 0 #23213f,
+      15em 5em 0 #23213f,
+      2em 6em 0 #23213f,
+      3em 6em 0 #ffe1c6,
+      4em 6em 0 #ffe1c6,
+      5em 6em 0 #ffe1c6,
+      6em 6em 0 #ffe1c6,
+      7em 6em 0 #ffe1c6,
+      8em 6em 0 #ffe1c6,
+      9em 6em 0 #ffe1c6,
+      10em 6em 0 #ffe1c6,
+      11em 6em 0 #ffe1c6,
+      12em 6em 0 #ffe1c6,
+      13em 6em 0 #ffe1c6,
+      14em 6em 0 #ffe1c6,
+      15em 6em 0 #23213f,
+      2em 7em 0 #23213f,
+      3em 7em 0 #ffe1c6,
+      4em 7em 0 #ffe1c6,
+      5em 7em 0 #15152b,
+      6em 7em 0 #ffffff,
+      7em 7em 0 #ffe1c6,
+      8em 7em 0 #ffe1c6,
+      9em 7em 0 #ffe1c6,
+      10em 7em 0 #ffe1c6,
+      11em 7em 0 #15152b,
+      12em 7em 0 #ffffff,
+      13em 7em 0 #ffe1c6,
+      14em 7em 0 #ffe1c6,
+      15em 7em 0 #23213f,
+      2em 8em 0 #23213f,
+      3em 8em 0 #ffe1c6,
+      4em 8em 0 #ffe1c6,
+      5em 8em 0 #15152b,
+      6em 8em 0 #15152b,
+      7em 8em 0 #ffe1c6,
+      8em 8em 0 #ffe1c6,
+      9em 8em 0 #ffe1c6,
+      10em 8em 0 #ffe1c6,
+      11em 8em 0 #15152b,
+      12em 8em 0 #15152b,
+      13em 8em 0 #ffe1c6,
+      14em 8em 0 #ffe1c6,
+      15em 8em 0 #23213f,
+      2em 9em 0 #23213f,
+      3em 9em 0 #ffe1c6,
+      4em 9em 0 #ffe1c6,
+      5em 9em 0 #ffe1c6,
+      6em 9em 0 #ffe1c6,
+      7em 9em 0 #ffe1c6,
+      8em 9em 0 #ffe1c6,
+      9em 9em 0 #ffe1c6,
+      10em 9em 0 #ffe1c6,
+      11em 9em 0 #ffe1c6,
+      12em 9em 0 #ffe1c6,
+      13em 9em 0 #ffe1c6,
+      14em 9em 0 #ffe1c6,
+      15em 9em 0 #23213f,
+      3em 10em 0 #23213f,
+      4em 10em 0 #ffe1c6,
+      5em 10em 0 #ffe1c6,
+      6em 10em 0 #ffe1c6,
+      7em 10em 0 #ffe1c6,
+      8em 10em 0 #d4534f,
+      9em 10em 0 #d4534f,
+      10em 10em 0 #ffe1c6,
+      11em 10em 0 #ffe1c6,
+      12em 10em 0 #ffe1c6,
+      13em 10em 0 #ffe1c6,
+      14em 10em 0 #23213f,
+      4em 11em 0 #f0bf99,
+      5em 11em 0 #ffe1c6,
+      6em 11em 0 #ffe1c6,
+      7em 11em 0 #ffe1c6,
+      8em 11em 0 #ffe1c6,
+      9em 11em 0 #ffe1c6,
+      10em 11em 0 #ffe1c6,
+      11em 11em 0 #ffe1c6,
+      12em 11em 0 #ffe1c6,
+      13em 11em 0 #f0bf99,
+      7em 12em 0 #ffe1c6,
+      8em 12em 0 #ffe1c6,
+      9em 12em 0 #ffe1c6,
+      10em 12em 0 #ffe1c6,
+      3em 13em 0 #ffffff,
+      4em 13em 0 #ffffff,
+      5em 13em 0 #ffffff,
+      6em 13em 0 #1e5bd8,
+      7em 13em 0 #1e5bd8,
+      8em 13em 0 #ffe1c6,
+      9em 13em 0 #ffe1c6,
+      10em 13em 0 #1e5bd8,
+      11em 13em 0 #1e5bd8,
+      12em 13em 0 #ffffff,
+      13em 13em 0 #ffffff,
+      14em 13em 0 #ffffff,
+      2em 14em 0 #ffffff,
+      3em 14em 0 #ffffff,
+      4em 14em 0 #ffffff,
+      5em 14em 0 #ffffff,
+      6em 14em 0 #1e5bd8,
+      7em 14em 0 #ffffff,
+      8em 14em 0 #ffffff,
+      9em 14em 0 #ffffff,
+      10em 14em 0 #ffffff,
+      11em 14em 0 #1e5bd8,
+      12em 14em 0 #ffffff,
+      13em 14em 0 #ffffff,
+      14em 14em 0 #ffffff,
+      15em 14em 0 #ffffff,
+      2em 15em 0 #ffe1c6,
+      3em 15em 0 #ffe1c6,
+      4em 15em 0 #ffffff,
+      5em 15em 0 #ffffff,
+      6em 15em 0 #1e5bd8,
+      7em 15em 0 #ffffff,
+      8em 15em 0 #ffffff,
+      9em 15em 0 #ffffff,
+      10em 15em 0 #ffffff,
+      11em 15em 0 #1e5bd8,
+      12em 15em 0 #ffffff,
+      13em 15em 0 #ffffff,
+      14em 15em 0 #ffe1c6,
+      15em 15em 0 #ffe1c6,
+      2em 16em 0 #ffe1c6,
+      3em 16em 0 #ffe1c6,
+      4em 16em 0 #ffffff,
+      5em 16em 0 #ffffff,
+      6em 16em 0 #1e5bd8,
+      7em 16em 0 #ffffff,
+      8em 16em 0 #ffffff,
+      9em 16em 0 #ffffff,
+      10em 16em 0 #ffffff,
+      11em 16em 0 #1e5bd8,
+      12em 16em 0 #ffffff,
+      13em 16em 0 #ffffff,
+      14em 16em 0 #ffe1c6,
+      15em 16em 0 #ffe1c6,
+      4em 17em 0 #1e5bd8,
+      5em 17em 0 #1e5bd8,
+      6em 17em 0 #1e5bd8,
+      7em 17em 0 #1e5bd8,
+      8em 17em 0 #1e5bd8,
+      9em 17em 0 #1e5bd8,
+      10em 17em 0 #1e5bd8,
+      11em 17em 0 #1e5bd8,
+      12em 17em 0 #1e5bd8,
+      13em 17em 0 #1e5bd8,
+      4em 18em 0 #1e5bd8,
+      5em 18em 0 #1e5bd8,
+      6em 18em 0 #1e5bd8,
+      7em 18em 0 #1e5bd8,
+      10em 18em 0 #1e5bd8,
+      11em 18em 0 #1e5bd8,
+      12em 18em 0 #1e5bd8,
+      13em 18em 0 #1e5bd8,
+      5em 19em 0 #ffe1c6,
+      6em 19em 0 #ffe1c6,
+      7em 19em 0 #ffe1c6,
+      10em 19em 0 #ffe1c6,
+      11em 19em 0 #ffe1c6,
+      12em 19em 0 #ffe1c6,
+      5em 20em 0 #ffffff,
+      6em 20em 0 #ffffff,
+      7em 20em 0 #ffffff,
+      10em 20em 0 #ffffff,
+      11em 20em 0 #ffffff,
+      12em 20em 0 #ffffff,
+      5em 21em 0 #1e5bd8,
+      6em 21em 0 #1e5bd8,
+      7em 21em 0 #1e5bd8,
+      10em 21em 0 #1e5bd8,
+      11em 21em 0 #1e5bd8,
+      12em 21em 0 #1e5bd8,
+      4em 22em 0 #1d1d1d,
+      5em 22em 0 #1d1d1d,
+      6em 22em 0 #1d1d1d,
+      7em 22em 0 #1d1d1d,
+      10em 22em 0 #1d1d1d,
+      11em 22em 0 #1d1d1d,
+      12em 22em 0 #1d1d1d,
+      13em 22em 0 #1d1d1d;
+  }
+  .mat-name {
+    font-family: 'Courier New', monospace; font-weight: 900; font-size: 12px; letter-spacing: 3px;
+    color: #fff; text-shadow: 1px 1px 0 #1e5bd8, -1px -1px 0 #0d1b2a, 1px -1px 0 #0d1b2a, -1px 1px 0 #0d1b2a;
+    padding-left: 3px;
+  }
+  #mat-corner { position: absolute; top: 38px; left: 10px; z-index: 20; animation: matBob 1.4s steps(2) infinite; }
+  #mat-corner .mat-mascot { font-size: 3px; }
+  #game-container:not(.playing) #mat-corner { display: none; }
+  @keyframes matBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+  .mat-wrap.cheer .mat-mascot { animation: matCheer 0.6s steps(6) 1; }
+  .mat-wrap.sad .mat-mascot { animation: matSad 0.5s steps(5) 1; }
+  @keyframes matCheer { 0% { transform: translateY(0); } 30% { transform: translateY(-4em); } 60% { transform: translateY(-4em); } 100% { transform: translateY(0); } }
+  @keyframes matSad { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-1em); } 40% { transform: translateX(1em); } 60% { transform: translateX(-1em); } 80% { transform: translateX(1em); } }
+  .brand-title { font-family: 'Courier New', monospace; font-size: clamp(54px, 13vw, 92px); font-weight: 900; letter-spacing: 8px; padding-left: 8px; color: #fff; line-height: 1;
+    text-shadow: 4px 4px 0 #1e5bd8, 0 0 24px rgba(255,214,0,0.55); }
+  .brand-tag { font-size: 14px; font-weight: 900; letter-spacing: 4px; color: var(--amarillo); text-transform: uppercase; margin-bottom: 4px; }
+  @media (max-width: 600px) { #mat-corner .mat-mascot { font-size: 2px; } #mat-corner { top: 36px; } .mat-name { font-size: 10px; } }
+
   @media (max-width: 600px) {
     .ball .ball-emoji { font-size: 34px; }
     .ball .ball-value { font-size: 13px; min-width: 28px; padding: 1px 6px; }
@@ -415,6 +676,7 @@
   <button class="btn-exit-game hidden" id="btn-exit-game" title="Salir al menú">🏠</button>
 
   <div class="lives" id="ui-lives-icons"></div>
+  <div id="mat-corner" class="mat-wrap" data-mat="0"></div>
   <div class="equation-box" id="ui-equation">2 + 3</div>
 
   <!-- Keeper Mode Elements -->
@@ -436,11 +698,13 @@
 
   <div class="ticker">
     <span class="live">🔴 EN VIVO</span>
-    <span id="ui-ticker">Bienvenidos al Estadio Matemático.</span>
+    <span id="ui-ticker">Bienvenidos a MAT.</span>
   </div>
 
   <div class="overlay" id="overlay-menu">
-    <div class="title">⚽ ARQUERO MATEMÁTICO ⚽</div>
+    <div class="mat-wrap" data-mat="5"></div>
+    <div class="brand-title">MAT</div>
+    <div class="brand-tag">Manos · Arco · Tiro</div>
     <div class="subtitle">Ataja con el arquero o patea para hacer goles</div>
     <div class="subtitle" style="font-size:13px;opacity:0.7;">🖱️ Mouse · ⌨️ Flechas/WASD · 📱 Touch</div>
     <button class="btn" id="btn-tournament">🏆 MODO TORNEO</button>
@@ -541,6 +805,7 @@
   </div>
 
   <div class="overlay hidden" id="overlay-gameover">
+    <div class="mat-wrap" data-mat="3"></div>
     <div class="title" id="go-title">¡GOL EN CONTRA!</div>
     <div class="subtitle" id="go-subtitle"></div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:6px 0;">
@@ -573,6 +838,7 @@
   </div>
 
   <div class="overlay hidden" id="overlay-levelup">
+    <div class="mat-wrap" data-mat="3"></div>
     <div class="title" id="lu-title">¡NIVEL SUPERADO!</div>
     <div class="subtitle" id="lu-subtitle"></div>
     <div class="session-summary hidden" id="lu-session-summary"></div>
@@ -1001,7 +1267,7 @@ const FRACTION_MAX_DEN = 24;
 function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { const t = b; b = a % b; a = t; } return a || 1; }
 function lcm(a, b) { return (a * b) / gcd(a, b); }
 function simplify(num, den) { if (den === 0) den = 1; if (den < 0) { num = -num; den = -den; } const g = gcd(num, den); return { num: num/g, den: den/g }; }
-function fracHTML(num, den) { const s = simplify(num, den); return `<span class="frac"><span class="num">${s.num}</span><span class="den">${s.den}</span></span>`; }
+function fracHTML(num, den) { const s = simplify(num, den); if (s.den === 1) return String(s.num); return `<span class="frac"><span class="num">${s.num}</span><span class="den">${s.den}</span></span>`; }
 function decimalToFraction(dec, maxDen = FRACTION_MAX_DEN) {
   if (Number.isInteger(dec)) return { num: dec, den: 1, value: dec };
   const sign = dec < 0 ? -1 : 1;
@@ -1026,7 +1292,7 @@ function numHTML(value, opts = {}) {
   return fracPart;
 }
 function numText(value) { if (Number.isInteger(value)) return String(value); const f = decimalToFraction(value); if (f.den === 1) return String(f.num); return `${f.num}/${f.den}`; }
-function explainNum(v) { if (Number.isInteger(v)) return v < 0 ? `(−${Math.abs(v)})` : String(v); return numText(v); }
+function explainNum(v) { if (Number.isInteger(v)) return v < 0 ? `(−${Math.abs(v)})` : String(v); const f = decimalToFraction(v); if (f.den === 1) return f.num < 0 ? `(−${Math.abs(f.num)})` : String(f.num); return f.num < 0 ? `(−${Math.abs(f.num)}/${f.den})` : `${f.num}/${f.den}`; }
 function approxEqual(a, b) { return Math.abs(a - b) < 1e-6; }
 function sameFraction(a, b) { if (approxEqual(a, b)) return true; const fa = decimalToFraction(a); const fb = decimalToFraction(b); return fa.num === fb.num && fa.den === fb.den; }
 const randInt = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
@@ -1278,7 +1544,7 @@ function makeDifferentDenFractions(op) {
   return null;
 }
 
-function generateEquation(level) {
+function generateEquationRaw(level) {
   const op = level.ops[randInt(0, level.ops.length-1)];
   let textHTML = '';
   let answer = null;
@@ -1412,6 +1678,61 @@ function generateEquation(level) {
   return { textHTML, answer, options, op, opA, opB };
 }
 
+/* ============================================================
+   VERIFICACIÓN INDEPENDIENTE: cada ejercicio se re-resuelve con
+   aritmética exacta a partir de lo que SE MUESTRA en pantalla.
+   Si algo no cuadra, el ejercicio se descarta y se genera otro.
+   ============================================================ */
+function exactAnswer(textHTML) {
+  const t = textHTML.replace(/<span class="frac"><span class="num">(\d+)<\/span><span class="den">(\d+)<\/span><\/span>/g, '[$1/$2]');
+  const O = '(\\(−(?:\\d+|\\[\\d+\\/\\d+\\])\\)|\\d+|\\[\\d+\\/\\d+\\])';
+  const parseOp = (str) => {
+    let neg = false, m;
+    if ((m = str.match(/^\(−(.+)\)$/))) { neg = true; str = m[1]; }
+    let n, d = 1;
+    if ((m = str.match(/^\[(\d+)\/(\d+)\]$/))) { n = +m[1]; d = +m[2]; } else n = +str;
+    return { n: neg ? -n : n, d };
+  };
+  const norm = (n, d) => { if (d < 0) { n = -n; d = -d; } const k = gcd(n, d); return { n: n / k, d: d / k }; };
+  let m;
+  if ((m = t.match(/^√(\d+)$/))) { const r = Math.round(Math.sqrt(+m[1])); return r * r === +m[1] ? { n: r, d: 1 } : null; }
+  if ((m = t.match(/^log₁₀\((\d+)\)$/))) { const e = Math.round(Math.log10(+m[1])); return Math.pow(10, e) === +m[1] ? { n: e, d: 1 } : null; }
+  m = t.match(new RegExp('^' + O + ' (\\+|−|×|÷) ' + O + '$'));
+  if (!m) return null;
+  const a = parseOp(m[1]), b = parseOp(m[3]);
+  if (m[2] === '+') return norm(a.n * b.d + b.n * a.d, a.d * b.d);
+  if (m[2] === '−') return norm(a.n * b.d - b.n * a.d, a.d * b.d);
+  if (m[2] === '×') return norm(a.n * b.n, a.d * b.d);
+  if (b.n === 0) return null;
+  return norm(a.n * b.d, a.d * b.n);
+}
+function equationIsSound(eq) {
+  const ex = exactAnswer(eq.textHTML);
+  if (!ex || ex.d > FRACTION_MAX_DEN) return false;
+  if (Math.abs(eq.answer - ex.n / ex.d) > 1e-4) return false;
+  const seen = [];
+  let correct = 0;
+  for (const o of eq.options) {
+    const f = decimalToFraction(o);
+    if (Math.abs(f.num / f.den - o) > 1e-4) return false;            // se mostraría un valor distinto
+    if (f.num * ex.d === ex.n * f.den) correct++;                      // coincide con el resultado exacto
+    for (const q of seen) if (q.num * f.den === f.num * q.den) return false; // opciones repetidas
+    seen.push(f);
+  }
+  return correct === 1;
+}
+function generateEquation(level) {
+  for (let i = 0; i < 80; i++) {
+    const eq = generateEquationRaw(level);
+    if (equationIsSound(eq)) return eq;
+  }
+  // respaldo seguro (nunca debería llegar aquí)
+  const a = randInt(1, 10), b = randInt(1, 10);
+  const options = generateOptions(a + b, level);
+  for (let i = options.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [options[i], options[j]] = [options[j], options[i]]; }
+  return { textHTML: `${a} + ${b}`, answer: a + b, options, op: '+', opA: a, opB: b };
+}
+
 function generateOptions(answer, level) {
   const options = [answer];
   const wrongs = new Set();
@@ -1437,6 +1758,7 @@ function generateOptions(answer, level) {
       if (candidate === answer) candidate += 1;
     }
     candidate = Math.round(candidate * 10000) / 10000;
+    { const fc = decimalToFraction(candidate); if (Math.abs(fc.num / fc.den - candidate) > 1e-4) continue; }
     if (sameFraction(candidate, answer)) continue;
     let duplicate = false;
     for (const w of wrongs) { if (sameFraction(candidate, w)) { duplicate = true; break; } }
@@ -1450,6 +1772,10 @@ function generateOptions(answer, level) {
 /* ============================================================
    EXPLICACIONES DIDÁCTICAS
    ============================================================ */
+function simpNote(rawNum, rawDen, ansText) {
+  if (gcd(Math.abs(rawNum), rawDen) > 1) return `<span class="step">Simplificar:</span> ${rawNum}/${rawDen} = <b>${ansText}</b>`;
+  return '';
+}
 function generateExplanation(mistake) {
   const { op, opA, opB, correctAnswer, chosenAnswer, type } = mistake;
   const ansText = explainNum(correctAnswer);
@@ -1466,6 +1792,7 @@ function generateExplanation(mistake) {
         if (fA.den === fB.den) {
           lines.push(`Cuando sumás fracciones con el <b>mismo denominador</b>, sumás los numeradores y mantenés el denominador.`);
           lines.push(`<span class="tip">Numeradores: ${fA.num} + ${fB.num} = ${fA.num + fB.num} → mantenés el denominador ${fA.den}.</span>`);
+          { const sn = simpNote(fA.num + fB.num, fA.den, ansText); if (sn) lines.push(sn); }
           lines.push(`Resultado: ${explainNum(opA)} + ${explainNum(opB)} = <b>${ansText}</b>`);
         } else {
           const L = lcm(fA.den, fB.den);
@@ -1474,6 +1801,7 @@ function generateExplanation(mistake) {
           lines.push(`<span class="step">Paso 1 — MCM:</span> MCM(${fA.den}, ${fB.den}) = <b>${L}</b>.`);
           lines.push(`<span class="step">Paso 2 — Convertir:</span> ${fA.num}/${fA.den} = ${newNumA}/${L} y ${fB.num}/${fB.den} = ${newNumB}/${L}.`);
           lines.push(`<span class="step">Paso 3 — Sumar numeradores:</span> ${newNumA} + ${newNumB} = ${newNumA + newNumB}.`);
+          { const sn = simpNote(newNumA + newNumB, L, ansText); if (sn) lines.push(sn); }
           lines.push(`Resultado: <b>${ansText}</b>`);
         }
       } else if (hasNeg) {
@@ -1491,6 +1819,7 @@ function generateExplanation(mistake) {
         if (fA.den === fB.den) {
           lines.push(`Con el <b>mismo denominador</b>, restás los numeradores y mantenés el denominador.`);
           lines.push(`<span class="tip">Numeradores: ${fA.num} − ${fB.num} = ${fA.num - fB.num} → mantenés el denominador ${fA.den}.</span>`);
+          { const sn = simpNote(fA.num - fB.num, fA.den, ansText); if (sn) lines.push(sn); }
           lines.push(`Resultado: ${explainNum(opA)} − ${explainNum(opB)} = <b>${ansText}</b>`);
         } else {
           const L = lcm(fA.den, fB.den);
@@ -1499,6 +1828,7 @@ function generateExplanation(mistake) {
           lines.push(`<span class="step">Paso 1 — MCM:</span> MCM(${fA.den}, ${fB.den}) = <b>${L}</b>.`);
           lines.push(`<span class="step">Paso 2 — Convertir:</span> ${fA.num}/${fA.den} = ${newNumA}/${L} y ${fB.num}/${fB.den} = ${newNumB}/${L}.`);
           lines.push(`<span class="step">Paso 3 — Restar numeradores:</span> ${newNumA} − ${newNumB} = ${newNumA - newNumB}.`);
+          { const sn = simpNote(newNumA - newNumB, L, ansText); if (sn) lines.push(sn); }
           lines.push(`Resultado: <b>${ansText}</b>`);
         }
       } else if (hasNeg) {
@@ -1516,7 +1846,8 @@ function generateExplanation(mistake) {
         lines.push(`<b>Fracción × entero:</b> multiplicás el numerador por el entero y mantenés el denominador.`);
         const fracOperand = isFracA ? opA : opB, intOperand = isFracA ? opB : opA;
         const f = decimalToFraction(fracOperand);
-        lines.push(`<span class="tip">${f.num}/${f.den} × ${intOperand} = (${f.num} × ${intOperand}) / ${f.den} = <b>${ansText}</b></span>`);
+        lines.push(`<span class="tip">${f.num}/${f.den} × ${explainNum(intOperand)} = (${f.num} × ${explainNum(intOperand)}) / ${f.den} = ${f.num * intOperand}/${f.den}</span>`);
+        lines.push(simpNote(f.num * intOperand, f.den, ansText) || `Resultado: <b>${ansText}</b>`);
       } else if (hasNeg) {
         lines.push(`<b>Regla de signos:</b> (−) × (+) = (−) y (−) × (−) = (+).`);
         lines.push(`${explainNum(opA)} × ${explainNum(opB)} = <b>${ansText}</b>`);
@@ -1529,7 +1860,8 @@ function generateExplanation(mistake) {
       if (hasFrac) {
         lines.push(`<b>Fracción ÷ entero:</b> multiplicás el denominador por el entero.`);
         const f = decimalToFraction(opA);
-        lines.push(`<span class="tip">${f.num}/${f.den} ÷ ${opB} = ${f.num}/(${f.den} × ${opB}) = <b>${ansText}</b></span>`);
+        lines.push(`<span class="tip">${f.num}/${f.den} ÷ ${opB} = ${f.num}/(${f.den} × ${opB}) = ${f.num}/${f.den * opB}</span>`);
+        lines.push(simpNote(f.num, f.den * opB, ansText) || `Resultado: <b>${ansText}</b>`);
       } else if (hasNeg) {
         lines.push(`<b>Regla de signos en la división:</b> (−) ÷ (+) = (−) y (−) ÷ (−) = (+).`);
         lines.push(`${explainNum(opA)} ÷ ${explainNum(opB)} = <b>${ansText}</b>`);
@@ -1562,7 +1894,8 @@ function generateExplanation(mistake) {
   } else if (type === 'missed') {
     lines.push(`⚽ Dejaste pasar el balón correcto (<b>${ansText}</b>) y fue gol en contra.`);
   }
-  return lines;
+  // Presentación: signo menos tipográfico y negativos entre paréntesis después de un operador
+  return lines.map(l => l.replace(/(^|[\s(>])-(\d)/g, '$1−$2').replace(/([+−×÷=]) −(\d)/g, '$1 (−$2)'));
 }
 
 function fillAcademicCard(selector, mistake) {
@@ -1575,6 +1908,9 @@ function fillAcademicCard(selector, mistake) {
   if (mistake.type === 'wrongBall') wrongEl.innerHTML = numHTML(mistake.chosenAnswer);
   else wrongEl.innerHTML = '<span style="font-size:14px;font-weight:normal;opacity:0.9;">Dejaste pasar el correcto</span>';
   const lines = generateExplanation(mistake);
+  if (mistake.shown && mistake.shown.length) {
+    lines.push('🎯 <b>Las opciones eran:</b> ' + mistake.shown.map(v => approxEqual(v, mistake.correctAnswer) ? `<span class="verify">${numHTML(v)} ✓</span>` : numHTML(v)).join(' · '));
+  }
   card.querySelector('[data-role="explanation"]').innerHTML = lines.map(l => `<div>${l}</div>`).join('');
   return true;
 }
@@ -1629,7 +1965,14 @@ function updateUI() {
   uiLivesIcons.textContent = hearts;
 }
 function setTicker(t){ uiTicker.textContent = t; }
+function matReact(kind) {
+  const el = document.getElementById('mat-corner');
+  if (!el) return;
+  el.classList.remove('cheer', 'sad'); void el.offsetWidth;
+  el.classList.add(kind);
+}
 function showFeedback(text, color) {
+  matReact(color === '#4caf50' ? 'cheer' : 'sad');
   uiFeedback.textContent = text;
   uiFeedback.style.color = color;
   uiFeedback.classList.remove('hidden');
@@ -1728,6 +2071,7 @@ function spawnBalls() {
     picked[0] = eq.answer;
     picked.sort(()=>Math.random()-0.5);
   }
+  eq.shown = picked.slice();
   const rect = container.getBoundingClientRect();
   const w = rect.width;
   const colWidth = (w - 100) / picked.length;
@@ -1821,6 +2165,7 @@ function spawnShooterTargets() {
     picked.sort(()=>Math.random()-0.5);
   }
 
+  eq.shown = picked.slice();
   picked.forEach((val) => {
     const el = document.createElement('div');
     el.className = 'shooter-target';
@@ -1994,7 +2339,7 @@ function resolveShooterRound(isGoal, targetHit) {
       if (state.currentEquation) {
         state.mistakes.push({
           op: state.currentEquation.op, opA: state.currentEquation.opA, opB: state.currentEquation.opB,
-          textHTML: state.currentEquation.textHTML, correctAnswer: state.correctAnswer,
+          textHTML: state.currentEquation.textHTML, shown: state.currentEquation.shown, correctAnswer: state.correctAnswer,
           chosenAnswer: targetHit.value, type: 'wrongBall',
         });
       }
@@ -2005,7 +2350,7 @@ function resolveShooterRound(isGoal, targetHit) {
       if (state.currentEquation) {
         state.mistakes.push({
           op: state.currentEquation.op, opA: state.currentEquation.opA, opB: state.currentEquation.opB,
-          textHTML: state.currentEquation.textHTML, correctAnswer: state.correctAnswer,
+          textHTML: state.currentEquation.textHTML, shown: state.currentEquation.shown, correctAnswer: state.correctAnswer,
           chosenAnswer: null, type: 'missed',
         });
       }
@@ -2088,7 +2433,7 @@ function handleCollision(ball) {
     if (state.currentEquation) {
       state.mistakes.push({
         op: state.currentEquation.op, opA: state.currentEquation.opA, opB: state.currentEquation.opB,
-        textHTML: state.currentEquation.textHTML, correctAnswer: state.correctAnswer,
+        textHTML: state.currentEquation.textHTML, shown: state.currentEquation.shown, correctAnswer: state.correctAnswer,
         chosenAnswer: ball.value, type: 'wrongBall',
       });
     }
@@ -2127,7 +2472,7 @@ function gameLoop(timestamp) {
         if (state.currentEquation) {
           state.mistakes.push({
             op: state.currentEquation.op, opA: state.currentEquation.opA, opB: state.currentEquation.opB,
-            textHTML: state.currentEquation.textHTML, correctAnswer: state.correctAnswer,
+            textHTML: state.currentEquation.textHTML, shown: state.currentEquation.shown, correctAnswer: state.correctAnswer,
             chosenAnswer: null, type: 'missed',
           });
         }
@@ -2251,7 +2596,7 @@ function exitToMenu() {
   hideAllAcademicCards();
   updateCareerButton();
   showOverlay('overlay-menu');
-  setTicker('Bienvenidos al Estadio Matemático. ¡Elige un modo!');
+  setTicker('Bienvenidos a MAT. ¡Elige un modo!');
   soundWhistle();
 }
 
@@ -2691,12 +3036,12 @@ onTap(document.getElementById('btn-retry'), () => { soundClick(); state.isTourna
 onTap(document.getElementById('btn-menu-go'), () => {
   soundClick(); cancelSpeech(); state.mode='menu'; container.classList.remove('playing', 'keeper-mode', 'shooter-mode');
   updateCareerButton(); showOverlay('overlay-menu');
-  setTicker('Bienvenidos al Estadio Matemático.');
+  setTicker('Bienvenidos a MAT.');
 });
 onTap(document.getElementById('btn-menu-lu'), () => {
   soundClick(); cancelSpeech(); state.mode='menu'; container.classList.remove('playing', 'keeper-mode', 'shooter-mode');
   updateCareerButton(); showOverlay('overlay-menu');
-  setTicker('Bienvenidos al Estadio Matemático.');
+  setTicker('Bienvenidos a MAT.');
 });
 onTap(btnExitGame, () => { soundClick(); state.gamePaused = true; confirmExitModal.classList.remove('hidden'); });
 onTap(document.getElementById('btn-confirm-cancel'), () => { soundClick(); confirmExitModal.classList.add('hidden'); state.gamePaused = false; state.lastTime = 0; });
@@ -2719,7 +3064,7 @@ speedSlider.addEventListener('input', (e) => {
    INICIALIZACIÓN
    ============================================================ */
 updateUI();
-setTicker('Bienvenidos al Estadio Matemático. ¡Elige un modo!');
+setTicker('Bienvenidos a MAT. ¡Elige un modo!');
 buildLevelGrid();
 uiKeeperEmoji.textContent = state.keeperAvatar;
 syncSoundToggle(); syncVoiceToggle(); syncMusicToggle();
@@ -2751,6 +3096,13 @@ window.addEventListener('resize', () => {
   if (state.mode === 'playing' && state.playMode === 'shooter') { applyShooterGeom(); layoutShooterTargets(); updateBallSpot(); }
 });
 setTimeout(() => { recalcArea(); resetKeeperPosition(); }, 100);
+
+(function buildMat() {
+  document.querySelectorAll('.mat-wrap[data-mat]').forEach(el => {
+    const n = parseInt(el.dataset.mat);
+    el.innerHTML = `<div class="mat-mascot"${n ? ` style="font-size:${n}px"` : ''}><div class="mat-px"></div></div><div class="mat-name">MAT</div>`;
+  });
+})();
 
 function globalFirstInteraction() {
   initAudio();
