@@ -182,12 +182,52 @@
   .session-summary .new-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(255,214,0,0.2); padding: 3px 10px; border-radius: 99px; margin: 4px 3px 0; font-size: 11px; font-weight: 900; }
   .confirm-modal { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 200; padding: 20px; }
   .confirm-modal.hidden { display: none; }
-  .confirm-box { background: var(--marcador-bg); border: 3px solid var(--amarillo); border-radius: 16px; padding: 24px 28px; max-width: 360px; width: 100%; text-align: center; color: #fff; box-shadow: var(--sombra); }
+  .confirm-box { background: var(--marcador-bg); border: 3px solid var(--amarillo); border-radius: 16px; padding: 24px 28px; max-width: 400px; width: 100%; text-align: center; color: #fff; box-shadow: var(--sombra); }
   .confirm-box .confirm-icon { font-size: 48px; margin-bottom: 8px; }
   .confirm-box .confirm-title { font-size: 20px; font-weight: 900; color: var(--amarillo); margin-bottom: 8px; }
   .confirm-box .confirm-text { font-size: 14px; opacity: 0.85; margin-bottom: 16px; }
   .confirm-box .confirm-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
   .confirm-box .btn { padding: 10px 20px; font-size: 13px; }
+
+  /* ============================================================
+     RESULT ACTIONS — 3 pasos explícitos
+     ============================================================ */
+  .result-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; max-width: 520px; margin: 8px 0; }
+  .result-actions.hidden { display: none !important; }
+  .action-card { background: #263238; border: 2px solid #546e7a; border-radius: 12px; padding: 12px 6px 10px; display: flex; flex-direction: column; align-items: center; gap: 3px; color: #fff; cursor: pointer; text-align: center; font-family: inherit; text-transform: none; letter-spacing: normal; font-weight: normal; box-shadow: var(--sombra); transition: transform 0.15s, box-shadow 0.15s; position: relative; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .action-card:active { transform: scale(0.97); }
+  .action-card.step-1 { background: linear-gradient(135deg, #1976d2, #0d47a1); border-color: #42a5f5; }
+  .action-card.step-1:hover { box-shadow: 0 0 14px rgba(66,165,245,0.5); }
+  .action-card.step-2 { background: linear-gradient(135deg, #4caf50, #2e7d32); border-color: #66bb6a; }
+  .action-card.step-2:hover { box-shadow: 0 0 14px rgba(102,187,106,0.5); }
+  .action-card.step-3 { background: rgba(255,255,255,0.06); border-style: dashed; border-color: rgba(255,255,255,0.35); cursor: default; }
+  .action-card .step-num { position: absolute; top: -9px; left: -9px; width: 24px; height: 24px; background: var(--amarillo); color: #1a1a2e; border-radius: 50%; font-weight: 900; font-size: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.6); border: 2px solid #fff; z-index: 2; }
+  .action-card .step-emoji { font-size: 28px; line-height: 1; }
+  .action-card .step-title { font-size: 10px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase; line-height: 1.2; margin-top: 2px; }
+  .action-card .step-hint { font-size: 9px; opacity: 0.85; line-height: 1.2; font-weight: 600; }
+  .action-card.step-3 .step-title { color: var(--amarillo); }
+
+  /* ============================================================
+     MENÚ PRINCIPAL — 3 columnas compacto
+     ============================================================ */
+  #overlay-menu { gap: 6px; padding: 12px 14px; }
+  .menu-header { display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .menu-header .mat-wrap { flex-shrink: 0; }
+  .menu-header .mat-mascot { font-size: 2.5px !important; }
+  .menu-brand { font-size: clamp(36px, 7.5vw, 54px) !important; letter-spacing: 4px !important; padding-left: 3px !important; line-height: 0.95 !important; }
+  .menu-tag { font-size: 10px !important; letter-spacing: 2px !important; margin-bottom: 0 !important; }
+  .menu-subtitle { font-size: 11px; opacity: 0.65; margin-bottom: 0; line-height: 1.3; }
+  .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; max-width: 520px; margin: 2px 0; }
+  .menu-btn { padding: 10px 6px; font-size: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; letter-spacing: 0.5px; line-height: 1.15; text-transform: uppercase; font-weight: 900; min-height: 66px; border-radius: 10px; }
+  .menu-btn .mb-ico { font-size: 22px; line-height: 1; }
+  .menu-btn.span-2 { grid-column: span 2; }
+  .menu-mode-label { margin: 4px 0 2px !important; font-size: 11px !important; }
+
+  /* Botón "Crear reto" — verde por defecto, azul en modo profe */
+  .menu-btn.create-challenge-btn { background: linear-gradient(135deg,#4caf50,#2e7d32); color: #fff; border: 2px solid #a5d6a7; }
+  .menu-btn.create-challenge-btn.teacher-active { background: linear-gradient(135deg, #1976d2, #0d47a1); border-color: #42a5f5; box-shadow: 0 0 16px rgba(66, 165, 245, 0.5); }
+  .menu-btn.create-challenge-btn.teacher-active .mb-ico { font-size: 26px; }
+  .menu-btn.create-challenge-btn.teacher-active .mb-title { font-size: 12px; letter-spacing: 1px; }
 
   #game-container {
     --gl: 22%; --gt: 24%; --gw: 56%; --gh: 20%; --gline: 44%;
@@ -240,9 +280,6 @@
   .ai-keeper.dive-right { left: 80%; }
   .ai-keeper.dive-center { left: 50%; }
 
-  /* ============================================================
-     MODO WORLDCUP - Barrera y compañeros
-     ============================================================ */
   .wall-player {
     position: absolute;
     z-index: 12;
@@ -396,21 +433,31 @@
   #audio-hud .aq-btn { width: 40px; height: 40px; }
   #audio-hud .aq-btn .aq-ico { font-size: 17px; }
   #audio-menu { justify-content: center; margin: 2px 0 4px; }
-  #audio-menu .aq-btn { width: 74px; height: 48px; }
-  #audio-menu .aq-btn .aq-ico { font-size: 20px; }
-  #audio-menu .aq-btn .aq-lbl { font-size: 9px; }
+  #audio-menu .aq-btn { width: 60px; height: 42px; }
+  #audio-menu .aq-btn .aq-ico { font-size: 18px; }
+  #audio-menu .aq-btn .aq-lbl { font-size: 8px; }
   @media (max-width: 600px) { #audio-hud { top: 54px; } #audio-hud .aq-btn { width: 36px; height: 36px; } #audio-hud .aq-btn .aq-ico { font-size: 15px; } #audio-hud .aq-btn .aq-lbl { display: none; } }
 
-  /* Mod tag para indicar worldcup activo */
   .mod-tag {
     display: inline-flex; align-items: center; gap: 4px;
     background: linear-gradient(135deg, #4caf50, #2e7d32);
-    color: #fff; padding: 4px 12px; border-radius: 99px;
-    font-size: 11px; font-weight: 900; letter-spacing: 1px;
+    color: #fff; padding: 3px 10px; border-radius: 99px;
+    font-size: 10px; font-weight: 900; letter-spacing: 1px;
     box-shadow: 0 2px 8px rgba(76,175,80,0.4);
-    margin-top: 4px;
+    margin-top: 2px;
   }
   .mod-tag.hidden { display: none !important; }
+
+  .csv-declaration-label {
+    display: flex; align-items: flex-start; gap: 8px;
+    text-align: left; font-size: 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px; padding: 10px 12px;
+    margin-bottom: 12px; cursor: pointer;
+    line-height: 1.4;
+  }
+  .csv-declaration-label input[type="checkbox"] { margin-top: 2px; flex-shrink: 0; width: 16px; height: 16px; cursor: pointer; }
 
   @media (max-width: 600px) {
     .ball .ball-emoji { font-size: 34px; }
@@ -437,6 +484,15 @@
     .challenge-preview .cp-row { font-size: 12px; }
     .challenge-input { font-size: 13px; padding: 8px 12px; }
     .teammate-player .tm-emoji { font-size: 34px; }
+    .menu-btn { min-height: 62px; font-size: 9px; padding: 8px 4px; }
+    .menu-btn .mb-ico { font-size: 20px; }
+    .menu-btn.create-challenge-btn.teacher-active .mb-ico { font-size: 24px; }
+    .menu-btn.create-challenge-btn.teacher-active .mb-title { font-size: 11px; }
+    .action-card { padding: 10px 4px 8px; }
+    .action-card .step-emoji { font-size: 24px; }
+    .action-card .step-title { font-size: 9px; }
+    .action-card .step-hint { font-size: 8px; }
+    .action-card .step-num { width: 22px; height: 22px; font-size: 11px; top: -8px; left: -8px; }
   }
 </style>
 </head>
@@ -500,23 +556,38 @@
   </div>
 
   <div class="overlay" id="overlay-menu">
-    <div class="mat-wrap" data-mat="5"></div>
-    <div class="brand-title">MAT</div>
-    <div class="brand-tag">Manos · Arco · Tiro</div>
-    <div class="subtitle">Ataja con el arquero o patea para hacer goles</div>
-    <div class="subtitle" style="font-size:13px;opacity:0.7;">🖱️ Mouse · ⌨️ Flechas/WASD · 📱 Touch</div>
+    <div class="menu-header">
+      <div class="mat-wrap" data-mat="3"></div>
+      <div>
+        <div class="brand-title menu-brand">MAT</div>
+        <div class="brand-tag menu-tag">Manos · Arco · Tiro</div>
+      </div>
+    </div>
+    <div class="menu-subtitle">🖱️ Mouse · ⌨️ WASD/Flechas · 📱 Touch</div>
     <div class="mod-tag hidden" id="ui-mod-tag">🌍 WORLDCUP ACTIVO</div>
     <div class="audio-quick" id="audio-menu">
       <button class="aq-btn" data-audio="music" title="Música de fondo" aria-label="Música de fondo"><span class="aq-ico">🎵</span><span class="aq-lbl">FONDO</span></button>
       <button class="aq-btn" data-audio="voice" title="Narración" aria-label="Narración"><span class="aq-ico">🎙️</span><span class="aq-lbl">VOZ</span></button>
       <button class="aq-btn" data-audio="celebration" title="Celebración de goles" aria-label="Celebración de goles"><span class="aq-ico">🎉</span><span class="aq-lbl">GOL</span></button>
     </div>
-    <button class="btn" id="btn-tournament">🏆 MODO TORNEO</button>
-    <button class="btn secondary" id="btn-levels">🎯 ELEGIR NIVEL</button>
-    <button class="btn secondary" id="btn-career">🥾 MI CARRERA</button>
-    <button class="btn secondary" id="btn-settings">⚙️ AJUSTES</button>
-    <button class="btn" id="btn-create-challenge" style="background:linear-gradient(135deg,#4caf50,#2e7d32); color:#fff; border: 2px solid #a5d6a7;">🎯 CREAR RETO</button>
-    <div class="settings-label" style="margin-top:6px;">Modo de juego</div>
+    <div class="menu-grid">
+      <button class="btn menu-btn" id="btn-tournament">
+        <span class="mb-ico">🏆</span><span>TORNEO</span>
+      </button>
+      <button class="btn secondary menu-btn" id="btn-levels">
+        <span class="mb-ico">🎯</span><span>NIVELES</span>
+      </button>
+      <button class="btn secondary menu-btn" id="btn-career">
+        <span class="mb-ico">🥾</span><span>CARRERA</span>
+      </button>
+      <button class="btn secondary menu-btn" id="btn-settings">
+        <span class="mb-ico">⚙️</span><span>AJUSTES</span>
+      </button>
+      <button class="btn menu-btn span-2 create-challenge-btn" id="btn-create-challenge">
+        <span class="mb-ico">🎯</span><span class="mb-title">CREAR RETO</span>
+      </button>
+    </div>
+    <div class="settings-label menu-mode-label">Modo de juego</div>
     <div class="toggle-group" id="mode-selector">
       <button class="toggle-btn active" data-mode="keeper">🧤 ARQUERO</button>
       <button class="toggle-btn" data-mode="shooter">🎯 PATEADOR</button>
@@ -542,6 +613,11 @@
         <div class="settings-label">🌍 Modo WorldCup</div>
         <button class="btn" id="btn-worldcup-toggle" style="padding:6px 20px;font-size:13px;">OFF</button>
         <div class="voice-hint">Arquero: balones en movimiento · Pateador: barrera + pase obligatorio a un compañero (acercate a cada uno para ver a qué balón apunta)</div>
+      </div>
+      <div class="settings-section" style="margin-bottom:10px;">
+        <div class="settings-label">👨‍🏫 Modo Profesor</div>
+        <button class="btn" id="btn-teacher-toggle" style="padding:6px 20px;font-size:13px;">OFF</button>
+        <div class="voice-hint">Cuando está activo, los retos que crees incluirán un informe CSV descargable para que el alumno te lo envíe con la declaración de que resolvió sin ayuda. Los retos entre amigos no muestran el CSV.</div>
       </div>
       <div class="settings-section">
         <div class="settings-label">⚡ Velocidad de los balones</div>
@@ -655,7 +731,26 @@
         <div class="expl-text" data-role="explanation"></div>
       </div>
     </div>
-    <button class="btn hidden" id="btn-share-result-go" style="background:#4caf50; color:#fff; margin-top:4px;">📤 Devolver resultado</button>
+    <div class="result-actions hidden" id="go-result-actions">
+      <button class="action-card step-1" id="btn-download-csv-go">
+        <span class="step-num">1</span>
+        <span class="step-emoji">📊</span>
+        <span class="step-title">Descargar CSV</span>
+        <span class="step-hint">Para adjuntar</span>
+      </button>
+      <button class="action-card step-2" id="btn-share-result-go">
+        <span class="step-num">2</span>
+        <span class="step-emoji">📤</span>
+        <span class="step-title">Generar link</span>
+        <span class="step-hint">Tu resultado</span>
+      </button>
+      <div class="action-card step-3">
+        <span class="step-num">3</span>
+        <span class="step-emoji">📎</span>
+        <span class="step-title">Enviar ambos</span>
+        <span class="step-hint">CSV + link al profe</span>
+      </div>
+    </div>
     <button class="btn" id="btn-retry">🔄 REINTENTAR</button>
     <button class="btn secondary" id="btn-menu-go">🏠 MENÚ</button>
   </div>
@@ -684,7 +779,26 @@
         <div class="expl-text" data-role="explanation"></div>
       </div>
     </div>
-    <button class="btn hidden" id="btn-share-result-lu" style="background:#4caf50; color:#fff; margin-top:4px;">📤 Devolver resultado</button>
+    <div class="result-actions hidden" id="lu-result-actions">
+      <button class="action-card step-1" id="btn-download-csv-lu">
+        <span class="step-num">1</span>
+        <span class="step-emoji">📊</span>
+        <span class="step-title">Descargar CSV</span>
+        <span class="step-hint">Para adjuntar</span>
+      </button>
+      <button class="action-card step-2" id="btn-share-result-lu">
+        <span class="step-num">2</span>
+        <span class="step-emoji">📤</span>
+        <span class="step-title">Generar link</span>
+        <span class="step-hint">Tu resultado</span>
+      </button>
+      <div class="action-card step-3">
+        <span class="step-num">3</span>
+        <span class="step-emoji">📎</span>
+        <span class="step-title">Enviar ambos</span>
+        <span class="step-hint">CSV + link al profe</span>
+      </div>
+    </div>
     <button class="btn" id="btn-next-level">➡️ SIGUIENTE NIVEL</button>
     <button class="btn secondary" id="btn-menu-lu">🏠 MENÚ</button>
   </div>
@@ -751,6 +865,23 @@
       </div>
     </div>
   </div>
+
+  <div class="confirm-modal hidden" id="csv-modal">
+    <div class="confirm-box">
+      <div class="confirm-icon">📊</div>
+      <div class="confirm-title">Descargar detalle</div>
+      <div class="confirm-text">Antes de descargar el informe para tu profe:</div>
+      <input type="text" id="csv-name-input" placeholder="Tu nombre completo" maxlength="40" class="challenge-input" style="margin-bottom:10px; max-width:100%;">
+      <label class="csv-declaration-label">
+        <input type="checkbox" id="csv-declaration">
+        <span>Declaro que resolví este reto <b>sin ayuda externa</b>, sin consultar calculadoras ni a otras personas.</span>
+      </label>
+      <div class="confirm-buttons">
+        <button class="btn secondary" id="btn-cancel-csv">CANCELAR</button>
+        <button class="btn" id="btn-confirm-csv" style="background:#1976d2; color:#fff;">DESCARGAR</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -788,14 +919,16 @@ const state = {
   attemptsPerLife: 1, failedAttempts: 0,
   musicEnabled: true, musicTrackIndex: 0,
   worldcupEnabled: false,
+  teacherMode: false,
   numberTypes: { natural: true, negative: true, fraction: true },
   area: { left: 0, right: 0, top: 0, bottom: 0 },
   goalLineY: 0, goalRect: { left: 0, right: 0, top: 0, bottom: 0 },
   gamePaused: false, narrationTimer: null, pendingSpeakTimer: null,
   mistakes: [], sessionStats: { fractionSaves: 0, negativeSaves: 0, logSaves: 0, sqrtSaves: 0 },
+  rounds: [], roundStartTime: 0,
   shooterTargets: [], isAiming: false, aimX: 0, aimY: 0, playerBallX: 0, playerBallY: 0,
   wallElements: [], teammate: null, teammates: [], hoveredTeammate: null, passPhase: 'normal', aimedAtTeammate: false,
-  incomingChallenge: null, pendingIncomingChallenge: null, shareResultReturnTo: 'overlay-menu',
+  incomingChallenge: null, pendingIncomingChallenge: null, currentChallenge: null, shareResultReturnTo: 'overlay-menu',
 };
 
 const RANKS = [
@@ -827,7 +960,7 @@ const Progress = (function() {
     fractionSaves: 0, negativeSaves: 0, logSaves: 0, sqrtSaves: 0,
     hasPerfectLevel: false, hasFlawlessLevel: false, tournamentWins: 0,
     unlockedBadges: [],
-    preferences: { musicEnabled: true, voiceEnabled: false, celebrationEnabled: true, worldcupEnabled: false, musicTrack: 0, velocityStage: 1, sliderPos: 5, attemptsPerLife: 1, playerName: '' },
+    preferences: { musicEnabled: true, voiceEnabled: false, celebrationEnabled: true, worldcupEnabled: false, teacherMode: false, musicTrack: 0, velocityStage: 1, sliderPos: 5, attemptsPerLife: 1, playerName: '' },
   };
   let data = JSON.parse(JSON.stringify(defaults));
   function load() {
@@ -1215,6 +1348,12 @@ function approxEqual(a, b) { return Math.abs(a - b) < 1e-6; }
 function sameFraction(a, b) { if (approxEqual(a, b)) return true; const fa = decimalToFraction(a); const fb = decimalToFraction(b); return fa.num === fb.num && fa.den === fb.den; }
 const randInt = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
 const randChoice = arr => arr[Math.floor(Math.random()*arr.length)];
+function generateRid() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let s = '';
+  for (let i = 0; i < 6; i++) s += chars[Math.floor(Math.random() * chars.length)];
+  return s;
+}
 
 function initAudio() {
   if (!state.audioCtx) { try { state.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {} }
@@ -1746,6 +1885,34 @@ function showEndAcademicCard(overlayId) {
   fillAcademicCard(selector, randomMistake);
 }
 
+function getEquationType(eq) {
+  if (!eq) return 'natural';
+  if (eq.op === 'log') return 'logaritmo';
+  if (eq.op === '√') return 'raíz';
+  const isFracA = eq.opA !== null && eq.opA !== undefined && !Number.isInteger(eq.opA);
+  const isFracB = eq.opB !== null && eq.opB !== undefined && !Number.isInteger(eq.opB);
+  if (isFracA || isFracB) return 'fracción';
+  const isNegA = eq.opA !== null && eq.opA !== undefined && eq.opA < 0;
+  const isNegB = eq.opB !== null && eq.opB !== undefined && eq.opB < 0;
+  if (isNegA || isNegB) return 'negativo';
+  return 'natural';
+}
+function recordRound(opts) {
+  if (!state.currentEquation) return;
+  const eq = state.currentEquation;
+  const elapsed = state.roundStartTime ? (performance.now() - state.roundStartTime) / 1000 : 0;
+  state.rounds.push({
+    equation: eq.textHTML,
+    shown: (eq.shown || []).slice(),
+    chosen: opts.chosen !== undefined ? opts.chosen : null,
+    correct: eq.answer,
+    correctHit: !!opts.correctHit,
+    type: getEquationType(eq),
+    time: elapsed,
+  });
+  state.roundStartTime = 0;
+}
+
 /* ============================================================
    UI REFS
    ============================================================ */
@@ -1765,6 +1932,7 @@ const cursorDot = document.getElementById('cursor-dot');
 const controlsHint = document.getElementById('controls-hint');
 const btnExitGame = document.getElementById('btn-exit-game');
 const confirmExitModal = document.getElementById('confirm-exit-modal');
+const csvModal = document.getElementById('csv-modal');
 const btnSoundToggle = document.getElementById('btn-sound-toggle');
 const btnVoiceToggle = document.getElementById('btn-voice-toggle');
 const btnMusicToggle = document.getElementById('btn-music-toggle');
@@ -1775,7 +1943,6 @@ const aimLineEl = document.getElementById('aim-line');
 const aimPathEl = document.getElementById('aim-path');
 const aiKeeperEl = document.getElementById('ai-keeper');
 
-/* Capa para la línea punteada del compañero (WorldCup) */
 const tmLineEl = document.createElement('div');
 tmLineEl.className = 'tm-line';
 tmLineEl.innerHTML = '<svg><path d=""></path></svg>';
@@ -1836,6 +2003,17 @@ function syncWorldcupToggle() {
   if (b) { b.textContent = state.worldcupEnabled ? 'ON' : 'OFF'; b.classList.toggle('toggle-off', !state.worldcupEnabled); }
   const tag = document.getElementById('ui-mod-tag');
   if (tag) tag.classList.toggle('hidden', !state.worldcupEnabled);
+}
+function syncTeacherToggle() {
+  const b = document.getElementById('btn-teacher-toggle');
+  if (b) { b.textContent = state.teacherMode ? 'ON' : 'OFF'; b.classList.toggle('toggle-off', !state.teacherMode); }
+  const btn = document.getElementById('btn-create-challenge');
+  if (btn) {
+    btn.classList.toggle('teacher-active', state.teacherMode);
+    btn.innerHTML = state.teacherMode
+      ? '<span class="mb-ico">👨‍🏫</span><span class="mb-title">MODO PROFE</span>'
+      : '<span class="mb-ico">🎯</span><span class="mb-title">CREAR RETO</span>';
+  }
 }
 const AUDIO_LABELS = { music: 'Música de fondo', voice: 'Narración', celebration: 'Celebración de goles' };
 function audioFlag(k) { return k === 'music' ? state.musicEnabled : k === 'voice' ? state.voiceEnabled : state.celebrationEnabled; }
@@ -1933,7 +2111,7 @@ function getValueClass(val) {
 }
 
 /* ============================================================
-   KEEPER BALLS (con soporte WorldCup)
+   KEEPER BALLS
    ============================================================ */
 function spawnBalls() {
   state.balls.forEach(b => b.el.remove());
@@ -1979,6 +2157,7 @@ function spawnBalls() {
 
   state.active = true;
   state.roundLocked = false;
+  state.roundStartTime = performance.now();
   controlsHint.classList.add('show');
   setTimeout(()=>controlsHint.classList.remove('show'), 2500);
   narrateShot();
@@ -2026,11 +2205,10 @@ function layoutShooterTargets() {
 }
 
 /* ============================================================
-   WORLDCUP - Barrera y compañeros
+   WORLDCUP
    ============================================================ */
 function setupWorldCupWall() {
   const g = shooterGeom();
-
   const wallEl = document.createElement('div');
   wallEl.className = 'wall-player';
   wallEl.innerHTML = '<span>🧍</span><span>🧍</span><span>🧍</span><span>🧍</span>';
@@ -2150,6 +2328,7 @@ function spawnShooterTargets() {
 
   state.active = true;
   state.roundLocked = false;
+  state.roundStartTime = performance.now();
   narrateShot();
 }
 
@@ -2381,6 +2560,7 @@ function resolveShooterRound(isGoal, targetHit) {
     state.goals++; state.streak++;
     if (state.streak > state.bestStreak) state.bestStreak = state.streak;
     registerSuccess();
+    recordRound({ chosen: targetHit ? targetHit.value : null, correctHit: true });
     soundSave(); soundCrowd();
     showFeedback('¡GOOOL! ⚽', '#4caf50');
     GoalCelebration.play();
@@ -2400,6 +2580,7 @@ function resolveShooterRound(isGoal, targetHit) {
   } else {
     state.streak = 0;
     soundGoal();
+    recordRound({ chosen: targetHit ? targetHit.value : null, correctHit: false });
     if (targetHit) {
       showFeedback('¡ATAJADO! 🧤', '#e53935');
       setTicker(`¡El arquero la sacó! Era ${numText(state.correctAnswer)}.`);
@@ -2458,6 +2639,7 @@ function handleCollision(ball) {
     state.saves++; state.streak++;
     if (state.streak > state.bestStreak) state.bestStreak = state.streak;
     registerSuccess();
+    recordRound({ chosen: ball.value, correctHit: true });
     if (state.currentEquation) {
       const eq = state.currentEquation;
       if ((eq.opA !== null && !Number.isInteger(eq.opA)) || (eq.opB !== null && !Number.isInteger(eq.opB))) state.sessionStats.fractionSaves++;
@@ -2481,6 +2663,7 @@ function handleCollision(ball) {
     soundGoal();
     showFeedback('¡NO! ❌', '#e53935');
     setTicker(`¡Ese no era! Era ${numText(state.correctAnswer)}.`);
+    recordRound({ chosen: ball.value, correctHit: false });
     if (state.currentEquation) {
       state.mistakes.push({ op: state.currentEquation.op, opA: state.currentEquation.opA, opB: state.currentEquation.opB, textHTML: state.currentEquation.textHTML, shown: state.currentEquation.shown, correctAnswer: state.correctAnswer, chosenAnswer: ball.value, type: 'wrongBall' });
     }
@@ -2509,7 +2692,7 @@ function handleCollision(ball) {
 }
 
 /* ============================================================
-   GAME LOOP (con soporte WorldCup para balones en movimiento)
+   GAME LOOP
    ============================================================ */
 function gameLoop(timestamp) {
   if (state.mode !== 'playing') return;
@@ -2543,6 +2726,7 @@ function gameLoop(timestamp) {
         GoalCelebration.play();
         setTicker(`¡Gol en contra! Era ${numText(state.correctAnswer)}.`);
         showCorrectAnswerBig(state.correctAnswer);
+        recordRound({ chosen: null, correctHit: false });
         if (state.currentEquation) {
           state.mistakes.push({
             op: state.currentEquation.op, opA: state.currentEquation.opA, opB: state.currentEquation.opB,
@@ -2597,6 +2781,126 @@ function renderSessionSummary(elId, result) {
 }
 
 /* ============================================================
+   CSV GENERATION
+   ============================================================ */
+function pad2(n) { return String(n).padStart(2, '0'); }
+function formatDateLocal(date) {
+  return `${date.getFullYear()}-${pad2(date.getMonth()+1)}-${pad2(date.getDate())} ${pad2(date.getHours())}:${pad2(date.getMinutes())}:${pad2(date.getSeconds())}`;
+}
+function formatDateFilename(date) {
+  return `${date.getFullYear()}-${pad2(date.getMonth()+1)}-${pad2(date.getDate())}_${pad2(date.getHours())}${pad2(date.getMinutes())}${pad2(date.getSeconds())}`;
+}
+function sanitizeCsvField(v) {
+  if (v === null || v === undefined) return '';
+  return String(v).replace(/;/g, ',').replace(/\r?\n/g, ' ').replace(/"/g, "'").trim();
+}
+function sanitizeFilename(v) {
+  return String(v).replace(/[^a-zA-Z0-9_\-]/g, '_').substring(0, 30);
+}
+function generateCsvContent(studentName) {
+  const ch = state.currentChallenge;
+  if (!ch) return '';
+  const meta = LEVELS[ch.level].target;
+  const resultado = ch.mode === 'shooter' ? state.goals : state.saves;
+  const pct = ((resultado / meta) * 100).toFixed(1);
+  const velocidad = ['', 'Etapa 1', 'Etapa 2', 'Etapa 3'][ch.velocityStage] + ' (' + state.globalSpeedMultiplier.toFixed(1) + 'x)';
+  const tipos = [];
+  if (ch.numberTypes.natural) tipos.push('Naturales');
+  if (ch.numberTypes.negative) tipos.push('Negativos');
+  if (ch.numberTypes.fraction) tipos.push('Fracciones');
+  const now = new Date();
+  const fecha = formatDateLocal(now);
+
+  const headers = [
+    'reto_id', 'alumno', 'nivel', 'nivel_nombre', 'modo', 'velocidad', 'tipos_numeros',
+    'meta', 'resultado', 'resultado_pct', 'racha_max',
+    'fecha_descarga',
+    'n_pregunta', 'ecuacion', 'opciones', 'respuesta_alumno', 'respuesta_correcta',
+    'acierto', 'tipo', 'tiempo_seg'
+  ];
+  const rows = [headers.join(';')];
+
+  state.rounds.forEach((r, i) => {
+    const ecuacionLimpia = sanitizeCsvField(r.equation);
+    const opcionesLimpia = r.shown.map(v => numText(v)).join('|');
+    const respuestaAlumnoLimpia = r.chosen !== null && r.chosen !== undefined ? numText(r.chosen) : 'no_respondida';
+    const respuestaCorrectaLimpia = numText(r.correct);
+    const acierto = r.correctHit ? '✓' : '✗';
+    const tiempo = r.time ? r.time.toFixed(1) : '0.0';
+    const row = [
+      sanitizeCsvField(ch.rid || ''),
+      sanitizeCsvField(studentName),
+      ch.level + 1,
+      sanitizeCsvField(LEVELS[ch.level].name),
+      ch.mode === 'shooter' ? 'Pateador' : 'Arquero',
+      sanitizeCsvField(velocidad),
+      sanitizeCsvField(tipos.join(' · ')),
+      meta,
+      resultado,
+      pct + '%',
+      state.bestStreak,
+      sanitizeCsvField(fecha),
+      i + 1,
+      sanitizeCsvField(ecuacionLimpia),
+      sanitizeCsvField(opcionesLimpia),
+      sanitizeCsvField(respuestaAlumnoLimpia),
+      sanitizeCsvField(respuestaCorrectaLimpia),
+      acierto,
+      sanitizeCsvField(r.type || ''),
+      tiempo
+    ];
+    rows.push(row.join(';'));
+  });
+
+  return '\uFEFF' + rows.join('\r\n');
+}
+function downloadCsv(studentName) {
+  const content = generateCsvContent(studentName);
+  if (!content) return;
+  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const ch = state.currentChallenge;
+  const ridPart = ch && ch.rid ? ch.rid : 'local';
+  const namePart = sanitizeFilename(studentName || 'anonimo');
+  const now = new Date();
+  a.href = url;
+  a.download = `MAT_reto_${ridPart}_${namePart}_${formatDateFilename(now)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function openCsvModal() {
+  soundClick();
+  const nameInput = document.getElementById('csv-name-input');
+  const prefs = Progress.getData().preferences || {};
+  nameInput.value = prefs.playerName || '';
+  document.getElementById('csv-declaration').checked = false;
+  csvModal.classList.remove('hidden');
+}
+function confirmDownloadCsv() {
+  const nameInput = document.getElementById('csv-name-input');
+  const decl = document.getElementById('csv-declaration');
+  const nombre = (nameInput.value || '').trim();
+  if (!nombre) {
+    showToast('⚠️ Escribí tu nombre antes de descargar', '#e53935');
+    nameInput.focus();
+    return;
+  }
+  if (!decl.checked) {
+    showToast('⚠️ Debés aceptar la declaración para descargar', '#e53935');
+    return;
+  }
+  Progress.savePreference('playerName', nombre.substring(0, 40));
+  soundClick();
+  downloadCsv(nombre);
+  csvModal.classList.add('hidden');
+  showToast('✅ CSV descargado. Enviaselo a tu profe.', '#1976d2');
+}
+function cancelDownloadCsv() { soundClick(); csvModal.classList.add('hidden'); }
+
+/* ============================================================
    FLUJO
    ============================================================ */
 function startLevel(index, mode = 'keeper') {
@@ -2614,6 +2918,8 @@ function startLevel(index, mode = 'keeper') {
   state.active = false; state.roundLocked = false;
   state.lastTime = 0; state.pointerActive = false; state.gamePaused = false;
   state.mistakes = [];
+  state.rounds = [];
+  state.roundStartTime = 0;
   state.sessionStats = { fractionSaves: 0, negativeSaves: 0, logSaves: 0, sqrtSaves: 0 };
   state.wallElements = [];
   state.teammate = null;
@@ -2623,6 +2929,10 @@ function startLevel(index, mode = 'keeper') {
   state.aimedAtTeammate = false;
   tmLineEl.classList.remove('active');
 
+  if (!state.incomingChallenge) {
+    state.currentChallenge = null;
+  }
+
   container.classList.add('playing');
   container.classList.remove('keeper-mode', 'shooter-mode');
   container.classList.add(mode === 'keeper' ? 'keeper-mode' : 'shooter-mode');
@@ -2631,17 +2941,21 @@ function startLevel(index, mode = 'keeper') {
   updateUI();
   hideAllOverlays();
   hideAllAcademicCards();
-  updateShareResultButton();
+  updateResultButtons();
   document.getElementById('lu-session-summary').classList.add('hidden');
   document.getElementById('go-session-summary').classList.add('hidden');
   confirmExitModal.classList.add('hidden');
+  csvModal.classList.add('hidden');
   btnExitGame.classList.remove('hidden');
   soundWhistle();
   narrateCategory('levelStart', { rate: 1.05, pitch: 1.2 });
 
   const lvl = LEVELS[index];
   const pct = Math.round(getRarityChance(lvl.rarity) * 100);
-  const modLabel = state.worldcupEnabled ? '🌍 WORLDCUP · ' : '';
+  const modLabels = [];
+  if (state.worldcupEnabled) modLabels.push('🌍 WORLDCUP');
+  if (state.currentChallenge && state.currentChallenge.teacher) modLabels.push('👨‍🏫 RETO PROFE');
+  const modLabel = modLabels.length ? modLabels.join(' · ') + ' · ' : '';
   setTicker(`${modLabel}Nivel ${index+1}: ${lvl.name} - ¡${mode === 'keeper' ? 'Ataja' : 'Meté'} ${lvl.target} balones! (Especiales: ${pct}%)`);
   state.balls.forEach(b => b.el.remove());
   state.balls = [];
@@ -2687,8 +3001,12 @@ function exitToMenu() {
   state.teammate = null;
   state.teammates = [];
   state.hoveredTeammate = null;
+  state.currentChallenge = null;
+  state.rounds = [];
+  state.roundStartTime = 0;
   tmLineEl.classList.remove('active');
   confirmExitModal.classList.add('hidden');
+  csvModal.classList.add('hidden');
   btnExitGame.classList.add('hidden');
   cursorDot.style.display = 'none';
   aimLineEl.classList.remove('active');
@@ -2723,7 +3041,7 @@ function levelComplete() {
     `Atajadas/Goles: ${state.saves + state.goals} | Errores: ${state.mistakes.length} | Racha máx: ${state.bestStreak}`;
 
   showEndAcademicCard('overlay-levelup');
-  updateShareResultButton();
+  updateResultButtons();
 
   const btnNext = document.getElementById('btn-next-level');
   if (isLast && !state.isTournament) {
@@ -2769,7 +3087,7 @@ function gameOver(tournamentWin = false) {
   document.getElementById('go-streak').textContent = state.bestStreak;
 
   showEndAcademicCard('overlay-gameover');
-  updateShareResultButton();
+  updateResultButtons();
   showOverlay('overlay-gameover');
   setTicker('Fin del partido. ¡Presiona reintentar!');
 }
@@ -2927,7 +3245,7 @@ function buildMusicTracks() {
 }
 
 /* ============================================================
-   SISTEMA DE RETOS COMPARTIBLES
+   SISTEMA DE RETOS
    ============================================================ */
 function encodeNumberTypes(nt) {
   let bits = 0;
@@ -2951,6 +3269,8 @@ function getCurrentChallengeConfig() {
     challengerName: '',
     result: null,
     resultBy: '',
+    teacher: state.teacherMode,
+    rid: state.teacherMode ? generateRid() : '',
   };
 }
 function encodeChallenge(cfg) {
@@ -2963,6 +3283,8 @@ function encodeChallenge(cfg) {
   if (cfg.challengerName) parts.push('d=' + encodeURIComponent(cfg.challengerName));
   if (cfg.result !== null && cfg.result !== undefined) parts.push('r=' + cfg.result);
   if (cfg.resultBy) parts.push('d2=' + encodeURIComponent(cfg.resultBy));
+  if (cfg.teacher) parts.push('tm=1');
+  if (cfg.rid) parts.push('rid=' + encodeURIComponent(cfg.rid));
   return parts.join('&');
 }
 function decodeChallenge(hash) {
@@ -2984,6 +3306,8 @@ function decodeChallenge(hash) {
       challengerName: params.d ? decodeURIComponent(params.d) : '',
       result: params.r !== undefined && params.r !== '' ? parseInt(params.r) : null,
       resultBy: params.d2 ? decodeURIComponent(params.d2) : '',
+      teacher: params.tm === '1',
+      rid: params.rid ? decodeURIComponent(params.rid) : '',
     };
   } catch (e) { return null; }
 }
@@ -3000,6 +3324,12 @@ function applyChallengeConfig(cfg) {
     level: cfg.level, mode: cfg.mode,
     velocityStage: cfg.velocityStage, sliderPos: cfg.sliderPos,
     numberTypes: { ...cfg.numberTypes }, challengerName: cfg.challengerName,
+  };
+  state.currentChallenge = {
+    level: cfg.level, mode: cfg.mode,
+    velocityStage: cfg.velocityStage, sliderPos: cfg.sliderPos,
+    numberTypes: { ...cfg.numberTypes }, challengerName: cfg.challengerName,
+    teacher: !!cfg.teacher, rid: cfg.rid || '',
   };
   syncModeSelector();
   applySpeedFromStage();
@@ -3069,6 +3399,9 @@ function renderChallengePreview(elId, cfg, showResult) {
     <div class="cp-row"><span class="cp-label">Números</span><span class="cp-value">${numTypes.join(' · ') || '—'}</span></div>
     <div class="cp-row"><span class="cp-label">Meta</span><span class="cp-value">${nivel.target} ${metaLabel}</span></div>
   `;
+  if (cfg.teacher) {
+    html += `<div class="cp-row"><span class="cp-label">Tipo</span><span class="cp-value">👨‍🏫 Reto Profesor${cfg.rid ? ' · #' + cfg.rid : ''}</span></div>`;
+  }
   if (showResult && cfg.result !== null && cfg.result !== undefined) {
     html += `<div class="cp-row cp-highlight"><span class="cp-label">Resultado</span><span class="cp-value">${cfg.result} ${metaLabel}</span></div>`;
   }
@@ -3127,14 +3460,22 @@ function handleIncomingChallenge(cfg) {
     const completed = cfg.result >= levelTarget;
     document.getElementById('incoming-title').textContent = `📊 ${by} hizo ${cfg.result} ${metaLabel}`;
     document.getElementById('incoming-subtitle').textContent = completed
-      ? `¡Completó tu reto (meta: ${levelTarget})! ¿Le ganás de nuevo?`
+      ? `¡Completó el reto (meta: ${levelTarget})! ¿Le ganás de nuevo?`
       : `No alcanzó la meta de ${levelTarget} ${metaLabel}. ¿Jugás vos?`;
     document.getElementById('btn-accept-challenge').textContent = '🔁 Jugar el reto';
     renderChallengePreview('incoming-preview', cfg, true);
   } else {
-    const titulo = cfg.challengerName ? `🏆 ${cfg.challengerName} te retó` : '🏆 Te retaron';
+    let titulo = '🏆 Te retaron';
+    if (cfg.teacher) {
+      titulo = cfg.challengerName ? `👨‍🏫 Reto de ${cfg.challengerName}` : '👨‍🏫 Reto del profesor';
+      if (cfg.rid) titulo += ` · #${cfg.rid}`;
+    } else if (cfg.challengerName) {
+      titulo = `🏆 ${cfg.challengerName} te retó`;
+    }
     document.getElementById('incoming-title').textContent = titulo;
-    document.getElementById('incoming-subtitle').textContent = '¿Aceptás el desafío?';
+    document.getElementById('incoming-subtitle').textContent = cfg.teacher
+      ? 'Cuando termines, descargá el CSV y enviaselo a tu profe.'
+      : '¿Aceptás el desafío?';
     document.getElementById('btn-accept-challenge').textContent = '⚔️ Aceptar reto';
     renderChallengePreview('incoming-preview', cfg, false);
   }
@@ -3154,6 +3495,7 @@ function declineIncomingChallenge() {
   history.replaceState(null, '', location.pathname + location.search);
   state.pendingIncomingChallenge = null;
   state.incomingChallenge = null;
+  state.currentChallenge = null;
   showOverlay('overlay-menu');
 }
 
@@ -3173,6 +3515,7 @@ function openShareResult(fromOverlay) {
     velocityStage: ch.velocityStage, sliderPos: ch.sliderPos,
     numberTypes: ch.numberTypes, challengerName: ch.challengerName,
     result: achieved, resultBy: nameBy,
+    teacher: ch.teacher, rid: ch.rid,
   };
   renderChallengePreview('share-result-preview', cfg, true);
   document.getElementById('share-result-name').value = nameBy;
@@ -3192,16 +3535,26 @@ function generateShareResultLink() {
     velocityStage: ch.velocityStage, sliderPos: ch.sliderPos,
     numberTypes: ch.numberTypes, challengerName: ch.challengerName,
     result: achieved, resultBy: resultBy,
+    teacher: ch.teacher, rid: ch.rid,
   };
   document.getElementById('share-result-url').value = buildChallengeURL(cfg);
   document.getElementById('share-result-output').classList.remove('hidden');
 }
-function updateShareResultButton() {
-  const show = !!state.incomingChallenge;
+function updateResultButtons() {
+  const showShare = !!state.incomingChallenge;
+  const isTeacher = !!(state.currentChallenge && state.currentChallenge.teacher);
+  const showGrid = showShare && isTeacher;
+  const showStandaloneShare = showShare && !isTeacher;
+
   const b1 = document.getElementById('btn-share-result-lu');
   const b2 = document.getElementById('btn-share-result-go');
-  if (b1) b1.classList.toggle('hidden', !show);
-  if (b2) b2.classList.toggle('hidden', !show);
+  if (b1) b1.classList.toggle('hidden', !showStandaloneShare);
+  if (b2) b2.classList.toggle('hidden', !showStandaloneShare);
+
+  const g1 = document.getElementById('lu-result-actions');
+  const g2 = document.getElementById('go-result-actions');
+  if (g1) g1.classList.toggle('hidden', !showGrid);
+  if (g2) g2.classList.toggle('hidden', !showGrid);
 }
 
 /* ============================================================
@@ -3216,6 +3569,7 @@ window.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') state.keys.down = true;
   }
   if (e.key === 'Escape') {
+    if (!csvModal.classList.contains('hidden')) { csvModal.classList.add('hidden'); state.gamePaused = false; return; }
     if (!confirmExitModal.classList.contains('hidden')) { confirmExitModal.classList.add('hidden'); state.gamePaused = false; }
     else if (state.mode === 'playing') { confirmExitModal.classList.remove('hidden'); state.gamePaused = true; }
   }
@@ -3249,6 +3603,7 @@ container.addEventListener('pointerdown', (e) => {
   initAudio();
   if (state.mode !== 'playing') return;
   if (!confirmExitModal.classList.contains('hidden')) return;
+  if (!csvModal.classList.contains('hidden')) return;
   const p = getPointerPos(e);
   if (state.playMode === 'keeper') { updatePointer(e); }
   else if (state.playMode === 'shooter' && state.active && !state.roundLocked) {
@@ -3272,6 +3627,7 @@ container.addEventListener('touchstart', (e) => {
   initAudio();
   if (state.mode !== 'playing') return;
   if (!confirmExitModal.classList.contains('hidden')) return;
+  if (!csvModal.classList.contains('hidden')) return;
   e.preventDefault();
   const t = e.touches[0];
   const p = getPointerPos({ clientX: t.clientX, clientY: t.clientY });
@@ -3318,7 +3674,7 @@ onTap(document.getElementById('btn-career'), () => { soundClick(); renderCareer(
 onTap(document.getElementById('btn-settings'), () => {
   soundClick(); buildAvatarPickers(); buildNumberTypeToggles();
   updateVoiceSelector(); syncSoundToggle(); syncVoiceToggle(); syncMusicToggle();
-  syncWorldcupToggle();
+  syncWorldcupToggle(); syncTeacherToggle();
   updateVoiceStatus('');
   buildMusicTracks();
   setupStageSelector();
@@ -3363,16 +3719,23 @@ onTap(document.getElementById('btn-worldcup-toggle'), function() {
   soundClick();
   setTicker(state.worldcupEnabled ? '🌍 MODO WORLDCUP ACTIVADO' : '🌍 MODO WORLDCUP DESACTIVADO');
 });
+onTap(document.getElementById('btn-teacher-toggle'), function() {
+  state.teacherMode = !state.teacherMode;
+  Progress.savePreference('teacherMode', state.teacherMode);
+  syncTeacherToggle();
+  soundClick();
+  setTicker(state.teacherMode ? '👨‍🏫 MODO PROFE ACTIVADO — los retos incluirán CSV' : '👨‍🏫 MODO PROFE DESACTIVADO');
+});
 
 onTap(document.getElementById('btn-voice-test'), () => { soundClick(); speakDirect('¡Se prepara... y patea! ¡Gooool!', { rate: 1.15, pitch: 1.3, force: true }); });
 onTap(document.getElementById('btn-retry'), () => { soundClick(); state.isTournament=false; startLevel(state.levelIndex, state.playMode); });
 onTap(document.getElementById('btn-menu-go'), () => {
-  soundClick(); cancelSpeech(); state.mode='menu'; container.classList.remove('playing', 'keeper-mode', 'shooter-mode');
+  soundClick(); cancelSpeech(); state.mode='menu'; state.currentChallenge=null; state.incomingChallenge=null; container.classList.remove('playing', 'keeper-mode', 'shooter-mode');
   updateCareerButton(); showOverlay('overlay-menu');
   setTicker('Bienvenidos a MAT.');
 });
 onTap(document.getElementById('btn-menu-lu'), () => {
-  soundClick(); cancelSpeech(); state.mode='menu'; container.classList.remove('playing', 'keeper-mode', 'shooter-mode');
+  soundClick(); cancelSpeech(); state.mode='menu'; state.currentChallenge=null; state.incomingChallenge=null; container.classList.remove('playing', 'keeper-mode', 'shooter-mode');
   updateCareerButton(); showOverlay('overlay-menu');
   setTicker('Bienvenidos a MAT.');
 });
@@ -3398,6 +3761,10 @@ onTap(document.getElementById('btn-copy-result'), () => {
   const url = document.getElementById('share-result-url').value;
   if (url) copyToClipboard(url);
 });
+onTap(document.getElementById('btn-download-csv-lu'), openCsvModal);
+onTap(document.getElementById('btn-download-csv-go'), openCsvModal);
+onTap(document.getElementById('btn-cancel-csv'), cancelDownloadCsv);
+onTap(document.getElementById('btn-confirm-csv'), confirmDownloadCsv);
 
 const voiceSelect = document.getElementById('voice-select');
 voiceSelect.addEventListener('change', (e) => {
@@ -3427,7 +3794,7 @@ updateUI();
 setTicker('Bienvenidos a MAT. ¡Elige un modo!');
 buildLevelGrid();
 uiKeeperEmoji.textContent = state.keeperAvatar;
-syncSoundToggle(); syncAudioButtons(); syncWorldcupToggle();
+syncSoundToggle(); syncAudioButtons(); syncWorldcupToggle(); syncTeacherToggle();
 updateCareerButton();
 initVoices();
 setupSettingsTabs();
@@ -3438,6 +3805,7 @@ setupSettingsTabs();
   if (typeof prefs.voiceEnabled === 'boolean') state.voiceEnabled = prefs.voiceEnabled;
   if (typeof prefs.celebrationEnabled === 'boolean') state.celebrationEnabled = prefs.celebrationEnabled;
   if (typeof prefs.worldcupEnabled === 'boolean') state.worldcupEnabled = prefs.worldcupEnabled;
+  if (typeof prefs.teacherMode === 'boolean') state.teacherMode = prefs.teacherMode;
   if (typeof prefs.musicTrack === 'number') state.musicTrackIndex = prefs.musicTrack;
   if (typeof prefs.velocityStage === 'number') state.velocityStage = prefs.velocityStage;
   if (typeof prefs.sliderPos === 'number') state.sliderPos = prefs.sliderPos;
@@ -3451,6 +3819,7 @@ setupSettingsTabs();
   }
   syncAudioButtons();
   syncWorldcupToggle();
+  syncTeacherToggle();
 })();
 
 window.addEventListener('resize', () => {
